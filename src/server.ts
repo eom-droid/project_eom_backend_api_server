@@ -1,4 +1,4 @@
-import { diaryRouter } from "./routes";
+import { diaryRouter, uploadRouter } from "./routes";
 import express from "express";
 import mongoose from "mongoose";
 
@@ -18,9 +18,10 @@ const server = async () => {
     mongoose.set("debug", true);
     console.log("MongoDB connected");
 
-    app.use(express.json());
+    // app.use(express.json());
 
     app.use("/diary", diaryRouter);
+    app.use("/upload", uploadRouter);
 
     app.listen(PORT, async () => {
       console.log(`server listening on port ${PORT}`);

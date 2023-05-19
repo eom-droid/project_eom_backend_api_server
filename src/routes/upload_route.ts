@@ -1,39 +1,47 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { isValidObjectId } from "mongoose";
 import { DataUtils } from "../utils/default_util";
-export const diaryRouter = Router();
+export const uploadRouter = Router();
 
-diaryRouter.post("/", async (req: Request, res: Response) => {
-  try {
-    // console.log(req.body);
-    console.log(req.headers);
-    // console.log(req.);
+import multer from "multer";
+var upload = multer({ dest: "uploads/" });
 
-    // if (typeof title !== "string")
-    //   return res.status(400).send({ err: "title is required" });
-    // if (typeof content !== "string")
-    //   return res.status(400).send({ err: "content is required" });
-    // if (islive && typeof islive !== "boolean")
-    //   return res.status(400).send({ err: "islive must be a boolean" });
+uploadRouter.post(
+  "/",
+  upload.array("files"),
+  async (req: Request, res: Response) => {
+    try {
+      // console.log(req.body);
+      // res.send("Uploaded! : " + req.file); // object를 리턴함
+      console.log(req.files); // 콘솔(터미널)을 통해서 req.file Object 내용 확인 가능.
+      // console.log(req.);
 
-    // if (!isValidObjectId(userId))
-    //   return res.send(400).send({ err: "userId is invalid" });
+      // if (typeof title !== "string")
+      //   return res.status(400).send({ err: "title is required" });
+      // if (typeof content !== "string")
+      //   return res.status(400).send({ err: "content is required" });
+      // if (islive && typeof islive !== "boolean")
+      //   return res.status(400).send({ err: "islive must be a boolean" });
 
-    // let user = await User.findById(userId);
-    // if (!user) return res.status(400).send({ err: "user does not exist" });
+      // if (!isValidObjectId(userId))
+      //   return res.send(400).send({ err: "userId is invalid" });
 
-    // // let blog = new Blog({ ...req.body, user: user._id });
-    // // 아래와 같이 넣어주더라도 user객체를 모두 넣는거는 아님 ID만 넣어주 ㅋㅋ
-    // let blog = new Blog({ ...req.body, user: user });
-    // await blog.save();
-    return res.send({ a: "sdfsdf" });
-  } catch (error: any) {
-    DataUtils.errorHandle({
-      error: error,
-      res: res,
-    });
+      // let user = await User.findById(userId);
+      // if (!user) return res.status(400).send({ err: "user does not exist" });
+
+      // // let blog = new Blog({ ...req.body, user: user._id });
+      // // 아래와 같이 넣어주더라도 user객체를 모두 넣는거는 아님 ID만 넣어주 ㅋㅋ
+      // let blog = new Blog({ ...req.body, user: user });
+      // await blog.save();
+      return res.send({ a: "sdfsdf" });
+    } catch (error: any) {
+      DataUtils.errorHandle({
+        error: error,
+        res: res,
+      });
+    }
   }
-});
+);
 
 // diaryRouter.get("/", async (req, res) => {
 //   try {
