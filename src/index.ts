@@ -1,10 +1,8 @@
-import { diaryRouter, uploadRouter } from "./routes";
 import express from "express";
 import mongoose from "mongoose";
+import { diaryRouter } from "./v1/routes/diary_routes";
 
 const app = express();
-
-//middleware
 
 // 반복적으로 나오는 try catch나 에러 처리 같은 경우에는 express에 미들웨어를 통해 진행함
 const server = async () => {
@@ -18,10 +16,7 @@ const server = async () => {
     mongoose.set("debug", true);
     console.log("MongoDB connected");
 
-    // app.use(express.json());
-
-    app.use("/diary", diaryRouter);
-    app.use("/upload", uploadRouter);
+    app.use("/api/v1/diary", diaryRouter);
 
     app.listen(PORT, async () => {
       console.log(`server listening on port ${PORT}`);
