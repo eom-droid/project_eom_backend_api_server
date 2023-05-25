@@ -13,7 +13,7 @@ export const createNewDiaryController = async (req: Request, res: Response) => {
     );
 
     // // console.log(diary);
-    // // console.log(diaryInstance.thumnail);
+    // // console.log(diaryInstance.thumbnail);
     // await diaryInstance.save();
 
     res.status(201).send({ status: "OK", data: "allWorkouts" });
@@ -33,7 +33,7 @@ export const getNewDiaryController = async (req: Request, res: Response) => {
   //     req.files !== undefined ? (req.files as Express.Multer.File[]) : undefined
   //   );
   //   // // console.log(diary);
-  //   // // console.log(diaryInstance.thumnail);
+  //   // // console.log(diaryInstance.thumbnail);
   //   // await diaryInstance.save();
   //   res.status(201).send({ status: "OK", data: "allWorkouts" });
   // } catch (error: any) {

@@ -12,8 +12,8 @@ export interface IDiary {
   hashtags: Array<String>;
   // postDate : 표출 일자 -> 다이어리의 표출 일자, 사용자는 해당 값으로 ordering을 진행할 예정
   postDate: Date;
-  // thumnail : 썸네일 -> S3에 저장된 이미지, vid 의 경로
-  thumnail: String;
+  // thumbnail : 썸네일 -> S3에 저장된 이미지, vid 의 경로
+  thumbnail: String;
   // category : 카테고리 -> 카테고리를 통해서 다이어리 리스트 페이지에서 필터링을 진행할 예정
   category: String;
   // isShown : 표출 여부
@@ -34,8 +34,8 @@ const DiarySchema = new Schema<IDiary>(
     hashtags: [{ type: String, required: true }],
     // postDate : 표출 일자 -> 다이어리의 표출 일자, 사용자는 해당 값으로 ordering을 진행할 예정
     postDate: { type: Date, required: true },
-    // thumnail : 썸네일 -> S3에 저장된 이미지, vid 의 경로
-    thumnail: { type: String, required: false },
+    // thumbnail : 썸네일 -> S3에 저장된 이미지, vid 의 경로
+    thumbnail: { type: String, required: false },
     // category : 카테고리 -> 카테고리를 통해서 다이어리 리스트 페이지에서 필터링을 진행할 예정
     category: { type: String, required: true },
     // isShown : 표출 여부
