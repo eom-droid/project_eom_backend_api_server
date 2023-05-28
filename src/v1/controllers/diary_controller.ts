@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { Diary, DiaryDetail } from "../models/diary_model";
-import { createDiaryService } from "../services/diary_service";
+import { createDiaryService, getDiaryService } from "../services/diary_service";
 
 export const createNewDiaryController = async (req: Request, res: Response) => {
   try {
     const { body } = req;
     const diary = JSON.parse(body.diary);
 
-    await createDiaryService(
+    var data = await createDiaryService(
       diary,
       req.files !== undefined ? (req.files as Express.Multer.File[]) : undefined
     );
@@ -16,7 +16,7 @@ export const createNewDiaryController = async (req: Request, res: Response) => {
     // // console.log(diaryInstance.thumbnail);
     // await diaryInstance.save();
 
-    res.status(201).send({ status: "OK", data: "allWorkouts" });
+    res.status(201).send({ status: "OK", data: data });
   } catch (error: any) {
     res
       .status(error?.status || 500)
@@ -24,7 +24,17 @@ export const createNewDiaryController = async (req: Request, res: Response) => {
   }
 };
 
-export const getNewDiaryController = async (req: Request, res: Response) => {
+export const getDiarysController = async (req: Request, res: Response) => {
+  try {
+    var diarys = await getDiaryService();
+    console.log(diarys);
+    res.status(200).send(diarys);
+  } catch (error: any) {
+    res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+
   // try {
   //   const { body } = req;
   //   const diary = JSON.parse(body.diary);

@@ -5,7 +5,10 @@ import {
   IDiaryDetail,
 } from "../models/diary_model";
 
-import { createDiaryRepository } from "../repositorys/diary_repository";
+import {
+  createDiaryRepository,
+  getDiaryRepository,
+} from "../repositorys/diary_repository";
 
 export const createDiaryService = async (
   diary: Object,
@@ -46,7 +49,15 @@ export const createDiaryService = async (
         }
       }
     }
-    await createDiaryRepository(diaryObj, diaryDetailObj);
+    return await createDiaryRepository(diaryObj, diaryDetailObj);
+  } catch (error: any) {
+    throw { status: error?.status || 400, message: error?.message || error };
+  }
+};
+
+export const getDiaryService = async () => {
+  try {
+    return await getDiaryRepository();
   } catch (error: any) {
     throw { status: error?.status || 400, message: error?.message || error };
   }

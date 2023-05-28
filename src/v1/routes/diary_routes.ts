@@ -1,6 +1,9 @@
 import express from "express";
 
-import { createNewDiaryController } from "../controllers/diary_controller";
+import {
+  createNewDiaryController,
+  getDiarysController,
+} from "../controllers/diary_controller";
 
 import { multiPartMiddleware } from "../middlewares/file_upload_middleware";
 // const authenticate = require("../../middlewares/authenticate");
@@ -8,9 +11,7 @@ import { multiPartMiddleware } from "../middlewares/file_upload_middleware";
 
 export const diaryRouter = express.Router();
 
-diaryRouter.get("/", (res, req) => {
-  return;
-});
+diaryRouter.get("/", getDiarysController);
 diaryRouter.post(
   "/",
   // milddleware
