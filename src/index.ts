@@ -16,7 +16,7 @@ const server = async () => {
     mongoose.set("debug", true);
     console.log("MongoDB connected");
 
-    app.use("/api/v1/diary", diaryRouter);
+    app.use("/api/v1/diaries", diaryRouter);
 
     app.listen(PORT, async () => {
       console.log(`server listening on port ${PORT}`);

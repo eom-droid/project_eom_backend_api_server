@@ -37,7 +37,6 @@ export const multer_instance = multer({
     bucket: process.env.S3_BUCKET_NAME!,
 
     key: function (req, file, cb) {
-      console.log("key");
       const directory = "eom/diary/image/";
       const fileExtension = file.originalname.split(".").pop();
 
@@ -49,11 +48,7 @@ export const multer_instance = multer({
   }),
 }).array("file");
 
-export const multiPartMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const multiPart = (req: Request, res: Response, next: NextFunction) => {
   multer_instance(req, res, (errorMes) => {
     if (errorMes) {
       res.status(400).send({ status: "FAILED", data: { error: errorMes } });

@@ -1,5 +1,6 @@
 import { Response } from "express";
 import { v4 as uuidv4 } from "uuid";
+import { CustomHttpErrorModel } from "../models/custom_http_error_model";
 
 interface ICustomError {
   error: any;

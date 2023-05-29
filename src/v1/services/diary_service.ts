@@ -1,23 +1,15 @@
-import {
-  Diary,
-  DiaryDetail,
-  IDiary,
-  IDiaryDetail,
-} from "../models/diary_model";
+import { DiaryPaginateReqModel } from "../../models/diary_paginate_req_model";
+import { Meta } from "../../models/paginate_res_model";
+import { PaginateReturnModel } from "../../models/paginate_res_model";
+import { Diary, DiaryModel } from "../models/diary_model";
 
-import {
-  createDiaryRepository,
-  getDiaryRepository,
-} from "../repositorys/diary_repository";
+import * as diaryRepository from "../repositorys/diary_repository";
 
-export const createDiaryService = async (
-  diary: Object,
+export const createDiary = async (
+  diary: Diary,
   files: Express.Multer.File[] | undefined
 ) => {
   try {
-    var diaryObj = diary as IDiary;
-    var diaryDetailObj = diary as IDiaryDetail;
-
     // 파일 이름 매칭 시켜주기
     if (files != undefined) {
       for (var i = 0; i < files.length; i++) {
@@ -26,39 +18,59 @@ export const createDiaryService = async (
         const originalname = files[i].originalname;
 
         // file 중에 thumbnail 값이 일치하다면 diaryObj.thumbnail에 넣어주기
-        if (diaryObj.thumbnail === originalname) {
-          diaryObj.thumbnail = filename;
+        if (diary.thumbnail === originalname) {
+          diary.thumbnail = filename;
         }
 
         // file 중에 img 값이 일치하다면 diaryDetailObj.imgs에 넣어주기
-        const imgFoundIndex = diaryDetailObj.imgs.findIndex(
-          (e) => e === originalname
-        );
+        const imgFoundIndex = diary.imgs.findIndex((e) => e === originalname);
         if (imgFoundIndex !== -1) {
-          diaryDetailObj.imgs[imgFoundIndex] = filename;
+          diary.imgs[imgFoundIndex] = filename;
           continue;
         }
 
         // file 중에 vid 값이 일치하다면 diaryDetailObj.vids에 넣어주기
-        const vidFoundIndex = diaryDetailObj.vids.findIndex(
-          (e) => e === originalname
-        );
+        const vidFoundIndex = diary.vids.findIndex((e) => e === originalname);
         if (vidFoundIndex !== -1) {
-          diaryDetailObj.vids[vidFoundIndex] = filename;
+          diary.vids[vidFoundIndex] = filename;
           continue;
         }
       }
     }
-    return await createDiaryRepository(diaryObj, diaryDetailObj);
+
+    const lastIndOfPostDate = await diaryRepository.getLastIndexDiaryByDate(
+      diary.postDT
+    );
+    diary.postDateInd =
+      lastIndOfPostDate !== undefined ? lastIndOfPostDate + 1 : 0;
+
+    return await diaryRepository.createDiary(diary);
   } catch (error: any) {
     throw { status: error?.status || 400, message: error?.message || error };
   }
 };
 
-export const getDiaryService = async () => {
-  try {
-    return await getDiaryRepository();
-  } catch (error: any) {
-    throw { status: error?.status || 400, message: error?.message || error };
-  }
+async function a(date: Date) {
+  console.log(date);
+
+  const result = await DiaryModel.find({
+    postDT: {
+      $lte: date,
+    },
+  }).sort({ postDT: 1, postDateInd: -1 });
+
+  console.log(result);
+}
+
+export const getDiaries = async (
+  paginateReq: DiaryPaginateReqModel
+): Promise<PaginateReturnModel<Diary>> => {
+  const result = await diaryRepository.getDiaries(paginateReq);
+  return new PaginateReturnModel<Diary>({
+    meta: new Meta({
+      count: result.length,
+      hasMore: result.length === paginateReq.count,
+    }),
+    data: result,
+  });
 };
