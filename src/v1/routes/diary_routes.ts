@@ -3,7 +3,7 @@ import express from "express";
 import * as diaryController from "../controllers/diary_controller";
 
 import { multiPart } from "../middlewares/file_upload_middleware";
-import { body } from "express-validator";
+import { body, param, query } from "express-validator";
 import { PAGINATE_LIMIT } from "../../constant/default";
 // const authenticate = require("../../middlewares/authenticate");
 // const authorize = require("../../middlewares/authorize");
@@ -17,11 +17,15 @@ diaryRouter.get(
   "/",
   express.json(),
   [
-    body("count").isInt({ min: 1, max: PAGINATE_LIMIT }).optional().bail(),
-    body("category").isString().optional().bail(),
-    body("after.postDateInd").isInt({ min: 0 }).optional().bail(),
-    body("after.postDT")
-      .isDate()
+    query("count")
+      .isInt({ min: 1, max: PAGINATE_LIMIT })
+      .optional()
+      .toInt()
+      .bail(),
+    query("category").isString().optional().bail(),
+    query("postDateInd").isInt({ min: 0 }).optional().toInt().bail(),
+    query("postDT")
+      .isString()
       .optional()
       .toDate()
       .custom((value: Date, { req }) => {
@@ -35,6 +39,13 @@ diaryRouter.get(
       .bail(),
   ],
   diaryController.getDiaries
+);
+
+diaryRouter.get(
+  "/:id",
+  express.json(),
+  param("id").isString(),
+  diaryController.getDiary
 );
 // diaryRouter.get("/dateFilterTest", express.json(), diaryController.test);
 

@@ -1,6 +1,6 @@
+import { count } from "console";
 import { DiaryPaginateReqModel } from "../../models/diary_paginate_req_model";
-import { Meta } from "../../models/paginate_res_model";
-import { PaginateReturnModel } from "../../models/paginate_res_model";
+import { Meta, PaginateReturnModel } from "../../models/paginate_res_model";
 import { Diary, DiaryModel } from "../models/diary_model";
 
 import * as diaryRepository from "../repositorys/diary_repository";
@@ -50,6 +50,29 @@ export const createDiary = async (
   }
 };
 
+export const getDiaries = async (
+  paginateReq: DiaryPaginateReqModel
+): Promise<PaginateReturnModel<Diary>> => {
+  const result = await diaryRepository.getDiaries(paginateReq);
+
+  return new PaginateReturnModel<Diary>({
+    meta: {
+      count: result.length,
+      hasMore: result.length === paginateReq.count,
+    },
+    data: result,
+  });
+};
+
+export const getDiary = async (diaryId: string): Promise<Diary> => {
+  const result = await diaryRepository.getDiary(diaryId);
+  if (result == null) {
+    throw { status: 400, message: "값이 존재하지 않습니다." };
+  } else {
+    return result;
+  }
+};
+
 async function a(date: Date) {
   console.log(date);
 
@@ -61,16 +84,3 @@ async function a(date: Date) {
 
   console.log(result);
 }
-
-export const getDiaries = async (
-  paginateReq: DiaryPaginateReqModel
-): Promise<PaginateReturnModel<Diary>> => {
-  const result = await diaryRepository.getDiaries(paginateReq);
-  return new PaginateReturnModel<Diary>({
-    meta: new Meta({
-      count: result.length,
-      hasMore: result.length === paginateReq.count,
-    }),
-    data: result,
-  });
-};

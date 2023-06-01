@@ -23,6 +23,85 @@ export const createNewDiary = async (req: Request, res: Response) => {
   }
 };
 
+export const getDiary = async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log(errors);
+      throw new CustomHttpErrorModel({
+        message: "잘못된 요청입니다.",
+        status: 400,
+      });
+    }
+
+    const diaryId = req.params.id;
+
+    const data = await diaryService.getDiary(diaryId);
+
+    return res.status(200).send(data);
+  } catch (error: any) {
+    console.log(
+      `[statusCode: ${error?.status || "???"}] [message: "${
+        error?.message || "???"
+      }}"]`
+    );
+    return res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
+
+export const getDiaries = async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log(errors);
+      throw new CustomHttpErrorModel({
+        message: "잘못된 요청입니다.",
+        status: 400,
+      });
+    }
+
+    const paginateReq = new DiaryPaginateReqModel(req.query);
+
+    const data = await diaryService.getDiaries(paginateReq);
+
+    return res.status(200).send(data);
+  } catch (error: any) {
+    console.log(
+      `[statusCode: ${error?.status || "???"}] [message: "${
+        error?.message || "???"
+      }}"]`
+    );
+    return res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
+
+// export const setFaker = async (req: Request, res: Response) => {
+//   var yesterday = new Date();
+//   yesterday.setDate(yesterday.getDate() - 1);
+//   for (var i = 0; i < 10; i++) {
+//     var diary = new DiaryModel({
+//       title: "newtitle" + i,
+//       writer: "newwriter" + i,
+//       weather: "newjkljkl",
+//       hashtags: ["sdfsdf", "sdfsdf"],
+//       postDT: yesterday,
+//       thumbnail: "",
+//       category: "category" + i,
+//       isShown: true,
+//       txts: [],
+//       imgs: [],
+//       vids: [],
+//       contentOrder: [],
+//     });
+//     await diary.save();
+//   }
+//   return;
+// };
+
 // export const test = async (req: Request, res: Response) => {
 //   const date = new Date();
 //   console.log(date);
@@ -45,54 +124,3 @@ export const createNewDiary = async (req: Request, res: Response) => {
 //     throw { status: 400, message: "값이 존재하지 않습니다." };
 //   }
 // };
-
-export const getDiaries = async (req: Request, res: Response) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      console.log(errors);
-      throw new CustomHttpErrorModel({
-        message: "잘못된 요청입니다.",
-        status: 400,
-      });
-    }
-
-    const paginateReq = new DiaryPaginateReqModel(req.body);
-
-    const data = await diaryService.getDiaries(paginateReq);
-
-    return res.status(200).send(data);
-  } catch (error: any) {
-    console.log(
-      `[statusCode: ${error?.status || "???"}] [message: "${
-        error?.message || "???"
-      }}"]`
-    );
-    return res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
-  }
-};
-
-export const setFaker = async (req: Request, res: Response) => {
-  var yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  for (var i = 0; i < 10; i++) {
-    var diary = new DiaryModel({
-      title: "newtitle" + i,
-      writer: "newwriter" + i,
-      weather: "newjkljkl",
-      hashtags: ["sdfsdf", "sdfsdf"],
-      postDT: yesterday,
-      thumbnail: "",
-      category: "category" + i,
-      isShown: true,
-      txts: [],
-      imgs: [],
-      vids: [],
-      contentOrder: [],
-    });
-    await diary.save();
-  }
-  return;
-};

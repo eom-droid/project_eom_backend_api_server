@@ -67,11 +67,18 @@ export const getDiaries = async (paginateReq: DiaryPaginateReqModel) => {
   try {
     var selectQuery = { txts: 0, imgs: 0, vids: 0, contentOrder: 0 };
     var filterQuery = paginateReq.generateQuery();
-    console.log(filterQuery);
 
     return await DiaryModel.find(filterQuery, selectQuery)
-      .sort({ postDT: 1, postDateInd: -1 })
+      .sort({ postDT: -1, postDateInd: -1 })
       .limit(paginateReq.count);
+  } catch (e) {
+    throw { status: 400, message: "값이 존재하지 않습니다." };
+  }
+};
+
+export const getDiary = async (diaryId: string): Promise<Diary | null> => {
+  try {
+    return await DiaryModel.findById(diaryId);
   } catch (e) {
     throw { status: 400, message: "값이 존재하지 않습니다." };
   }

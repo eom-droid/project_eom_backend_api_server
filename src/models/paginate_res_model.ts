@@ -9,11 +9,24 @@ export class Meta {
 }
 
 export class PaginateReturnModel<T> {
-  meta: Meta;
+  meta: { count: number; hasMore: boolean };
   data: T[];
 
-  constructor({ meta, data }: { meta: Meta; data: T[] }) {
+  constructor({
+    meta,
+    data,
+  }: {
+    meta: { count: number; hasMore: boolean };
+    data: T[];
+  }) {
     this.meta = meta;
     this.data = data;
+  }
+
+  toJson() {
+    return {
+      meta: this.meta,
+      data: this.data,
+    };
   }
 }

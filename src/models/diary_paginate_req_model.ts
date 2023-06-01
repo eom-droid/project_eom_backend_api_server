@@ -14,26 +14,24 @@ class _After {
 export class DiaryPaginateReqModel {
   count: number;
   category?: string;
-  after?: _After;
+  postDT?: Date;
+  postDateInd?: number;
 
   constructor({
     count,
     category,
-    after,
+    postDT,
+    postDateInd,
   }: {
     count?: number;
     category?: string;
-    after?: any;
+    postDT?: Date;
+    postDateInd?: number;
   }) {
     try {
-      if (
-        after !== undefined &&
-        after.postDT !== undefined &&
-        after.postDateInd !== undefined
-      ) {
-        this.after = new _After(after);
-      } else {
-        this.after = undefined;
+      if (postDT !== undefined && postDateInd !== undefined) {
+        this.postDT = postDT;
+        this.postDateInd = postDateInd;
       }
 
       this.count = count ?? PAGINATE_COUNT_DEFAULT;
@@ -54,12 +52,12 @@ export class DiaryPaginateReqModel {
       query.category = this.category;
     }
 
-    if (this.after !== undefined) {
+    if (this.postDT && this.postDateInd) {
       query.postDT = {
-        $lte: this.after.postDT,
+        $lte: this.postDT,
       };
       query.postDateInd = {
-        $lt: this.after.postDateInd,
+        $lt: this.postDateInd,
       };
     }
 
