@@ -2,9 +2,11 @@ import express from "express";
 
 import * as diaryController from "../controllers/diary_controller";
 
-import { multiPart } from "../middlewares/file_upload_middleware";
+import { awsS3UploadMiddleware } from "../middlewares/aws_S3_middleware";
 import { body, param, query } from "express-validator";
 import { PAGINATE_LIMIT } from "../../constant/default";
+import { checkIdMiddleware } from "../middlewares/check_id_middleware";
+import { inputMiddleware } from "../middlewares/input_middleware";
 // const authenticate = require("../../middlewares/authenticate");
 // const authorize = require("../../middlewares/authorize");
 
@@ -38,20 +40,44 @@ diaryRouter.get(
       })
       .bail(),
   ],
+  inputMiddleware,
   diaryController.getDiaries
 );
 
 diaryRouter.get(
   "/:id",
-  express.json(),
   param("id").isString(),
+  inputMiddleware,
   diaryController.getDiary
 );
-// diaryRouter.get("/dateFilterTest", express.json(), diaryController.test);
 
 diaryRouter.post(
   "/",
   // milddleware
-  multiPart,
+  awsS3UploadMiddleware,
   diaryController.createNewDiary
+);
+
+diaryRouter.patch(
+  "/:id",
+  checkIdMiddleware,
+
+  // [
+  //   body("title").isString().bail(),
+  //   body("writer").isString().bail(),
+  //   body("weather").isString().bail(),
+  //   body("hashtags").isArray().bail(),
+  //   body("postDT").isDate(),
+  //   body("postDateInd").isInt({ min: 0 }).bail(),
+  //   body("thumbnail").isString().optional().bail(),
+  //   body("category").isString().bail(),
+  //   body("isShown").isBoolean().bail(),
+  //   body("txts").isArray().bail(),
+  //   body("imgs").isArray().bail(),
+  //   body("vids").isArray().bail(),
+  //   body("contentOrder").isArray().bail(),
+  // ],
+  // inputMiddleware,
+  awsS3UploadMiddleware,
+  diaryController.updateDiary
 );

@@ -48,7 +48,26 @@ export const multer_instance = multer({
   }),
 }).array("file");
 
-export const multiPart = (req: Request, res: Response, next: NextFunction) => {
+export const awsS3UploadMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  multer_instance(req, res, (errorMes) => {
+    if (errorMes) {
+      res.status(400).send({ status: "FAILED", data: { error: errorMes } });
+      return;
+    } else {
+      next();
+    }
+  });
+};
+
+export const awsS3DeleteMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   multer_instance(req, res, (errorMes) => {
     if (errorMes) {
       res.status(400).send({ status: "FAILED", data: { error: errorMes } });

@@ -1,7 +1,7 @@
 import { count } from "console";
 import { DiaryPaginateReqModel } from "../../models/diary_paginate_req_model";
 import { Meta, PaginateReturnModel } from "../../models/paginate_res_model";
-import { Diary, DiaryModel } from "../models/diary_model";
+import { Diary, DiaryModel, IDiary } from "../models/diary_model";
 
 import * as diaryRepository from "../repositorys/diary_repository";
 
@@ -10,33 +10,7 @@ export const createDiary = async (
   files: Express.Multer.File[] | undefined
 ) => {
   try {
-    // 파일 이름 매칭 시켜주기
-    if (files != undefined) {
-      for (var i = 0; i < files.length; i++) {
-        //@ts-ignore
-        const filename = files[i].key;
-        const originalname = files[i].originalname;
-
-        // file 중에 thumbnail 값이 일치하다면 diaryObj.thumbnail에 넣어주기
-        if (diary.thumbnail === originalname) {
-          diary.thumbnail = filename;
-        }
-
-        // file 중에 img 값이 일치하다면 diaryDetailObj.imgs에 넣어주기
-        const imgFoundIndex = diary.imgs.findIndex((e) => e === originalname);
-        if (imgFoundIndex !== -1) {
-          diary.imgs[imgFoundIndex] = filename;
-          continue;
-        }
-
-        // file 중에 vid 값이 일치하다면 diaryDetailObj.vids에 넣어주기
-        const vidFoundIndex = diary.vids.findIndex((e) => e === originalname);
-        if (vidFoundIndex !== -1) {
-          diary.vids[vidFoundIndex] = filename;
-          continue;
-        }
-      }
-    }
+    matchFileNames(diary, files);
 
     const lastIndOfPostDate = await diaryRepository.getLastIndexDiaryByDate(
       diary.postDT
@@ -50,12 +24,26 @@ export const createDiary = async (
   }
 };
 
+export const updateDiary = async (
+  id: string,
+  diary: Diary,
+  files: Express.Multer.File[] | undefined
+) => {
+  try {
+    matchFileNames(diary, files);
+
+    return await diaryRepository.updateDiary(id, diary);
+  } catch (error: any) {
+    throw { status: error?.status || 400, message: error?.message || error };
+  }
+};
+
 export const getDiaries = async (
   paginateReq: DiaryPaginateReqModel
-): Promise<PaginateReturnModel<Diary>> => {
-  const result = await diaryRepository.getDiaries(paginateReq);
+): Promise<PaginateReturnModel<IDiary>> => {
+  const result = (await diaryRepository.getDiaries(paginateReq)) as IDiary[];
 
-  return new PaginateReturnModel<Diary>({
+  return new PaginateReturnModel<IDiary>({
     meta: {
       count: result.length,
       hasMore: result.length === paginateReq.count,
@@ -73,14 +61,35 @@ export const getDiary = async (diaryId: string): Promise<Diary> => {
   }
 };
 
-async function a(date: Date) {
-  console.log(date);
+const matchFileNames = (
+  diary: Diary,
+  files: Express.Multer.File[] | undefined
+) => {
+  // 파일 이름 매칭 시켜주기
+  if (files != undefined) {
+    for (var i = 0; i < files.length; i++) {
+      //@ts-ignore
+      const filename = files[i].key;
+      const originalname = files[i].originalname;
 
-  const result = await DiaryModel.find({
-    postDT: {
-      $lte: date,
-    },
-  }).sort({ postDT: 1, postDateInd: -1 });
+      // file 중에 thumbnail 값이 일치하다면 diaryObj.thumbnail에 넣어주기
+      if (diary.thumbnail === originalname) {
+        diary.thumbnail = filename;
+      }
 
-  console.log(result);
-}
+      // file 중에 img 값이 일치하다면 diaryDetailObj.imgs에 넣어주기
+      const imgFoundIndex = diary.imgs.findIndex((e) => e === originalname);
+      if (imgFoundIndex !== -1) {
+        diary.imgs[imgFoundIndex] = filename;
+        continue;
+      }
+
+      // file 중에 vid 값이 일치하다면 diaryDetailObj.vids에 넣어주기
+      const vidFoundIndex = diary.vids.findIndex((e) => e === originalname);
+      if (vidFoundIndex !== -1) {
+        diary.vids[vidFoundIndex] = filename;
+        continue;
+      }
+    }
+  }
+};

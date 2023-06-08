@@ -30,6 +30,22 @@ export const createDiary = async (diary: Diary) => {
   }
 };
 
+export const updateDiary = async (id: String, diary: Diary) => {
+  try {
+    console.log(diary);
+    // save 하기
+    const updatedDiary = await DiaryModel.updateOne(
+      { _id: id },
+      diary.toJson()
+    );
+
+    return updatedDiary;
+  } catch (e: any) {
+    console.log(e);
+    throw { status: 400, message: "입력값이 유효하지 않습니다." };
+  }
+};
+
 // getLastIndexDiaryByDate
 // params : date(Date)
 // return : number | undefined

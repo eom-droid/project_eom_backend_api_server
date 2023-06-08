@@ -23,28 +23,39 @@ export const createNewDiary = async (req: Request, res: Response) => {
   }
 };
 
-export const getDiary = async (req: Request, res: Response) => {
+export const updateDiary = async (req: Request, res: Response) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      console.log(errors);
+    const diary = reqToDiary(req);
+
+    if (req.params.id === undefined) {
       throw new CustomHttpErrorModel({
         message: "잘못된 요청입니다.",
         status: 400,
       });
     }
 
+    var data = await diaryService.updateDiary(
+      req.params.id,
+      diary,
+      req.files !== undefined ? (req.files as Express.Multer.File[]) : undefined
+    );
+
+    res.status(201).send({ status: "OK", data: data });
+  } catch (error: any) {
+    res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
+
+export const getDiary = async (req: Request, res: Response) => {
+  try {
     const diaryId = req.params.id;
 
     const data = await diaryService.getDiary(diaryId);
 
     return res.status(200).send(data);
   } catch (error: any) {
-    console.log(
-      `[statusCode: ${error?.status || "???"}] [message: "${
-        error?.message || "???"
-      }}"]`
-    );
     return res
       .status(error?.status || 500)
       .send({ status: "FAILED", data: { error: error?.message || error } });
@@ -53,15 +64,6 @@ export const getDiary = async (req: Request, res: Response) => {
 
 export const getDiaries = async (req: Request, res: Response) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      console.log(errors);
-      throw new CustomHttpErrorModel({
-        message: "잘못된 요청입니다.",
-        status: 400,
-      });
-    }
-
     const paginateReq = new DiaryPaginateReqModel(req.query);
 
     const data = await diaryService.getDiaries(paginateReq);
