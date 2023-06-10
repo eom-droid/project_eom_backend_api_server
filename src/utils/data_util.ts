@@ -1,6 +1,5 @@
 import { Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import { CustomHttpErrorModel } from "../models/custom_http_error_model";
 
 interface ICustomError {
   error: any;
@@ -26,6 +25,38 @@ export class DataUtils {
     }_${uuidv4()}`;
 
     return fileName;
+  }
+
+  static isImageFile(fileName: string) {
+    const imageFileExtension = [
+      "jpg",
+      "jpeg",
+      "png",
+      "gif",
+      "bmp",
+      "JPG",
+      "JPEG",
+      "PNG",
+      "GIF",
+      "BMP",
+    ];
+    const fileExtension = fileName.split(".").pop();
+
+    if (fileExtension && imageFileExtension.includes(fileExtension)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  static isVideoFile(fileName: string) {
+    const videoFileExtension = ["mp4", "MP4", "avi", "AVI", "wmv", "WMV"];
+    const fileExtension = fileName.split(".").pop();
+
+    if (fileExtension && videoFileExtension.includes(fileExtension)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 

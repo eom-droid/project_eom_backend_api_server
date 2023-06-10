@@ -2,11 +2,15 @@ import express from "express";
 
 import * as diaryController from "../controllers/diary_controller";
 
-import { awsS3UploadMiddleware } from "../middlewares/aws_S3_middleware";
-import { body, param, query } from "express-validator";
-import { PAGINATE_LIMIT } from "../../constant/default";
-import { checkIdMiddleware } from "../middlewares/check_id_middleware";
-import { inputMiddleware } from "../middlewares/input_middleware";
+import { multerMiddleware } from "../middlewares/multer_middleware";
+import { diaryParamValidation } from "../middlewares/diary/param_middleware";
+import { diaryQueryValidation } from "../middlewares/diary/query_middleware";
+import { diaryBodyValidation } from "../middlewares/diary/body_middleware";
+import { validate } from "../middlewares/validate_middleware";
+import { nestedBodyParser } from "../../middlewares/nested_body_parser";
+import { checkIdExistMiddleware } from "../middlewares/check_id_exist_middleware";
+import { DiaryModel } from "../models/diary_model";
+import { DIARY } from "../../constant/default";
 // const authenticate = require("../../middlewares/authenticate");
 // const authorize = require("../../middlewares/authorize");
 
@@ -17,67 +21,43 @@ export const diaryRouter = express.Router();
 
 diaryRouter.get(
   "/",
-  express.json(),
-  [
-    query("count")
-      .isInt({ min: 1, max: PAGINATE_LIMIT })
-      .optional()
-      .toInt()
-      .bail(),
-    query("category").isString().optional().bail(),
-    query("postDateInd").isInt({ min: 0 }).optional().toInt().bail(),
-    query("postDT")
-      .isString()
-      .optional()
-      .toDate()
-      .custom((value: Date, { req }) => {
-        const givenDate = new Date(value);
-        const currentDate = new Date();
-        if (givenDate > currentDate) {
-          throw new Error("postDT should be less than current date");
-        }
-        return true;
-      })
-      .bail(),
-  ],
-  inputMiddleware,
+  // authCheck,
+  validate(diaryQueryValidation),
   diaryController.getDiaries
 );
 
 diaryRouter.get(
   "/:id",
-  param("id").isString(),
-  inputMiddleware,
+  // authCheck,
+  validate(diaryParamValidation),
+  checkIdExistMiddleware(DiaryModel),
   diaryController.getDiary
 );
 
+// 1. authCheck로 token 인증
+// 2. multerInstance로 multipart 자르고 -> buffer에 넣어두기
+// 3. nestedBodyParser로 nested body를 flat하게 만들고
+// 4. validate로 body validation
 diaryRouter.post(
   "/",
-  // milddleware
-  awsS3UploadMiddleware,
+  // authCheck,
+  multerMiddleware,
+  nestedBodyParser("diary"),
+  validate(diaryBodyValidation),
   diaryController.createNewDiary
 );
 
+// 1. authCheck로 token 인증
+// 2. multerInstance로 multipart 자르고 -> File buffer에 넣어두기
+// 3. nestedBodyParser로 nested body를 flat하게 만들고
+// 4. validate로 body & params validation
+// 5. checkIdExistMiddleware로 patch 할 diary id가 존재하는지 확인
 diaryRouter.patch(
   "/:id",
-  checkIdMiddleware,
-
-  // [
-  //   body("title").isString().bail(),
-  //   body("writer").isString().bail(),
-  //   body("weather").isString().bail(),
-  //   body("hashtags").isArray().bail(),
-  //   body("postDT").isDate(),
-  //   body("postDateInd").isInt({ min: 0 }).bail(),
-  //   body("thumbnail").isString().optional().bail(),
-  //   body("category").isString().bail(),
-  //   body("isShown").isBoolean().bail(),
-  //   body("txts").isArray().bail(),
-  //   body("imgs").isArray().bail(),
-  //   body("vids").isArray().bail(),
-  //   body("contentOrder").isArray().bail(),
-  // ],
-  // inputMiddleware,
-  awsS3UploadMiddleware,
+  // authCheck,
+  multerMiddleware,
+  nestedBodyParser(DIARY),
+  validate(diaryBodyValidation.concat(diaryParamValidation)),
+  checkIdExistMiddleware(DiaryModel),
   diaryController.updateDiary
 );

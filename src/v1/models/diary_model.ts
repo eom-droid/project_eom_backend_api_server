@@ -1,6 +1,5 @@
-import { Schema, model, Types, InferSchemaType } from "mongoose";
+import { Schema, model } from "mongoose";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
-import { Request } from "express";
 
 /**
  * 다이어리 모델
@@ -192,10 +191,8 @@ const DiarySchema = new Schema(
 export const DiaryModel = model("diary", DiarySchema);
 
 // 추후 middleware화 예정
-export const reqToDiary = (req: Request): Diary => {
+export const reqToDiary = (json: any): Diary => {
   try {
-    const json = JSON.parse(req.body.diary);
-
     const result = new Diary({
       title: json.title as string,
       writer: json.writer as string,
@@ -211,6 +208,7 @@ export const reqToDiary = (req: Request): Diary => {
       vids: json.vids as string[],
       contentOrder: json.contentOrder as string[],
     });
+
     return result;
   } catch (e) {
     throw new CustomHttpErrorModel({

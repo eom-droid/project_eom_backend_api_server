@@ -1,23 +1,21 @@
 import { Request, Response } from "express";
 import * as diaryService from "../services/diary_service";
-import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
-import { PAGINATE_LIMIT } from "../../constant/default";
-import { DiaryModel, reqToDiary } from "../models/diary_model";
+
+import { reqToDiary } from "../models/diary_model";
 import { DiaryPaginateReqModel } from "../../models/diary_paginate_req_model";
-import { validationResult } from "express-validator";
 
 export const createNewDiary = async (req: Request, res: Response) => {
   try {
-    const diary = reqToDiary(req);
+    const diary = reqToDiary(req.body);
 
     var data = await diaryService.createDiary(
       diary,
       req.files !== undefined ? (req.files as Express.Multer.File[]) : undefined
     );
 
-    res.status(201).send({ status: "OK", data: data });
+    return res.status(201).send({ status: "OK", data: data });
   } catch (error: any) {
-    res
+    return res
       .status(error?.status || 500)
       .send({ status: "FAILED", data: { error: error?.message || error } });
   }
@@ -25,14 +23,7 @@ export const createNewDiary = async (req: Request, res: Response) => {
 
 export const updateDiary = async (req: Request, res: Response) => {
   try {
-    const diary = reqToDiary(req);
-
-    if (req.params.id === undefined) {
-      throw new CustomHttpErrorModel({
-        message: "잘못된 요청입니다.",
-        status: 400,
-      });
-    }
+    const diary = reqToDiary(req.body);
 
     var data = await diaryService.updateDiary(
       req.params.id,
@@ -40,9 +31,9 @@ export const updateDiary = async (req: Request, res: Response) => {
       req.files !== undefined ? (req.files as Express.Multer.File[]) : undefined
     );
 
-    res.status(201).send({ status: "OK", data: data });
+    return res.status(201).send({ status: "OK", data: data });
   } catch (error: any) {
-    res
+    return res
       .status(error?.status || 500)
       .send({ status: "FAILED", data: { error: error?.message || error } });
   }
@@ -70,11 +61,6 @@ export const getDiaries = async (req: Request, res: Response) => {
 
     return res.status(200).send(data);
   } catch (error: any) {
-    console.log(
-      `[statusCode: ${error?.status || "???"}] [message: "${
-        error?.message || "???"
-      }}"]`
-    );
     return res
       .status(error?.status || 500)
       .send({ status: "FAILED", data: { error: error?.message || error } });

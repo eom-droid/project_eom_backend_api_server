@@ -1,28 +1,11 @@
-import { PAGINATE_COUNT_DEFAULT } from "../../constant/default";
 import { DiaryPaginateReqModel } from "../../models/diary_paginate_req_model";
 import { Diary, DiaryModel } from "../models/diary_model";
 
 export const createDiary = async (diary: Diary) => {
   try {
-    // 스키마를 이용한 인스턴스화
-    const diaryInstance = new DiaryModel({
-      title: diary.title,
-      writer: diary.writer,
-      weather: diary.weather,
-      hashtags: diary.hashtags,
-      postDT: diary.postDT,
-      postDateInd: diary.postDateInd,
-      thumbnail: diary.thumbnail,
-      category: diary.category,
-      isShown: diary.isShown,
-      txts: diary.txts,
-      imgs: diary.imgs,
-      vids: diary.vids,
-      contentOrder: diary.contentOrder,
-    });
+    const diaryInstance = diary.toDiaryModel();
     // save 하기
     const savedDiary = await diaryInstance.save();
-
     return savedDiary;
   } catch (e: any) {
     console.log(e);
@@ -32,7 +15,6 @@ export const createDiary = async (diary: Diary) => {
 
 export const updateDiary = async (id: String, diary: Diary) => {
   try {
-    console.log(diary);
     // save 하기
     const updatedDiary = await DiaryModel.updateOne(
       { _id: id },
