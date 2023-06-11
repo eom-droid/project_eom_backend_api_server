@@ -61,3 +61,11 @@ diaryRouter.patch(
   checkIdExistMiddleware(DiaryModel),
   diaryController.updateDiary
 );
+
+diaryRouter.delete(
+  "/:id",
+  // authCheck,
+  validate(diaryParamValidation),
+  checkIdExistMiddleware(DiaryModel),
+  diaryController.deleteDiary
+);

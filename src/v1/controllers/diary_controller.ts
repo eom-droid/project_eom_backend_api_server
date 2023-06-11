@@ -67,6 +67,21 @@ export const getDiaries = async (req: Request, res: Response) => {
   }
 };
 
+export const deleteDiary = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    await diaryService.deleteDiary(id);
+
+    return res.status(200).send({ status: "SUCCESS" });
+    // return res.status(200).send(data);
+  } catch (error: any) {
+    return res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
+
 // export const setFaker = async (req: Request, res: Response) => {
 //   var yesterday = new Date();
 //   yesterday.setDate(yesterday.getDate() - 1);

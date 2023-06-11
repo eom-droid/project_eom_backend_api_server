@@ -95,6 +95,28 @@ export const getDiary = async (diaryId: string): Promise<Diary> => {
   }
 };
 
+export const deleteDiary = async (diaryId: string): Promise<void> => {
+  // 원래 findOneAndDelete를 진행해도 됨
+  // 더빠를듯
+  // 안정적으로 진행하기 위해서 이렇게 함
+  const result = await diaryRepository.getDiary(diaryId);
+
+  if (result != null) {
+    const deletingFiles = result.imgs.concat(result.vids);
+
+    await Promise.all(
+      deletingFiles.map((e) => {
+        AWSUtils.deleteFileFromS3({
+          files: [e],
+        });
+      })
+    );
+  }
+
+  await diaryRepository.deleteDiary(diaryId);
+  return;
+};
+
 // 파일 이름 매칭 시켜주기
 const matchFileNames = (diary: Diary, files: Express.Multer.File[]) => {
   for (var i = 0; i < files.length; i++) {
@@ -120,8 +142,4 @@ const matchFileNames = (diary: Diary, files: Express.Multer.File[]) => {
       continue;
     }
   }
-};
-
-const classifyDeleteFiles = (newValue: Diary, oldValue: Diary) => {
-  // 새로운 값에 없는 파일들을 찾아서 삭제
 };

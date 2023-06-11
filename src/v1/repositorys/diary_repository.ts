@@ -81,3 +81,12 @@ export const getDiary = async (diaryId: string): Promise<Diary | null> => {
     throw { status: 400, message: "값이 존재하지 않습니다." };
   }
 };
+
+export const deleteDiary = async (diaryId: string): Promise<void> => {
+  try {
+    await DiaryModel.deleteOne({ _id: diaryId });
+    return;
+  } catch (e) {
+    throw { status: 400, message: "값이 존재하지 않습니다." };
+  }
+};
