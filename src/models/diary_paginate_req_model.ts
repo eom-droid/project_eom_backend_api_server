@@ -1,16 +1,6 @@
 import { PAGINATE_COUNT_DEFAULT, PAGINATE_LIMIT } from "../constant/default";
 import { CustomHttpErrorModel } from "./custom_http_error_model";
 
-class _After {
-  postDT: Date;
-  postDateInd: number;
-
-  constructor({ postDT, postDateInd }: { postDT: Date; postDateInd: number }) {
-    this.postDT = postDT;
-    this.postDateInd = postDateInd;
-  }
-}
-
 export class DiaryPaginateReqModel {
   count: number;
   category?: string;

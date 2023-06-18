@@ -17,7 +17,12 @@ export const createDiary = async (
         file: files,
       });
 
-      matchFileNames(diary, uploadCompleteFiles);
+      matchFileNames(
+        diary,
+        uploadCompleteFiles instanceof Array
+          ? uploadCompleteFiles
+          : [uploadCompleteFiles]
+      );
     }
 
     // lastIndOfPostDate는 해당 날짜에 해당하는 postDateInd의 마지막 값을 가져옴
@@ -48,7 +53,12 @@ export const updateDiary = async (
         file: files,
       });
 
-      matchFileNames(diary, uploadCompleteFiles);
+      matchFileNames(
+        diary,
+        uploadCompleteFiles instanceof Array
+          ? uploadCompleteFiles
+          : [uploadCompleteFiles]
+      );
     }
     const oldDiary = await diaryRepository.getDiary(id);
     if (oldDiary == null) {

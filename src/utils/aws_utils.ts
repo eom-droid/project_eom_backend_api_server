@@ -34,43 +34,33 @@ export class AWSUtils {
   }: {
     file: Express.Multer.File | Express.Multer.File[];
     s3Path: string;
-  }) => {
+  }): Promise<Express.Multer.File[] | Express.Multer.File> => {
+    var tempFile;
     if (file instanceof Array) {
-      await Promise.all(
-        file.map(async (element: Express.Multer.File) => {
-          const fileExtension = element.originalname.split(".").pop();
-          const directory =
-            s3Path +
-            (DataUtils.isImageFile(element.originalname) ? "image/" : "video/");
-          const fileName =
-            directory + DataUtils.generateFileName() + "." + fileExtension;
-          element.filename = fileName;
-          return s3.send(
-            new PutObjectCommand({
-              Bucket: process.env.S3_BUCKET_NAME!,
-              Key: fileName,
-              Body: element.buffer,
-            })
-          );
-        })
-      );
-      return file;
+      tempFile = file;
     } else {
-      const fileExtension = file.originalname.split(".").pop();
-      const directory =
-        s3Path +
-        (DataUtils.isImageFile(file.originalname) ? "image/" : "video/");
-      const fileName =
-        directory + DataUtils.generateFileName() + "." + fileExtension;
-      file.filename = fileName;
-      await s3.send(
-        new PutObjectCommand({
-          Bucket: process.env.S3_BUCKET_NAME!,
-          Key: fileName,
-          Body: file.buffer,
-        })
-      );
-      return [file];
+      tempFile = [file];
     }
+
+    await Promise.all(
+      tempFile.map(async (element: Express.Multer.File) => {
+        const fileExtension = element.originalname.split(".").pop();
+        const directory =
+          s3Path +
+          (DataUtils.isImageFile(element.originalname) ? "image/" : "video/");
+        const fileName =
+          directory + DataUtils.generateFileName() + "." + fileExtension;
+        element.filename = fileName;
+        return s3.send(
+          new PutObjectCommand({
+            Bucket: process.env.S3_BUCKET_NAME!,
+            Key: fileName,
+            Body: element.buffer,
+          })
+        );
+      })
+    );
+    if (tempFile.length === 1) return tempFile[0];
+    return tempFile;
   };
 }

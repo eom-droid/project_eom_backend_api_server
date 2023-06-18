@@ -49,7 +49,16 @@ export class DataUtils {
     }
   }
   static isVideoFile(fileName: string) {
-    const videoFileExtension = ["mp4", "MP4", "avi", "AVI", "wmv", "WMV"];
+    const videoFileExtension = [
+      "mp4",
+      "MP4",
+      "avi",
+      "AVI",
+      "wmv",
+      "WMV",
+      "mov",
+      "MOV",
+    ];
     const fileExtension = fileName.split(".").pop();
 
     if (fileExtension && videoFileExtension.includes(fileExtension)) {

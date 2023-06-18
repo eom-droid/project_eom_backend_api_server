@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import { diaryRouter } from "./v1/routes/diary_routes";
+import { musicRouter } from "./v1/routes/music_routes";
 
 const app = express();
 
@@ -17,6 +18,7 @@ const server = async () => {
     console.log("MongoDB connected");
 
     app.use("/api/v1/diaries", diaryRouter);
+    app.use("/api/v1/musics", musicRouter);
 
     app.listen(PORT, async () => {
       console.log(`server listening on port ${PORT}`);
