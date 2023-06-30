@@ -20,7 +20,11 @@ export const musicBodyValidation = checkSchema({
     in: ["body"],
     isString: { bail: true },
   },
-  youtubeLink: {
+  youtubeMusicId: {
+    in: ["body"],
+    isString: { bail: true },
+  },
+  spotifyId: {
     in: ["body"],
     isString: { bail: true },
   },

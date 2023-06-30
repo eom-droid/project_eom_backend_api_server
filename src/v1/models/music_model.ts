@@ -14,8 +14,10 @@ export interface IMusic {
   review: string;
   // albumCover : 앨범커버
   albumCover: string;
-  // youtubeLink : 유튜브 링크
-  youtubeLink: string;
+  // youtubeMusicId : 유투브 뮤직 아이디
+  youtubeMusicId: string;
+  // spotify Id : 스포티파이 아이디
+  spotifyId: string;
 }
 export class Music {
   // title : 노래제목
@@ -26,27 +28,25 @@ export class Music {
   review: string;
   // albumCover : 앨범커버
   albumCover: string;
-  // youtubeLink : 유튜브 링크
-  youtubeLink: string;
+  // youtubeMusicId : 유투브 뮤직 아이디
+  youtubeMusicId: string;
+  // spotify Id : 스포티파이 아이디
+  spotifyId: string;
 
   constructor({
     title,
     artiste,
     review,
     albumCover,
-    youtubeLink,
-  }: {
-    title: string;
-    artiste: string;
-    review: string;
-    albumCover: string;
-    youtubeLink: string;
-  }) {
+    youtubeMusicId,
+    spotifyId,
+  }: IMusic) {
     this.title = title;
     this.artiste = artiste;
     this.review = review;
     this.albumCover = albumCover;
-    this.youtubeLink = youtubeLink;
+    this.youtubeMusicId = youtubeMusicId;
+    this.spotifyId = spotifyId;
   }
   toJson() {
     return {
@@ -54,7 +54,8 @@ export class Music {
       artiste: this.artiste,
       review: this.review,
       albumCover: this.albumCover,
-      youtubeLink: this.youtubeLink,
+      youtubeMusicId: this.youtubeMusicId,
+      spotifyId: this.spotifyId,
     };
   }
   static fromJson(json: any): Music {
@@ -63,7 +64,8 @@ export class Music {
       artiste: json.artiste,
       review: json.review,
       albumCover: json.albumCover,
-      youtubeLink: json.youtubeLink,
+      youtubeMusicId: json.youtubeMusicId,
+      spotifyId: json.spotifyId,
     });
   }
 
@@ -73,7 +75,8 @@ export class Music {
       artiste: this.artiste,
       review: this.review,
       albumCover: this.albumCover,
-      youtubeLink: this.youtubeLink,
+      youtubeMusicId: this.youtubeMusicId,
+      spotifyId: this.spotifyId,
     });
   }
 }
@@ -84,7 +87,8 @@ const MusicSchema = new Schema(
     artiste: { type: String, required: true },
     review: { type: String, required: true },
     albumCover: { type: String, required: true },
-    youtubeLink: { type: String, required: true },
+    youtubeMusicId: { type: String, required: true },
+    spotifyId: { type: String, required: true },
   },
   { timestamps: true }
 );
@@ -99,7 +103,8 @@ export const reqToMusic = (json: any): Music => {
       artiste: json.artiste as string,
       review: json.review as string,
       albumCover: json.albumCover as string,
-      youtubeLink: json.youtubeLink as string,
+      youtubeMusicId: json.youtubeMusicId as string,
+      spotifyId: json.spotifyId as string,
     });
 
     return result;
