@@ -22,7 +22,7 @@ export interface IDiary {
   // createIndex를 통해서 자동으로 생성
   postDateInd: number;
   // thumbnail : 썸네일 -> S3에 저장된 이미지, vid 의 경로
-  thumbnail: string | null;
+  thumbnail: string;
   // category : 카테고리 -> 카테고리를 통해서 다이어리 리스트 페이지에서 필터링을 진행할 예정
   category: string;
   // isShown : 표출 여부
@@ -54,7 +54,7 @@ export class Diary {
   // createIndex를 통해서 자동으로 생성
   postDateInd: number;
   // thumbnail : 썸네일 -> S3에 저장된 이미지, vid 의 경로
-  thumbnail: string | null;
+  thumbnail: string;
   // category : 카테고리 -> 카테고리를 통해서 다이어리 리스트 페이지에서 필터링을 진행할 예정
   category: string;
   // isShown : 표출 여부
@@ -142,7 +142,7 @@ export class Diary {
       hashtags: json.hashtags as string[],
       postDT: new Date(json.postDT),
       postDateInd: json.postDateInd as number,
-      thumbnail: json.thumbnail ? (json.thumbnail as string) : null,
+      thumbnail: json.thumbnail as string,
       category: json.category as string,
       isShown: json.isShown as boolean,
       txts: json.txts as string[],
@@ -169,7 +169,7 @@ const DiarySchema = new Schema(
     // createIndex를 통해서 자동으로 생성
     postDateInd: { type: Number, required: true },
     // thumbnail : 썸네일 -> S3에 저장된 이미지, vid 의 경로
-    thumbnail: { type: String, required: false },
+    thumbnail: { type: String, required: true },
     // category : 카테고리 -> 카테고리를 통해서 다이어리 리스트 페이지에서 필터링을 진행할 예정
     category: { type: String, required: true },
     // isShown : 표출 여부
@@ -200,7 +200,7 @@ export const reqToDiary = (json: any): Diary => {
       hashtags: json.hashtags as string[],
       postDT: new Date(json.postDT),
       postDateInd: json.postDateInd as number,
-      thumbnail: json.thumbnail ? (json.thumbnail as string) : null,
+      thumbnail: json.thumbnail as string,
       category: json.category as string,
       isShown: json.isShown as boolean,
       txts: json.txts as string[],

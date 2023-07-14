@@ -36,11 +36,6 @@ export const diaryBodyValidation = checkSchema({
     isString: {
       bail: true,
     },
-    optional: {
-      options: {
-        nullable: true,
-      },
-    },
   },
   category: {
     in: ["body"],
