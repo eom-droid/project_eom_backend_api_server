@@ -12,28 +12,35 @@ export const authCheck = async (
     const { authorization } = req.headers;
     if (!authorization) {
       throw new CustomHttpErrorModel({
-        message: "No authorization header",
+        message: "No authorization",
         status: 401,
       });
     }
 
-    const token = authorization.split(" ")[1];
+    const splitToken = authorization.split(" ");
+
+    if (splitToken.length !== 2 || splitToken[0] !== "Bearer") {
+      throw new CustomHttpErrorModel({
+        message: "No authorization",
+        status: 401,
+      });
+    }
 
     const { MANAGER_TOKEN, CLIENT_TOKEN } = process.env;
     // 1. GET 메소드는 클라이언트도 접근 가능하도록 허용
     if (req.method === "GET") {
-      if (token !== MANAGER_TOKEN && token !== CLIENT_TOKEN) {
+      if (splitToken[1] !== MANAGER_TOKEN && splitToken[1] !== CLIENT_TOKEN) {
         throw new CustomHttpErrorModel({
-          message: "Invalid token",
+          message: "No authorization",
           status: 401,
         });
       }
     }
     // 2. POST, PATCH, DELETE 메소드는 관리자만 접근 가능하도록 허용
     else {
-      if (token !== MANAGER_TOKEN) {
+      if (splitToken[1] !== MANAGER_TOKEN) {
         throw new CustomHttpErrorModel({
-          message: "Invalid token",
+          message: "No authorization",
           status: 401,
         });
       }

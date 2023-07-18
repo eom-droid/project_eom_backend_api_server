@@ -25,15 +25,6 @@ export const createDiary = async (
       );
     }
 
-    // lastIndOfPostDate는 해당 날짜에 해당하는 postDateInd의 마지막 값을 가져옴
-    // pagination 때문에 postDateInd가 0부터 시작하므로 +1 해줌
-    const lastIndOfPostDate = await diaryRepository.getLastIndexDiaryByDate(
-      diary.postDT
-    );
-
-    diary.postDateInd =
-      lastIndOfPostDate !== undefined ? lastIndOfPostDate + 1 : 0;
-
     return await diaryRepository.createDiary(diary);
   } catch (error: any) {
     console.log(error);
@@ -85,6 +76,7 @@ export const updateDiary = async (
 export const getDiaries = async (
   paginateReq: DiaryPaginateReqModel
 ): Promise<PaginateReturnModel<IDiary>> => {
+  console.log(paginateReq);
   const result = (await diaryRepository.getDiaries(paginateReq)) as IDiary[];
 
   return new PaginateReturnModel<IDiary>({

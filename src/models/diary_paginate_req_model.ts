@@ -5,26 +5,19 @@ export class DiaryPaginateReqModel {
   count: number;
   category?: string;
   postDT?: Date;
-  postDateInd?: number;
 
   constructor({
     count,
     category,
     postDT,
-    postDateInd,
   }: {
     count?: number;
     category?: string;
     postDT?: Date;
-    postDateInd?: number;
   }) {
     try {
-      if (postDT !== undefined && postDateInd !== undefined) {
-        this.postDT = postDT;
-        this.postDateInd = postDateInd;
-      }
-
       this.count = count ?? PAGINATE_COUNT_DEFAULT;
+      this.postDT = postDT;
       this.category = category;
       return this;
     } catch (e) {
@@ -42,15 +35,11 @@ export class DiaryPaginateReqModel {
       query.category = this.category;
     }
 
-    if (this.postDT && this.postDateInd) {
+    if (this.postDT !== undefined) {
       query.postDT = {
         $lte: this.postDT,
       };
-      query.postDateInd = {
-        $lt: this.postDateInd,
-      };
     }
-
     return query;
   }
 }
