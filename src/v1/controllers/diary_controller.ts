@@ -20,6 +20,8 @@ export const createNewDiary = async (req: Request, res: Response) => {
 
     return res.status(201).send({ status: "OK", data: data });
   } catch (error: any) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
     return res
       .status(error?.status || 500)
       .send({ status: "FAILED", data: { error: error?.message || error } });
@@ -43,6 +45,8 @@ export const updateDiary = async (req: Request, res: Response) => {
 
     return res.status(201).send({ status: "OK", data: data });
   } catch (error: any) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
     return res
       .status(error?.status || 500)
       .send({ status: "FAILED", data: { error: error?.message || error } });
@@ -61,6 +65,8 @@ export const getDiary = async (req: Request, res: Response) => {
 
     return res.status(200).send(data);
   } catch (error: any) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
     return res
       .status(error?.status || 500)
       .send({ status: "FAILED", data: { error: error?.message || error } });
@@ -79,6 +85,8 @@ export const getDiaries = async (req: Request, res: Response) => {
 
     return res.status(200).send(data);
   } catch (error: any) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
     return res
       .status(error?.status || 500)
       .send({ status: "FAILED", data: { error: error?.message || error } });
@@ -99,6 +107,8 @@ export const deleteDiary = async (req: Request, res: Response) => {
     return res.status(200).send({ status: "SUCCESS" });
     // return res.status(200).send(data);
   } catch (error: any) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
     return res
       .status(error?.status || 500)
       .send({ status: "FAILED", data: { error: error?.message || error } });

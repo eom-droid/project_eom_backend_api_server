@@ -16,6 +16,8 @@ export const getMusics = async (req: Request, res: Response) => {
 
     return res.status(200).send(data);
   } catch (error: any) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
     return res
       .status(error?.status || 500)
       .send({ status: "FAILED", data: { error: error?.message || error } });
@@ -40,6 +42,8 @@ export const createNewMusics = async (req: Request, res: Response) => {
     var data = await musicService.createMusic(music, file[0]);
     return res.status(201).send({ status: "OK", data: data });
   } catch (error: any) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
     return res
       .status(error?.status || 500)
       .send({ status: "FAILED", data: { error: error?.message || error } });

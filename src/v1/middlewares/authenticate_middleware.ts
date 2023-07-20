@@ -55,6 +55,8 @@ export const authCheck = async (
 
     next();
   } catch (error: any) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
     return res
       .status(error?.status || 500)
       .send({ status: "FAILED", data: { error: error?.message || error } });

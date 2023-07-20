@@ -108,7 +108,9 @@ export const reqToMusic = (json: any): Music => {
     });
 
     return result;
-  } catch (e) {
+  } catch (error) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
     throw new CustomHttpErrorModel({
       message: "입력값이 유효하지 않습니다.",
       status: 400,

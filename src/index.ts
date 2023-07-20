@@ -37,7 +37,7 @@ const server = async () => {
       console.log(`server listening on port ${PORT}`);
     });
   } catch (error) {
-    console.log(error);
+    console.log(new Date().toISOString() + ": npm log: " + error);
   }
 };
 server();

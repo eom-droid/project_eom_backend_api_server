@@ -13,7 +13,9 @@ export const createMusic = async (music: Music) => {
 
     const savedMusic = await musicInstance.save();
     return savedMusic;
-  } catch (e: any) {
+  } catch (error: any) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
     throw { status: 400, message: "입력값이 유효하지 않습니다." };
   }
 };
@@ -30,7 +32,9 @@ export const getMusics = async (paginateReq: MusicPaginateReqModel) => {
     return await MusicModel.find(filterQuery)
       .sort({ createdAt: -1 })
       .limit(paginateReq.count);
-  } catch (e) {
+  } catch (error) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
     throw { status: 400, message: "값이 존재하지 않습니다." };
   }
 };

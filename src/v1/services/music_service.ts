@@ -43,6 +43,8 @@ export const createMusic = async (
         : uploadCompleteFile.filename;
     return await musicRepository.createMusic(music);
   } catch (error: any) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
     throw { status: error?.status || 400, message: error?.message || error };
   }
 };

@@ -20,7 +20,9 @@ export class DiaryPaginateReqModel {
       this.postDT = postDT;
       this.category = category;
       return this;
-    } catch (e) {
+    } catch (error) {
+      console.log(new Date().toISOString() + ": npm log: " + error);
+
       throw new CustomHttpErrorModel({
         status: 400,
         message: "잘못된 요청입니다.",

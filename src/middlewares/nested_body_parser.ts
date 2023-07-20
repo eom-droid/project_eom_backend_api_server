@@ -14,6 +14,8 @@ export const nestedBodyParser = (nestedPath: string) => {
       req.body = JSON.parse(req.body[nestedPath]);
       return next();
     } catch (error) {
+      console.log(new Date().toISOString() + ": npm log: " + error);
+
       return res.status(400).send({
         status: "FAILED",
         data: { error: "body structure is wrong." },
