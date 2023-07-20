@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "npx tsc",
-    "start": "env-cmd concurrently \"npx tsc\" \"node dist/index.js\"",
+    "start": "env-cmd node dist/index.js",
     "dev": "env-cmd concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
   },
   "keywords": [],
