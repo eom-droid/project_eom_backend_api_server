@@ -1,4 +1,4 @@
-import { PAGINATE_COUNT_DEFAULT, PAGINATE_LIMIT } from "../constant/default";
+import { PAGINATE_COUNT_DEFAULT } from "../constant/default";
 import { CustomHttpErrorModel } from "./custom_http_error_model";
 
 export class DiaryPaginateReqModel {

@@ -4,6 +4,10 @@ import * as musicService from "../services/music_service";
 import { reqToMusic } from "../models/music_model";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 
+/**
+ * @DESC get musics
+ * @RETURN musics
+ */
 export const getMusics = async (req: Request, res: Response) => {
   try {
     const paginateReq = new MusicPaginateReqModel(req.query);
@@ -17,6 +21,11 @@ export const getMusics = async (req: Request, res: Response) => {
       .send({ status: "FAILED", data: { error: error?.message || error } });
   }
 };
+
+/**
+ * @DESC create new musics
+ * @RETURN musics
+ */
 export const createNewMusics = async (req: Request, res: Response) => {
   try {
     const music = reqToMusic(req.body);

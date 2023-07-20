@@ -5,6 +5,12 @@ import { Diary, IDiary } from "../models/diary_model";
 import * as diaryRepository from "../repositorys/diary_repository";
 import { AWSUtils } from "../../utils/aws_utils";
 
+/**
+ * @DESC create new diary
+ * 새로운 diary를 생성함 파일과 함께 전송될 경우 해당 파일을 저장함
+ * 파일 업로드와 이름 매칭을 진행함
+ * @RETURN diary
+ */
 export const createDiary = async (
   diary: Diary,
   files: Express.Multer.File[] | undefined
@@ -27,11 +33,17 @@ export const createDiary = async (
 
     return await diaryRepository.createDiary(diary);
   } catch (error: any) {
-    console.log(error);
     throw { status: error?.status || 400, message: error?.message || error };
   }
 };
 
+/**
+ * @DESC update diary
+ * diary를 patch함 파일과 함께 전송될 경우 해당 파일을 저장함
+ * 파일 업로드와 이름 매칭을 진행함
+ * 기존 파일중에서 삭제된 파일이 있다면 s3에서 삭제함
+ * @RETURN diary
+ */
 export const updateDiary = async (
   id: string,
   diary: Diary,
@@ -65,18 +77,19 @@ export const updateDiary = async (
       files: deleteImgs.concat(deleteVids),
     });
 
-    // throw { status: 400, message: "값이 존재하지 않습니다." };
-
     return await diaryRepository.updateDiary(id, diary);
   } catch (error: any) {
     throw { status: error?.status || 400, message: error?.message || error };
   }
 };
 
+/**
+ * @DESC get diaries
+ * pagination을 통해 특정 갯수만큼의 diary를 가져옴
+ */
 export const getDiaries = async (
   paginateReq: DiaryPaginateReqModel
 ): Promise<PaginateReturnModel<IDiary>> => {
-  console.log(paginateReq);
   const result = (await diaryRepository.getDiaries(paginateReq)) as IDiary[];
 
   return new PaginateReturnModel<IDiary>({
@@ -88,6 +101,10 @@ export const getDiaries = async (
   });
 };
 
+/**
+ * @DESC get diary detail
+ * 파라미터에 존재하는 id를 통해 특정 diary의 모든 정보를 가져옴
+ */
 export const getDiary = async (diaryId: string): Promise<Diary> => {
   const result = await diaryRepository.getDiary(diaryId);
   if (result == null) {
@@ -97,6 +114,11 @@ export const getDiary = async (diaryId: string): Promise<Diary> => {
   }
 };
 
+/**
+ * @DESC delete diary
+ * diary를 삭제함
+ * diary에 있는 thumbnail, imgs, vids를 s3에서 삭제함
+ */
 export const deleteDiary = async (diaryId: string): Promise<void> => {
   // 원래 findOneAndDelete를 진행해도 됨
   // 더빠를듯
@@ -113,13 +135,16 @@ export const deleteDiary = async (diaryId: string): Promise<void> => {
         });
       })
     );
+    await diaryRepository.deleteDiary(diaryId);
   }
-
-  await diaryRepository.deleteDiary(diaryId);
   return;
 };
 
-// 파일 이름 매칭 시켜주기
+/**
+ * @DESC match file names
+ * diary에 있는 thumbnail, imgs, vids와 files에 있는 originalname을 비교해서
+ * 일치하는 값이 있다면 해당 값에 맞는 filename으로 바꿔줌
+ */
 const matchFileNames = (diary: Diary, files: Express.Multer.File[]) => {
   for (var i = 0; i < files.length; i++) {
     const filename = files[i].filename;

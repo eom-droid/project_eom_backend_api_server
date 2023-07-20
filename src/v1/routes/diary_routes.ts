@@ -1,7 +1,5 @@
 import express from "express";
-
 import * as diaryController from "../controllers/diary_controller";
-
 import { multerMiddleware } from "../middlewares/multer_middleware";
 import { diaryDetailParamValidation } from "../middlewares/diary/detail_param_middleware";
 import { diaryQueryValidation } from "../middlewares/diary/query_middleware";
@@ -16,14 +14,13 @@ import { DiaryModel } from "../models/diary_model";
 import { DIARY } from "../../constant/default";
 import { authCheck } from "../middlewares/authenticate_middleware";
 import { diarySearchQueryValidation } from "../middlewares/diary/search_query_middleware";
-// const authenticate = require("../../middlewares/authenticate");
-// const authorize = require("../../middlewares/authorize");
 
 export const diaryRouter = express.Router();
 
 /**
  * @GET /api/v1/diaries
  * @DESC get all diaries
+ * @RETURN diaries(diaryModel[])
  */
 // 아래의 post 경우에는 multipart/form-data로 진행되기 때문에
 // get에만 express.json() 미들웨어를 장착!
@@ -37,6 +34,7 @@ diaryRouter.get(
 /**
  * @GET /api/v1/diaries/{id}/detail
  * @DESC get diary detail
+ * @RETURN diaryDetail
  */
 diaryRouter.get(
   "/:id/detail",
@@ -49,6 +47,7 @@ diaryRouter.get(
 /**
  * @GET /api/v1/diaries/search
  * @DESC search diary with postDT
+ * @TODO 추후 postDT가 아닌 다른 조건으로 검색할 경우도 포함예정
  */
 diaryRouter.get(
   "/search",
@@ -57,6 +56,11 @@ diaryRouter.get(
   checkPostDTExistMiddleware(DiaryModel)
 );
 
+/**
+ * @POST /api/v1/diaries
+ * @DESC create new diary
+ * @RETURN diary
+ */
 // 1. authCheck로 token 인증
 // 2. multerInstance로 multipart 자르고 -> buffer에 넣어두기
 // 3. nestedBodyParser로 nested body를 flat하게 만들고
@@ -65,11 +69,15 @@ diaryRouter.post(
   "/",
   authCheck,
   multerMiddleware,
-  nestedBodyParser("diary"),
+  nestedBodyParser(DIARY),
   validate(diaryBodyValidation),
   diaryController.createNewDiary
 );
 
+/**
+ * @PATCH /api/v1/diaries/{id}
+ * @DESC update diary
+ */
 // 1. authCheck로 token 인증
 // 2. multerInstance로 multipart 자르고 -> File buffer에 넣어두기
 // 3. nestedBodyParser로 nested body를 flat하게 만들고
@@ -85,6 +93,11 @@ diaryRouter.patch(
   diaryController.updateDiary
 );
 
+/**
+ *
+ * @DELETE /api/v1/diaries/{id}
+ * @DESC delete diary
+ */
 diaryRouter.delete(
   "/:id",
   authCheck,

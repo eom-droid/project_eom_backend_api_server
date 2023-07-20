@@ -1,7 +1,11 @@
 import { NextFunction, Response, Request } from "express";
 
-import { Model, Models, Schema, isValidObjectId } from "mongoose";
+import { Model, isValidObjectId } from "mongoose";
 
+/**
+ * @DESC check id exist
+ * 해당 id가 존재하는지 확인
+ */
 export const checkIdExistMiddleware = (model: typeof Model<any>) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
@@ -24,10 +28,13 @@ export const checkIdExistMiddleware = (model: typeof Model<any>) => {
   };
 };
 
+/**
+ * @DESC check postDT exist
+ * 해당 postDT가 존재하는지 확인
+ */
 export const checkPostDTExistMiddleware = (model: typeof Model<any>) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const { postDT } = req.query;
-    console.log(postDT);
 
     if ((await model.exists({ postDT: postDT })) === null) {
       return res.status(201).send(false);

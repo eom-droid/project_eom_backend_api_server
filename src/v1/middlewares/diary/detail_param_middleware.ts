@@ -1,3 +1,12 @@
-import { param } from "express-validator";
+import { checkSchema } from "express-validator";
 
-export const diaryDetailParamValidation = [param("id").isString()];
+/**
+ * @DESC diary detail param validation
+ * diary detail을 가져올 때 필요한 param validation
+ */
+export const diaryDetailParamValidation = checkSchema({
+  id: {
+    in: ["params"],
+    isString: { bail: true },
+  },
+});

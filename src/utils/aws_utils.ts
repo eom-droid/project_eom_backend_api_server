@@ -13,6 +13,10 @@ const s3 = new S3Client({
   },
 });
 export class AWSUtils {
+  /**
+   * @DESC delete files from s3
+   * s3에 있는 파일을 삭제함
+   */
   static deleteFileFromS3 = async ({ files }: { files: string[] }) => {
     await Promise.all(
       files.map(async (element: string) => {
@@ -26,6 +30,10 @@ export class AWSUtils {
     );
   };
 
+  /**
+   * @DESC upload file/files to s3
+   * 파일을 image/video에서 선택해서 s3에 업로드함
+   */
   // 자동적으로 image / video 폴더를 만들어서 업로드함
   static uploadFileToS3 = async ({
     file,

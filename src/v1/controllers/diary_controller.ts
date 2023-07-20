@@ -4,6 +4,11 @@ import * as diaryService from "../services/diary_service";
 import { reqToDiary } from "../models/diary_model";
 import { DiaryPaginateReqModel } from "../../models/diary_paginate_req_model";
 
+/**
+ * @DESC create new diary
+ * 새로운 diary를 생성함 파일과 함께 전송될 경우 해당 파일을 저장함
+ * @RETURN diary
+ */
 export const createNewDiary = async (req: Request, res: Response) => {
   try {
     const diary = reqToDiary(req.body);
@@ -21,6 +26,11 @@ export const createNewDiary = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @DESC update diary
+ * diary를 patch함 파일과 함께 전송될 경우 해당 파일을 저장함
+ * @RETURN diary
+ */
 export const updateDiary = async (req: Request, res: Response) => {
   try {
     const diary = reqToDiary(req.body);
@@ -39,6 +49,10 @@ export const updateDiary = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @DESC get diary detail
+ * 파라미터에 존재하는 id를 통해 특정 diary의 모든 정보를 가져옴
+ */
 export const getDiary = async (req: Request, res: Response) => {
   try {
     const diaryId = req.params.id;
@@ -53,6 +67,10 @@ export const getDiary = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @DESC get diaries
+ * pagination을 통해 특정 갯수만큼의 diary를 가져옴
+ */
 export const getDiaries = async (req: Request, res: Response) => {
   try {
     const paginateReq = new DiaryPaginateReqModel(req.query);
@@ -67,6 +85,11 @@ export const getDiaries = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @DESC delete diary
+ * 파라미터에 존재하는 id를 통해 특정 diary를 삭제함
+ * @RETURN diary
+ */
 export const deleteDiary = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -81,49 +104,3 @@ export const deleteDiary = async (req: Request, res: Response) => {
       .send({ status: "FAILED", data: { error: error?.message || error } });
   }
 };
-
-// export const setFaker = async (req: Request, res: Response) => {
-//   var yesterday = new Date();
-//   yesterday.setDate(yesterday.getDate() - 1);
-//   for (var i = 0; i < 10; i++) {
-//     var diary = new DiaryModel({
-//       title: "newtitle" + i,
-//       writer: "newwriter" + i,
-//       weather: "newjkljkl",
-//       hashtags: ["sdfsdf", "sdfsdf"],
-//       postDT: yesterday,
-//       thumbnail: "",
-//       category: "category" + i,
-//       isShown: true,
-//       txts: [],
-//       imgs: [],
-//       vids: [],
-//       contentOrder: [],
-//     });
-//     await diary.save();
-//   }
-//   return;
-// };
-
-// export const test = async (req: Request, res: Response) => {
-//   const date = new Date();
-//   console.log(date);
-//   try {
-//     var theDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-//     console.log(theDate);
-
-//     const result = await DiaryModel.find({
-//       postDT: {
-//         $lte: theDate,
-//       },
-//     }).sort({ postDT: 1, postDateInd: -1 });
-
-//     console.log(result);
-
-//     return res.status(200).send({ status: "OK", data: result });
-//   } catch (e: any) {
-//     console.log(e);
-//     throw { status: 400, message: "값이 존재하지 않습니다." };
-//   }
-// };

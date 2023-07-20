@@ -5,6 +5,10 @@ import { IMusic, Music } from "../models/music_model";
 
 import * as musicRepository from "../repositorys/music_repository";
 
+/**
+ * @DESC get musics
+ * @RETURN musics
+ */
 export const getMusics = async (
   paginateReq: MusicPaginateReqModel
 ): Promise<PaginateReturnModel<IMusic>> => {
@@ -19,6 +23,11 @@ export const getMusics = async (
   });
 };
 
+/**
+ * @DESC create new musics
+ * @RETURN musics
+ * albumCover를 s3에 업로드하고, music을 생성함
+ */
 export const createMusic = async (
   music: Music,
   albumCover: Express.Multer.File
@@ -34,7 +43,6 @@ export const createMusic = async (
         : uploadCompleteFile.filename;
     return await musicRepository.createMusic(music);
   } catch (error: any) {
-    console.log(error);
     throw { status: error?.status || 400, message: error?.message || error };
   }
 };

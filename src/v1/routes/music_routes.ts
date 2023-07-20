@@ -11,6 +11,10 @@ import { multerMiddleware } from "../middlewares/multer_middleware";
 import { nestedBodyParser } from "../../middlewares/nested_body_parser";
 import { authCheck } from "../middlewares/authenticate_middleware";
 
+/**
+ * @GET /api/v1/musics
+ * @DESC paginate musics
+ */
 musicRouter.get(
   "/",
   authCheck,
@@ -18,6 +22,10 @@ musicRouter.get(
   musicController.getMusics
 );
 
+/**
+ * @POST /api/v1/musics
+ * @DESC create new musics
+ */
 musicRouter.post(
   "/",
   authCheck,
