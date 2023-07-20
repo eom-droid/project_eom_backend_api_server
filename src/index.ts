@@ -9,6 +9,7 @@ const app = express();
 const server = async () => {
   try {
     // .env 파일 내에 있는 변수들을 불러옴
+    // destructuring을 통해 변수를 불러옴
     const { MONGO_URI, PORT } = process.env;
 
     // .env 파일 내에 있는 변수들이 없을 경우 에러를 던짐
