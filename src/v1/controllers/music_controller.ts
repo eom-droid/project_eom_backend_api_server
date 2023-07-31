@@ -49,3 +49,50 @@ export const createNewMusics = async (req: Request, res: Response) => {
       .send({ status: "FAILED", data: { error: error?.message || error } });
   }
 };
+
+/**
+ * @DESC update music
+ * @RETURN music
+ */
+export const updateMusic = async (req: Request, res: Response) => {
+  try {
+    const music = reqToMusic(req.body);
+
+    var data = await musicService.updateMusic(
+      req.params.id,
+      music,
+      req.files !== undefined
+        ? (req.files as Express.Multer.File[])[0]
+        : undefined
+    );
+
+    return res.status(201).send({ status: "OK", data: data });
+  } catch (error: any) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
+    return res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
+
+/**
+ * @DESC delete music
+ * @RETURN music
+ */
+
+export const deleteMusic = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    var data = await musicService.deleteMusic(id);
+
+    return res.status(200).send({ status: "SUCCESS" });
+  } catch (error: any) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
+    return res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};

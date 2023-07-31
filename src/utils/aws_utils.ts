@@ -18,16 +18,21 @@ export class AWSUtils {
    * s3에 있는 파일을 삭제함
    */
   static deleteFileFromS3 = async ({ files }: { files: string[] }) => {
-    await Promise.all(
-      files.map(async (element: string) => {
-        await s3.send(
-          new DeleteObjectCommand({
-            Bucket: process.env.S3_BUCKET_NAME!,
-            Key: element,
-          })
-        );
-      })
-    );
+    try {
+      await Promise.all(
+        files.map(async (element: string) => {
+          await s3.send(
+            new DeleteObjectCommand({
+              Bucket: process.env.S3_BUCKET_NAME!,
+              Key: element,
+            })
+          );
+        })
+      );
+    } catch (error) {
+      console.log(new Date().toISOString() + ": npm log: " + error);
+      throw { status: 400, message: "값이 존재하지 않습니다." };
+    }
   };
 
   /**

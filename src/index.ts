@@ -20,7 +20,7 @@ const server = async () => {
     await mongoose.connect(MONGO_URI);
 
     // mongoose의 debug 모드를 활성화
-    // mongoose.set("debug", true);
+    mongoose.set("debug", true);
     console.log("MongoDB connected");
 
     // express의 미들웨어를 통해 req.body를 사용할 수 있도록 함

@@ -1,7 +1,7 @@
 import express from "express";
 import * as diaryController from "../controllers/diary_controller";
 import { multerMiddleware } from "../middlewares/multer_middleware";
-import { diaryDetailParamValidation } from "../middlewares/diary/detail_param_middleware";
+import { idParamValidation } from "../middlewares/detail_param_middleware";
 import { diaryQueryValidation } from "../middlewares/diary/query_middleware";
 import { diaryBodyValidation } from "../middlewares/diary/body_middleware";
 import { validate } from "../middlewares/validate_middleware";
@@ -39,7 +39,7 @@ diaryRouter.get(
 diaryRouter.get(
   "/:id/detail",
   authCheck,
-  validate(diaryDetailParamValidation),
+  validate(idParamValidation),
   checkIdExistMiddleware(DiaryModel),
   diaryController.getDiary
 );
@@ -88,7 +88,7 @@ diaryRouter.patch(
   authCheck,
   multerMiddleware,
   nestedBodyParser(DIARY),
-  validate(diaryBodyValidation.concat(diaryDetailParamValidation)),
+  validate(diaryBodyValidation.concat(idParamValidation)),
   checkIdExistMiddleware(DiaryModel),
   diaryController.updateDiary
 );
@@ -101,7 +101,7 @@ diaryRouter.patch(
 diaryRouter.delete(
   "/:id",
   authCheck,
-  validate(diaryDetailParamValidation),
+  validate(idParamValidation),
   checkIdExistMiddleware(DiaryModel),
   diaryController.deleteDiary
 );

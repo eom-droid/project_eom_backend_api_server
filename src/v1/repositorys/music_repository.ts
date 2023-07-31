@@ -38,3 +38,51 @@ export const getMusics = async (paginateReq: MusicPaginateReqModel) => {
     throw { status: 400, message: "값이 존재하지 않습니다." };
   }
 };
+
+/**
+ * @DESC get one music
+ * 특정 music을 가져옴
+ */
+
+export const getMusic = async (id: string) => {
+  try {
+    return await MusicModel.findById(id);
+  } catch (error) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
+    throw { status: 400, message: "값이 존재하지 않습니다." };
+  }
+};
+
+/**
+ * @DESC update music
+ * music 업데이트
+ */
+export const updateMusic = async (id: String, music: Music) => {
+  try {
+    const updatedMusic = await MusicModel.updateOne(
+      { _id: id },
+      music.toJson()
+    );
+    return updatedMusic;
+  } catch (error) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
+    throw { status: 400, message: "입력값이 유효하지 않습니다." };
+  }
+};
+
+/**
+ * @DESC delete music
+ * music 삭제
+ */
+export const deleteMusic = async (id: String) => {
+  try {
+    const deletedMusic = await MusicModel.deleteOne({ _id: id });
+    return deletedMusic;
+  } catch (error) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
+    throw { status: 400, message: "입력값이 유효하지 않습니다." };
+  }
+};

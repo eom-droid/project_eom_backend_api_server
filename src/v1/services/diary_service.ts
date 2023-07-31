@@ -52,6 +52,21 @@ export const updateDiary = async (
   files: Express.Multer.File[] | undefined
 ) => {
   try {
+    const oldDiary = await diaryRepository.getDiary(id);
+    if (oldDiary == null) {
+      throw { status: 400, message: "값이 존재하지 않습니다." };
+    }
+
+    // 삭제 파일 filter
+    // 기존 oldDiary에서 diary(newDiary)에 없는 파일들을 삭제할 파일로 지정
+    const deleteImgs = oldDiary.imgs.filter((e) => !diary.imgs.includes(e));
+    const deleteVids = oldDiary.vids.filter((e) => !diary.vids.includes(e));
+
+    // 삭제할 파일들을 s3에서 삭제
+    await AWSUtils.deleteFileFromS3({
+      files: deleteImgs.concat(deleteVids),
+    });
+
     if (files != undefined) {
       const uploadCompleteFiles = await AWSUtils.uploadFileToS3({
         s3Path: "eom/diary/",
@@ -65,19 +80,6 @@ export const updateDiary = async (
           : [uploadCompleteFiles]
       );
     }
-    const oldDiary = await diaryRepository.getDiary(id);
-    if (oldDiary == null) {
-      throw { status: 400, message: "값이 존재하지 않습니다." };
-    }
-    // 삭제 파일 filter
-    // 기존 oldDiary에서 diary(newDiary)에 없는 파일들을 삭제할 파일로 지정
-    const deleteImgs = oldDiary.imgs.filter((e) => !diary.imgs.includes(e));
-    const deleteVids = oldDiary.vids.filter((e) => !diary.vids.includes(e));
-
-    // 삭제할 파일들을 s3에서 삭제
-    AWSUtils.deleteFileFromS3({
-      files: deleteImgs.concat(deleteVids),
-    });
 
     return await diaryRepository.updateDiary(id, diary);
   } catch (error: any) {
