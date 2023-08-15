@@ -40,6 +40,7 @@ diaryRouter.get(
   "/:id/detail",
   authCheck,
   validate(idParamValidation),
+  // 여기 추후에 변경 필요 불필요 요청인가 생각해보기!!!
   checkIdExistMiddleware(DiaryModel),
   diaryController.getDiary
 );

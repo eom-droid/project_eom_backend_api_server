@@ -80,6 +80,9 @@ export const getDiary = async (req: Request, res: Response) => {
 export const getDiaries = async (req: Request, res: Response) => {
   try {
     const paginateReq = new DiaryPaginateReqModel(req.query);
+    if (paginateReq.postDT === undefined) {
+      paginateReq.postDT = new Date();
+    }
 
     const data = await diaryService.getDiaries(paginateReq);
 
