@@ -12,3 +12,10 @@ export const ProviderType = {
 } as const;
 
 export type ProviderType = (typeof ProviderType)[keyof typeof ProviderType];
+
+export const TokenType = {
+  ACCESS: "access",
+  REFRESH: "refresh",
+} as const;
+
+export type TokenType = (typeof TokenType)[keyof typeof TokenType];

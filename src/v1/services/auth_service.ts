@@ -2,7 +2,8 @@ import * as userRepository from "../repositorys/auth_repository";
 
 import axios from "axios";
 import { IUser, User } from "../models/user_model";
-import { ProviderType } from "../../constant/default";
+import { ProviderType, TokenType } from "../../constant/default";
+import jwt from "jsonwebtoken";
 
 /**
  * @DESC create new member with kakao
@@ -24,35 +25,56 @@ export const createKakaoUser = async (code: string) => {
         },
       }
     );
-    const { access_token: accessToken, refresh_token: refreshToken } =
+    const { access_token: kakaoAccessToken, refresh_token: kakaoRefreshToken } =
       result.data;
 
     // 2. 토큰을 이용하여 사용자 정보를 가져온다.
     const userKakao = await axios.get("https://kapi.kakao.com/v2/user/me", {
-      headers: { Authorization: `Bearer ${accessToken}` },
+      headers: { Authorization: `Bearer ${kakaoAccessToken}` },
     });
 
-    const searchedUser = userRepository.searchSnsUser({
+    const searchedUser = await userRepository.searchSnsUser({
       snsId: userKakao.data.id,
       provider: ProviderType.KAKAO,
     });
+
+    let user = searchedUser;
     if (searchedUser === null) {
       // 3. User 모델 제작
-      const user = new User({
+      const userModel = new User({
         email: userKakao.data.kakao_account.email ?? undefined,
         nick: userKakao.data.properties.nickname,
         provider: ProviderType.KAKAO,
         snsId: userKakao.data.id,
       } as IUser);
 
-      return await userRepository.createUser(user);
-      // 이후에 jwt를 발급하여 리턴해야됨(진행중)
-    } else {
-      return searchedUser;
+      const createdUser = await userRepository.createUser(userModel);
+      user = createdUser;
     }
+
+    // 4. 토큰 발급
+    const accesToken = createJwt(user!._id.toString(), TokenType.ACCESS);
+    const refreshToken = createJwt(user!._id.toString(), TokenType.REFRESH);
+
+    return { accesToken, refreshToken };
   } catch (error: any) {
     console.log(new Date().toISOString() + ": npm log: " + error);
 
     throw { status: error?.status || 400, message: error?.message || error };
   }
+};
+
+const createJwt = (id: string, tokenType: TokenType) => {
+  const token = jwt.sign(
+    {
+      id,
+      tokenType,
+    },
+    process.env.JWT_SECRET_KEY!,
+    {
+      expiresIn: tokenType === TokenType.ACCESS ? "1h" : "14d",
+    }
+  );
+
+  return token;
 };

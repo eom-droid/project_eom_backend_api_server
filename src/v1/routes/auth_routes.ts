@@ -15,3 +15,13 @@ authRouter.post(
   validate(joinKakaoBodyValidation),
   authController.kakao
 );
+
+// /**
+//  * @POST /api/v1/auth/email/join
+//  * @DESC join with eamil
+//  */
+// authRouter.post(
+//   "/email/join",
+//   validate(joinKakaoBodyValidation),
+//   authController.kakao
+// );

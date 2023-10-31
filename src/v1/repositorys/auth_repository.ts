@@ -41,7 +41,7 @@ export const searchUserByEmail = async (email: string) => {
 
 const searchUser = async (searchObj: Object) => {
   try {
-    const searchedUser = await UserModel.findOne(searchObj);
+    return await UserModel.findOne(searchObj);
   } catch (error: any) {
     console.log(new Date().toISOString() + ": npm log: " + error);
     throw { status: 400, message: "입력값이 유효하지 않습니다." };

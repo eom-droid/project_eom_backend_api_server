@@ -10,9 +10,10 @@ import * as authService from "../services/auth_service";
 export const kakao = async (req: Request, res: Response) => {
   try {
     const { code } = req.body;
-    const user = authService.createKakaoUser(code);
+    const token = await authService.createKakaoUser(code);
+    console.log(token);
 
-    return res.status(200).send(user);
+    return res.status(200).send(token);
   } catch (error: any) {
     console.log(new Date().toISOString() + ": npm log: " + error);
 
@@ -21,3 +22,5 @@ export const kakao = async (req: Request, res: Response) => {
       .send({ status: "FAILED", data: { error: error?.message || error } });
   }
 };
+
+("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1M2JkNzA4ODE4MTE0YmY3M2IyYzdhMyIsInRva2VuVHlwZSI6ImFjY2VzcyIsImlhdCI6MTY5ODc2NTk2NSwiZXhwIjoxNjk4NzY5NTY1fQ.Im--zv2vAJVIGoZ-9VfzpUwHnokVyNXC_GohPe45k_A");
