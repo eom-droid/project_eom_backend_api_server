@@ -5,3 +5,10 @@ export const DIARY = "diary";
 export const MUSIC = "music";
 
 export const S3AlbumCoverPath = "eom/music/albumCover/";
+
+export const ProviderType = {
+  KAKAO: "kakao",
+  GOOGLE: "google",
+} as const;
+
+export type ProviderType = (typeof ProviderType)[keyof typeof ProviderType];

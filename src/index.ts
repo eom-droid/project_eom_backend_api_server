@@ -2,8 +2,10 @@ import express from "express";
 import mongoose from "mongoose";
 import { diaryRouter } from "./v1/routes/diary_routes";
 import { musicRouter } from "./v1/routes/music_routes";
+import { authRouter } from "./v1/routes/auth_routes";
 
 const app = express();
+app.use(express.json());
 
 // 반복적으로 나오는 try catch나 에러 처리 같은 경우에는 express에 미들웨어를 통해 진행함
 const server = async () => {
@@ -31,6 +33,7 @@ const server = async () => {
     // repository : DB에 접근하는 부분을 담당하며 mongoose를 통해 DB에 접근함
     app.use("/api/v1/diaries", diaryRouter);
     app.use("/api/v1/musics", musicRouter);
+    app.use("/api/v1/auth", authRouter);
 
     // 서버를 실행함
     app.listen(PORT, async () => {
