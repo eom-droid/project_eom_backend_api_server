@@ -1,5 +1,5 @@
 import multer from "multer";
-import { DataUtils } from "../../utils/data_util";
+import { DataUtils } from "../../utils/data_utils";
 
 /**
  * @DESC multer middleware

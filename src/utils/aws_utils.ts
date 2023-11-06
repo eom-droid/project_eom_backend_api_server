@@ -3,7 +3,7 @@ import {
   S3Client,
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
-import { DataUtils } from "./data_util";
+import { DataUtils } from "./data_utils";
 
 const s3 = new S3Client({
   region: process.env.S3_REGION!,

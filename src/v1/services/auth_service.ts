@@ -1,9 +1,50 @@
 import * as userRepository from "../repositorys/auth_repository";
-
+import * as emailVerifyRepository from "../repositorys/email_verify_repository";
+import crypto from "crypto";
 import axios from "axios";
 import { IUser, User } from "../models/user_model";
 import { ProviderType, TokenType } from "../../constant/default";
 import jwt from "jsonwebtoken";
+import { MailUtils } from "../../utils/mail_utils";
+import { EmailVerify } from "../models/email_verify_model";
+
+/**
+ * @DESC send verification code
+ */
+
+export const sendVerificationCode = async (email: string) => {
+  try {
+    // 1. 인증번호 생성
+    const sixDigitVerificationCode = crypto.randomBytes(3).toString("hex");
+    // 2. 인증번호를 이메일로 전송
+    const mailResult = await MailUtils.sendMail({
+      email,
+      subject: "엄태호 플랫폼 인증번호입니다.",
+      content: `
+                <h1>인증번호입니당.</h1>
+                <h1>${sixDigitVerificationCode}</h1>
+                `,
+    });
+    if (mailResult) {
+      // 3. 인증번호를 DB에 저장(이메일, 인증번호, 생성시간)
+      const emailVerifyModel = new EmailVerify({
+        email,
+        verificationCode: sixDigitVerificationCode,
+        isVerified: false,
+      });
+      const emailVerify = await emailVerifyRepository.createEmailVerify(
+        emailVerifyModel
+      );
+      return emailVerify;
+    } else {
+      throw { status: 500, message: "메일 전송에 실패하였습니다." };
+    }
+  } catch (error: any) {
+    console.log(new Date().toISOString() + ": npm log: " + error);
+
+    throw { status: error?.status || 400, message: error?.message || error };
+  }
+};
 
 /**
  * @DESC create new member with kakao

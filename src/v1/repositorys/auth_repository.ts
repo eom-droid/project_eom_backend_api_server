@@ -1,8 +1,4 @@
-import { DiaryPaginateReqModel } from "../../models/diary_paginate_req_model";
-import { Diary, DiaryModel } from "../models/diary_model";
 import { User, UserModel } from "../models/user_model";
-
-import { log } from "console";
 
 /**
  * @DESC create new User
