@@ -13,10 +13,8 @@ export const createMusic = async (music: Music) => {
 
     const savedMusic = await musicInstance.save();
     return savedMusic;
-  } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: 400, message: "입력값이 유효하지 않습니다." };
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -33,9 +31,7 @@ export const getMusics = async (paginateReq: MusicPaginateReqModel) => {
       .sort({ createdAt: -1 })
       .limit(paginateReq.count);
   } catch (error) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: 400, message: "값이 존재하지 않습니다." };
+    throw error;
   }
 };
 
@@ -48,9 +44,7 @@ export const getMusic = async (id: string) => {
   try {
     return await MusicModel.findById(id);
   } catch (error) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: 400, message: "값이 존재하지 않습니다." };
+    throw error;
   }
 };
 
@@ -66,9 +60,7 @@ export const updateMusic = async (id: String, music: Music) => {
     );
     return updatedMusic;
   } catch (error) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: 400, message: "입력값이 유효하지 않습니다." };
+    throw error;
   }
 };
 
@@ -81,8 +73,6 @@ export const deleteMusic = async (id: String) => {
     const deletedMusic = await MusicModel.deleteOne({ _id: id });
     return deletedMusic;
   } catch (error) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: 400, message: "입력값이 유효하지 않습니다." };
+    throw error;
   }
 };

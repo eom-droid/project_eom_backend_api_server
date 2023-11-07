@@ -35,14 +35,50 @@ export const sendVerificationCode = async (email: string) => {
       const emailVerify = await emailVerifyRepository.createEmailVerify(
         emailVerifyModel
       );
-      return emailVerify;
+      return;
     } else {
       throw { status: 500, message: "메일 전송에 실패하였습니다." };
     }
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
+    throw error;
+  }
+};
 
-    throw { status: error?.status || 400, message: error?.message || error };
+/**
+ * @DESC verify verification code
+ */
+
+export const verifyEmail = async (email: string, verificationCode: string) => {
+  try {
+    // 1. 이메일과 인증번호를 통해 DB에서 검색
+    const emailVerifyResult = await emailVerifyRepository.searchEmailVerify(
+      email,
+      verificationCode
+    );
+    //2. 검색 결과가 있으면 만료여부 확인 및 isVerified를 true로 변경
+    if (emailVerifyResult !== null) {
+      if (emailVerifyResult.isVerified) {
+        // 이미 인증된 이메일
+        throw { status: 400, message: "이미 인증된 이메일입니다." };
+      } else {
+        const now = new Date();
+        const createdAt = new Date(emailVerifyResult.createdAt);
+        const diff = now.getTime() - createdAt.getTime();
+        if (diff > 1000 * 60 * 30) {
+          throw { status: 400, message: "인증시간이 만료되었습니다." };
+        } else {
+          await emailVerifyRepository.updateEmailVerify(emailVerifyResult._id, {
+            isVerified: true,
+          });
+        }
+      }
+    } else {
+      // 검색 결과가 없으면 인증번호가 일치하지 않음
+      throw { status: 400, message: "인증번호가 일치하지 않습니다." };
+    }
+    return;
+  } catch (error: any) {
+    throw error;
   }
 };
 
@@ -99,9 +135,7 @@ export const createKakaoUser = async (code: string) => {
 
     return { accesToken, refreshToken };
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: error?.status || 400, message: error?.message || error };
+    throw error;
   }
 };
 

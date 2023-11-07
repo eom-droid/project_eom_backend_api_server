@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import * as authService from "../services/auth_service";
 
 /**
@@ -6,7 +6,11 @@ import * as authService from "../services/auth_service";
  * @RETURN kakao
  * 오직 rest api만 사용 가능 추후 flutter sdk를 사용하여 진행할 예정
  */
-export const kakaoJoin = async (req: Request, res: Response) => {
+export const kakaoJoin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { code } = req.body;
     const token = await authService.createKakaoUser(code);
@@ -14,11 +18,8 @@ export const kakaoJoin = async (req: Request, res: Response) => {
 
     return res.status(200).send(token);
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    return res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
+    // 각 컨트롤러 별 예상가능한 에러에 대해서 종합 필요
+    next(error);
   }
 };
 
@@ -27,17 +28,17 @@ export const kakaoJoin = async (req: Request, res: Response) => {
  * 이메일 인증번호 전송 요청
  */
 
-export const sendVerificationCode = async (req: Request, res: Response) => {
+export const sendVerificationCode = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { email } = req.body;
     await authService.sendVerificationCode(email);
     return res.status(200).send({ status: "SUCCESS" });
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    return res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
+    next(error);
   }
 };
 
@@ -46,15 +47,18 @@ export const sendVerificationCode = async (req: Request, res: Response) => {
  * 이메일 인증번호 검증 확인
  */
 
-export const verifyEmail = async (req: Request, res: Response) => {
+export const verifyEmail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { email, verificationCode } = req.body;
+    // 다양한 경우에서 실패 시 에러를 던지기 때문에 try catch로 감싸줌
+    await authService.verifyEmail(email, verificationCode);
+    return res.status(200).send({ status: "SUCCESS" });
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    return res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
+    next(error);
   }
 };
 
@@ -62,15 +66,15 @@ export const verifyEmail = async (req: Request, res: Response) => {
  * @DESC login with email
  * 이메일 활용 회원가입
  */
-export const emailJoin = async (req: Request, res: Response) => {
+export const emailJoin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { email, password, nick } = req.body;
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    return res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
+    next(error);
   }
 };
 
@@ -78,13 +82,13 @@ export const emailJoin = async (req: Request, res: Response) => {
  * @DESC login with email
  * 이메일 활용 회원가입
  */
-export const emailLogin = async (req: Request, res: Response) => {
+export const emailLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    return res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
+    next(error);
   }
 };

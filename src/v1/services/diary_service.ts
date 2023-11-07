@@ -33,9 +33,7 @@ export const createDiary = async (
 
     return await diaryRepository.createDiary(diary);
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: error?.status || 400, message: error?.message || error };
+    throw error;
   }
 };
 
@@ -83,9 +81,7 @@ export const updateDiary = async (
 
     return await diaryRepository.updateDiary(id, diary);
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: error?.status || 400, message: error?.message || error };
+    throw error;
   }
 };
 

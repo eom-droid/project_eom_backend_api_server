@@ -12,10 +12,8 @@ export const createDiary = async (diary: Diary) => {
     // save 하기
     const savedDiary = await diaryInstance.save();
     return savedDiary;
-  } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: 400, message: "입력값이 유효하지 않습니다." };
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -32,10 +30,8 @@ export const updateDiary = async (id: String, diary: Diary) => {
     );
 
     return updatedDiary;
-  } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: 400, message: "입력값이 유효하지 않습니다." };
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -54,9 +50,7 @@ export const getDiaries = async (paginateReq: DiaryPaginateReqModel) => {
       .sort({ postDT: -1 })
       .limit(paginateReq.count);
   } catch (error) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: 400, message: "값이 존재하지 않습니다." };
+    throw error;
   }
 };
 
@@ -68,9 +62,7 @@ export const getDiary = async (diaryId: string): Promise<Diary | null> => {
   try {
     return await DiaryModel.findById(diaryId);
   } catch (error) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: 400, message: "값이 존재하지 않습니다." };
+    throw error;
   }
 };
 
@@ -83,8 +75,6 @@ export const deleteDiary = async (diaryId: string): Promise<void> => {
     await DiaryModel.deleteOne({ _id: diaryId });
     return;
   } catch (error) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: 400, message: "값이 존재하지 않습니다." };
+    throw error;
   }
 };

@@ -44,9 +44,7 @@ export const createMusic = async (
         : uploadCompleteFile.filename;
     return await musicRepository.createMusic(music);
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: error?.status || 400, message: error?.message || error };
+    throw error;
   }
 };
 
@@ -88,9 +86,7 @@ export const updateMusic = async (
 
     return await musicRepository.updateMusic(id, music);
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: error?.status || 400, message: error?.message || error };
+    throw error;
   }
 };
 
@@ -115,8 +111,6 @@ export const deleteMusic = async (id: string) => {
 
     return await musicRepository.deleteMusic(id);
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: error?.status || 400, message: error?.message || error };
+    throw error;
   }
 };

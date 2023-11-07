@@ -19,3 +19,6 @@ export const TokenType = {
 } as const;
 
 export type TokenType = (typeof TokenType)[keyof typeof TokenType];
+
+export const PRODUCTION = "production";
+export const DEVELOPMENT = "development";

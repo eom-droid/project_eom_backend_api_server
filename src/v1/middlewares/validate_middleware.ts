@@ -16,9 +16,7 @@ export const validate = (schemas: ValidationChain[]) => {
 
     if (result.isEmpty()) {
       return next();
-      // return res.status(200).send({ status: "SUCCESS" });
     }
-
     return res
       .status(400)
       .send({ status: "FAILED", data: { error: "잘못된 요청입니다." } });

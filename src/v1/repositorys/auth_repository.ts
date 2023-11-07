@@ -1,3 +1,4 @@
+import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import { User, UserModel } from "../models/user_model";
 
 /**
@@ -11,9 +12,7 @@ export const createUser = async (user: User) => {
     const savedUser = await userInstance.save();
     return savedUser;
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw { status: 400, message: "입력값이 유효하지 않습니다." };
+    throw error;
   }
 };
 
@@ -38,8 +37,7 @@ export const searchUserByEmail = async (email: string) => {
 const searchUser = async (searchObj: Object) => {
   try {
     return await UserModel.findOne(searchObj);
-  } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-    throw { status: 400, message: "입력값이 유효하지 않습니다." };
+  } catch (error) {
+    throw error;
   }
 };

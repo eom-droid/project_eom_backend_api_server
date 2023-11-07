@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { MusicPaginateReqModel } from "../../models/music_paginate_req_model";
 import * as musicService from "../services/music_service";
 import { reqToMusic } from "../models/music_model";
@@ -8,7 +8,11 @@ import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
  * @DESC get musics
  * @RETURN musics
  */
-export const getMusics = async (req: Request, res: Response) => {
+export const getMusics = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const paginateReq = new MusicPaginateReqModel(req.query);
 
@@ -16,11 +20,7 @@ export const getMusics = async (req: Request, res: Response) => {
 
     return res.status(200).send(data);
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    return res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
+    next(error);
   }
 };
 
@@ -28,7 +28,11 @@ export const getMusics = async (req: Request, res: Response) => {
  * @DESC create new musics
  * @RETURN musics
  */
-export const createNewMusics = async (req: Request, res: Response) => {
+export const createNewMusics = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const music = reqToMusic(req.body);
     var file = req.files;
@@ -42,11 +46,7 @@ export const createNewMusics = async (req: Request, res: Response) => {
     var data = await musicService.createMusic(music, file[0]);
     return res.status(201).send({ status: "OK", data: data });
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    return res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
+    next(error);
   }
 };
 
@@ -54,7 +54,11 @@ export const createNewMusics = async (req: Request, res: Response) => {
  * @DESC update music
  * @RETURN music
  */
-export const updateMusic = async (req: Request, res: Response) => {
+export const updateMusic = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const music = reqToMusic(req.body);
 
@@ -68,11 +72,7 @@ export const updateMusic = async (req: Request, res: Response) => {
 
     return res.status(201).send({ status: "OK", data: data });
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    return res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
+    next(error);
   }
 };
 
@@ -81,7 +81,11 @@ export const updateMusic = async (req: Request, res: Response) => {
  * @RETURN music
  */
 
-export const deleteMusic = async (req: Request, res: Response) => {
+export const deleteMusic = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { id } = req.params;
 
@@ -89,10 +93,6 @@ export const deleteMusic = async (req: Request, res: Response) => {
 
     return res.status(200).send({ status: "SUCCESS" });
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    return res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
+    next(error);
   }
 };

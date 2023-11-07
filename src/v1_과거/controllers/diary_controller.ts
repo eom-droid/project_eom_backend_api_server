@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import * as diaryService from "../services/diary_service";
 
 import { reqToDiary } from "../models/diary_model";
@@ -9,7 +9,11 @@ import { DiaryPaginateReqModel } from "../../models/diary_paginate_req_model";
  * 새로운 diary를 생성함 파일과 함께 전송될 경우 해당 파일을 저장함
  * @RETURN diary
  */
-export const createNewDiary = async (req: Request, res: Response) => {
+export const createNewDiary = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const diary = reqToDiary(req.body);
 
@@ -33,7 +37,11 @@ export const createNewDiary = async (req: Request, res: Response) => {
  * diary를 patch함 파일과 함께 전송될 경우 해당 파일을 저장함
  * @RETURN diary
  */
-export const updateDiary = async (req: Request, res: Response) => {
+export const updateDiary = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const diary = reqToDiary(req.body);
 
@@ -57,7 +65,11 @@ export const updateDiary = async (req: Request, res: Response) => {
  * @DESC get diary detail
  * 파라미터에 존재하는 id를 통해 특정 diary의 모든 정보를 가져옴
  */
-export const getDiary = async (req: Request, res: Response) => {
+export const getDiary = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const diaryId = req.params.id;
 
@@ -77,7 +89,11 @@ export const getDiary = async (req: Request, res: Response) => {
  * @DESC get diaries
  * pagination을 통해 특정 갯수만큼의 diary를 가져옴
  */
-export const getDiaries = async (req: Request, res: Response) => {
+export const getDiaries = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const paginateReq = new DiaryPaginateReqModel(req.query);
     if (paginateReq.postDT === undefined) {
@@ -101,7 +117,11 @@ export const getDiaries = async (req: Request, res: Response) => {
  * 파라미터에 존재하는 id를 통해 특정 diary를 삭제함
  * @RETURN diary
  */
-export const deleteDiary = async (req: Request, res: Response) => {
+export const deleteDiary = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { id } = req.params;
 
