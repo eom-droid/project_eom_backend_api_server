@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import * as authService from "../services/auth_service";
+import jwt from "jsonwebtoken";
+import { AuthUtils } from "../../utils/auth_utils";
+import { TokenType } from "../../constant/default";
 
 /**
  * @DESC get kakao token
@@ -13,10 +16,23 @@ export const kakaoJoin = async (
 ) => {
   try {
     const { code } = req.body;
-    const token = await authService.createKakaoUser(code);
-    console.log(token);
+    const user = await authService.createKakaoUser(code);
+    const accessToken = await AuthUtils.createJwt(
+      user!._id.toString(),
+      TokenType.ACCESS
+    );
+    const refreshToken = await AuthUtils.createJwt(
+      user!._id.toString(),
+      TokenType.REFRESH
+    );
 
-    return res.status(200).send(token);
+    return res
+      .status(200)
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+      })
+      .json({ accessToken });
   } catch (error: any) {
     // 각 컨트롤러 별 예상가능한 에러에 대해서 종합 필요
     next(error);
@@ -35,8 +51,12 @@ export const sendVerificationCode = async (
 ) => {
   try {
     const { email } = req.body;
-    await authService.sendVerificationCode(email);
-    return res.status(200).send({ status: "SUCCESS" });
+    if (!(await authService.checkEmailDuplicate(email))) {
+      await authService.sendVerificationCode(email);
+      return res.status(200).send({ status: "SUCCESS" });
+    } else {
+      throw { status: 400, message: "이미 가입된 이메일입니다." };
+    }
   } catch (error: any) {
     next(error);
   }
@@ -72,7 +92,34 @@ export const emailJoin = async (
   next: NextFunction
 ) => {
   try {
-    const { email, password, nick } = req.body;
+    const { email, password, verificationCode } = req.body;
+    // 1. verificationCode 검증
+    // 1번 이유 : 해당 url로 요청이 온경우 이메일 중복 여부부터 확인하는 경우, 해당 이메일의 회원가입 여부를 알 수 있기 때문에
+    await authService.verifyEmail(email, verificationCode);
+    // 2, email 중복 여부 확인
+    if (await authService.checkEmailDuplicate(email)) {
+      throw { status: 400, message: "이미 가입된 이메일입니다." };
+    }
+
+    // 3. 회원가입(사용자 생성)
+    const user = await authService.createEmailUser(email, password);
+    // 4. 토큰 생성
+    const accessToken = await AuthUtils.createJwt(
+      user!._id.toString(),
+      TokenType.ACCESS
+    );
+    const refreshToken = await AuthUtils.createJwt(
+      user!._id.toString(),
+      TokenType.REFRESH
+    );
+
+    return res
+      .status(200)
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+      })
+      .json({ accessToken });
   } catch (error: any) {
     next(error);
   }
@@ -88,6 +135,9 @@ export const emailLogin = async (
   next: NextFunction
 ) => {
   try {
+    const { email, password } = req.body;
+
+    // const token = await authService.verifyToken(refreshToken);
   } catch (error: any) {
     next(error);
   }

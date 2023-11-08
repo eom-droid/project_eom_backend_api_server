@@ -36,6 +36,8 @@ export const authCheck = async (
 
     const key = process.env.JWT_SECRET_KEY!;
     req.decoded = jwt.verify(splitToken[1], key);
+
+    // 여기에 추후 토큰 검증 로직 추가
     next();
 
     // const { MANAGER_TOKEN, CLIENT_TOKEN } = process.env;

@@ -11,7 +11,7 @@ export const joinEmailBodyValidation = checkSchema({
     in: ["body"],
     isString: { bail: true },
   },
-  passwd: {
+  password: {
     in: ["body"],
     isString: { bail: true },
   },

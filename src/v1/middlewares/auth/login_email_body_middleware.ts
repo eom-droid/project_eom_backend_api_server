@@ -15,8 +15,4 @@ export const loginEmailBodyValidation = checkSchema({
     in: ["body"],
     isString: { bail: true },
   },
-  nick: {
-    in: ["body"],
-    isString: { bail: true },
-  },
 });

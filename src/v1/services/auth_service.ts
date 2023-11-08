@@ -2,11 +2,22 @@ import * as userRepository from "../repositorys/auth_repository";
 import * as emailVerifyRepository from "../repositorys/email_verify_repository";
 import crypto from "crypto";
 import axios from "axios";
-import { IUser, User } from "../models/user_model";
+import { IUser, User, UserModel } from "../models/user_model";
 import { ProviderType, TokenType } from "../../constant/default";
 import jwt from "jsonwebtoken";
 import { MailUtils } from "../../utils/mail_utils";
 import { EmailVerify } from "../models/email_verify_model";
+import * as bcrypt from "bcrypt";
+import { AuthUtils } from "../../utils/auth_utils";
+
+/**
+ * @DESC 이메일 중복여부 확인
+ * @RETURN true : 중복됨, false : 중복되지 않음
+ */
+export const checkEmailDuplicate = async (email: string): Promise<boolean> => {
+  const user = await userRepository.searchUserByEmail(email);
+  return user === null ? false : true;
+};
 
 /**
  * @DESC send verification code
@@ -30,7 +41,6 @@ export const sendVerificationCode = async (email: string) => {
       const emailVerifyModel = new EmailVerify({
         email,
         verificationCode: sixDigitVerificationCode,
-        isVerified: false,
       });
       const emailVerify = await emailVerifyRepository.createEmailVerify(
         emailVerifyModel
@@ -55,28 +65,34 @@ export const verifyEmail = async (email: string, verificationCode: string) => {
       email,
       verificationCode
     );
-    //2. 검색 결과가 있으면 만료여부 확인 및 isVerified를 true로 변경
+    //2. 검색 결과가 있으면 만료여부 확인
     if (emailVerifyResult !== null) {
-      if (emailVerifyResult.isVerified) {
-        // 이미 인증된 이메일
-        throw { status: 400, message: "이미 인증된 이메일입니다." };
-      } else {
-        const now = new Date();
-        const createdAt = new Date(emailVerifyResult.createdAt);
-        const diff = now.getTime() - createdAt.getTime();
-        if (diff > 1000 * 60 * 30) {
-          throw { status: 400, message: "인증시간이 만료되었습니다." };
-        } else {
-          await emailVerifyRepository.updateEmailVerify(emailVerifyResult._id, {
-            isVerified: true,
-          });
-        }
+      const now = new Date();
+      const createdAt = new Date(emailVerifyResult.createdAt);
+      const diff = now.getTime() - createdAt.getTime();
+      if (diff > 1000 * 60 * 30) {
+        throw { status: 400, message: "인증시간이 만료되었습니다." };
       }
     } else {
       // 검색 결과가 없으면 인증번호가 일치하지 않음
       throw { status: 400, message: "인증번호가 일치하지 않습니다." };
     }
     return;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+export const createEmailUser = async (email: string, password: string) => {
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const userModel = new User({
+      email,
+      password: hashedPassword,
+      nick: email.split("@")[0],
+    } as IUser);
+    const createdUser = await userRepository.createUser(userModel);
+    return createdUser;
   } catch (error: any) {
     throw error;
   }
@@ -128,28 +144,8 @@ export const createKakaoUser = async (code: string) => {
       const createdUser = await userRepository.createUser(userModel);
       user = createdUser;
     }
-
-    // 4. 토큰 발급
-    const accesToken = createJwt(user!._id.toString(), TokenType.ACCESS);
-    const refreshToken = createJwt(user!._id.toString(), TokenType.REFRESH);
-
-    return { accesToken, refreshToken };
+    return user;
   } catch (error: any) {
     throw error;
   }
-};
-
-const createJwt = (id: string, tokenType: TokenType) => {
-  const token = jwt.sign(
-    {
-      id,
-      tokenType,
-    },
-    process.env.JWT_SECRET_KEY!,
-    {
-      expiresIn: tokenType === TokenType.ACCESS ? "1h" : "14d",
-    }
-  );
-
-  return token;
 };

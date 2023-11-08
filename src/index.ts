@@ -7,6 +7,7 @@ import { CustomHttpErrorModel } from "./models/custom_http_error_model";
 import morgan from "morgan";
 import { accessLogStream } from "./utils/log_utils";
 import { PRODUCTION } from "./constant/default";
+import cookieParser from "cookie-parser";
 
 // 반복적으로 나오는 try catch나 에러 처리 같은 경우에는 express에 미들웨어를 통해 진행함
 const server = async () => {
@@ -25,11 +26,14 @@ const server = async () => {
   } else {
     app.use(morgan("dev"));
   }
+  const { MONGO_URI, MONGO_URI_SUFFIX, NODE_ENV, PORT, COOKIE_SECRET } =
+    process.env;
+
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
+  app.use(cookieParser(COOKIE_SECRET));
   // .env 파일 내에 있는 변수들을 불러옴
   // destructuring을 통해 변수를 불러옴
-  const { MONGO_URI, MONGO_URI_SUFFIX, NODE_ENV, PORT } = process.env;
 
   // .env 파일 내에 있는 변수들이 없을 경우 에러를 던짐
   if (!MONGO_URI) throw new Error("MONGO_URI is required!!!");

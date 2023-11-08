@@ -22,3 +22,8 @@ export type TokenType = (typeof TokenType)[keyof typeof TokenType];
 
 export const PRODUCTION = "production";
 export const DEVELOPMENT = "development";
+
+export const TOKEN_EXPIRE_TIME = {
+  ACCESS: "1h",
+  REFRESH: "30d",
+};

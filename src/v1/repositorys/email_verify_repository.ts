@@ -38,8 +38,6 @@ export const searchEmailVerify = async (
 
 /**
  * @DESC update EmailVerify
- * mongoDB에 email의 인증번호와 일치하는 항목 있는지 여부 확인
- * 일치하는 항목이 있다면 isVerified를 true로 변경
  */
 export const updateEmailVerify = async (
   id: Types.ObjectId,
