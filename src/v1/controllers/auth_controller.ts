@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import * as authService from "../services/auth_service";
 import jwt from "jsonwebtoken";
 import { AuthUtils } from "../../utils/auth_utils";
-import { TokenType } from "../../constant/default";
+import { CookieOption, TokenType } from "../../constant/default";
 
 /**
  * @DESC get kakao token
@@ -17,21 +17,18 @@ export const kakaoJoin = async (
   try {
     const { code } = req.body;
     const user = await authService.createKakaoUser(code);
-    const accessToken = await AuthUtils.createJwt(
+    const accessToken = AuthUtils.createJwt(
       user!._id.toString(),
       TokenType.ACCESS
     );
-    const refreshToken = await AuthUtils.createJwt(
+    const refreshToken = AuthUtils.createJwt(
       user!._id.toString(),
       TokenType.REFRESH
     );
 
     return res
       .status(200)
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-      })
+      .cookie("refreshToken", refreshToken, CookieOption)
       .json({ accessToken });
   } catch (error: any) {
     // 각 컨트롤러 별 예상가능한 에러에 대해서 종합 필요
@@ -104,21 +101,18 @@ export const emailJoin = async (
     // 3. 회원가입(사용자 생성)
     const user = await authService.createEmailUser(email, password);
     // 4. 토큰 생성
-    const accessToken = await AuthUtils.createJwt(
+    const accessToken = AuthUtils.createJwt(
       user!._id.toString(),
       TokenType.ACCESS
     );
-    const refreshToken = await AuthUtils.createJwt(
+    const refreshToken = AuthUtils.createJwt(
       user!._id.toString(),
       TokenType.REFRESH
     );
 
     return res
       .status(200)
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-      })
+      .cookie("refreshToken", refreshToken, CookieOption)
       .json({ accessToken });
   } catch (error: any) {
     next(error);
@@ -136,8 +130,21 @@ export const emailLogin = async (
 ) => {
   try {
     const { email, password } = req.body;
-
-    // const token = await authService.verifyToken(refreshToken);
+    // 1. email, password 검증
+    const user = await authService.emailLogin(email, password);
+    // 2. 토큰 생성
+    const accessToken = AuthUtils.createJwt(
+      user!._id.toString(),
+      TokenType.ACCESS
+    );
+    const refreshToken = AuthUtils.createJwt(
+      user!._id.toString(),
+      TokenType.REFRESH
+    );
+    return res
+      .status(200)
+      .cookie("refreshToken", refreshToken, CookieOption)
+      .json({ accessToken });
   } catch (error: any) {
     next(error);
   }

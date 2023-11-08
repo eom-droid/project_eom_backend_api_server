@@ -1,4 +1,4 @@
-import * as userRepository from "../repositorys/auth_repository";
+import * as authRepository from "../repositorys/auth_repository";
 import * as emailVerifyRepository from "../repositorys/email_verify_repository";
 import crypto from "crypto";
 import axios from "axios";
@@ -11,11 +11,32 @@ import * as bcrypt from "bcrypt";
 import { AuthUtils } from "../../utils/auth_utils";
 
 /**
+ * @DESC email login
+ */
+export const emailLogin = async (email: string, password: string) => {
+  try {
+    const exUser = await authRepository.searchUserByEmail(email);
+    if (exUser) {
+      const result = await bcrypt.compare(password, exUser.password!);
+      if (result) {
+        return exUser;
+      } else {
+        throw { status: 400, message: "비밀번호가 일치하지 않습니다." };
+      }
+    } else {
+      throw { status: 400, message: "가입되지 않은 이메일입니다." };
+    }
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
  * @DESC 이메일 중복여부 확인
  * @RETURN true : 중복됨, false : 중복되지 않음
  */
 export const checkEmailDuplicate = async (email: string): Promise<boolean> => {
-  const user = await userRepository.searchUserByEmail(email);
+  const user = await authRepository.searchUserByEmail(email);
   return user === null ? false : true;
 };
 
@@ -83,6 +104,9 @@ export const verifyEmail = async (email: string, verificationCode: string) => {
   }
 };
 
+/**
+ * @DESC create new member with email
+ */
 export const createEmailUser = async (email: string, password: string) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -91,7 +115,7 @@ export const createEmailUser = async (email: string, password: string) => {
       password: hashedPassword,
       nick: email.split("@")[0],
     } as IUser);
-    const createdUser = await userRepository.createUser(userModel);
+    const createdUser = await authRepository.createUser(userModel);
     return createdUser;
   } catch (error: any) {
     throw error;
@@ -126,7 +150,7 @@ export const createKakaoUser = async (code: string) => {
       headers: { Authorization: `Bearer ${kakaoAccessToken}` },
     });
 
-    const searchedUser = await userRepository.searchSnsUser({
+    const searchedUser = await authRepository.searchSnsUser({
       snsId: userKakao.data.id,
       provider: ProviderType.KAKAO,
     });
@@ -141,7 +165,7 @@ export const createKakaoUser = async (code: string) => {
         snsId: userKakao.data.id,
       } as IUser);
 
-      const createdUser = await userRepository.createUser(userModel);
+      const createdUser = await authRepository.createUser(userModel);
       user = createdUser;
     }
     return user;

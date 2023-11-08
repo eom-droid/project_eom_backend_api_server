@@ -1,6 +1,7 @@
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { AuthUtils } from "../../utils/auth_utils";
 
 // 초기에는 특정 토큰을 영구적으로 부여해주는 방식을 채택
 // -> 추후 로그인 시 토큰을 발급받아서 사용하는 방식으로 변경
@@ -33,11 +34,8 @@ export const authCheck = async (
         status: 401,
       });
     }
-
-    const key = process.env.JWT_SECRET_KEY!;
-    req.decoded = jwt.verify(splitToken[1], key);
-
-    // 여기에 추후 토큰 검증 로직 추가
+    // 뒤에 오는 Handler에서 사용할 수 있도록 decoded에 저장
+    req.decoded = AuthUtils.verifyToken(splitToken[1]);
     next();
 
     // const { MANAGER_TOKEN, CLIENT_TOKEN } = process.env;
@@ -60,12 +58,12 @@ export const authCheck = async (
     //   }
     // }
   } catch (error: any) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-    if (error.name === "TokenExpiredError") {
-      return res
-        .status(419)
-        .send({ status: "FAILED", data: { error: "Token Expired" } });
-    }
+    // console.log(new Date().toISOString() + ": npm log: " + error);
+    // if (error.name === "TokenExpiredError") {
+    //   return res
+    //     .status(419)
+    //     .send({ status: "FAILED", data: { error: "Token Expired" } });
+    // }
 
     return res
       .status(error?.status || 500)

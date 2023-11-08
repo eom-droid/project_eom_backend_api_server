@@ -27,3 +27,8 @@ export const TOKEN_EXPIRE_TIME = {
   ACCESS: "1h",
   REFRESH: "30d",
 };
+
+export const CookieOption = {
+  httpOnly: true,
+  secure: true,
+};
