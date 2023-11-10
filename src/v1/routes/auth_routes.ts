@@ -42,16 +42,6 @@ authRouter.post(
   authController.emailJoin
 );
 
-// /**
-//  * @POST /api/v1/auth/email
-//  * @DESC join with email
-//  */
-// authRouter.post(
-//   "/join",
-//   validate(joinEmailBodyValidation),
-//   authController.emailJoin
-// );
-
 /**
  * @POST /api/v1/auth/login
  * @DESC login with email
@@ -63,6 +53,13 @@ authRouter.post(
 );
 
 /**
+ * @GET /api/v1/auth/email/access-token
+ * @DESC access token 발급
+ */
+
+authRouter.get("/access-token", authController.getAccessToken);
+
+/**
  * @POST /api/v1/auth/kakao
  * @DESC join kakao
  */
@@ -71,13 +68,3 @@ authRouter.post(
   validate(joinKakaoBodyValidation),
   authController.kakaoJoin
 );
-
-// /**
-//  * @POST /api/v1/auth/email/join
-//  * @DESC join with eamil
-//  */
-// authRouter.post(
-//   "/email/join",
-//   validate(joinKakaoBodyValidation),
-//   authController.kakao
-// );

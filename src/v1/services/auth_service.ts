@@ -2,13 +2,12 @@ import * as authRepository from "../repositorys/auth_repository";
 import * as emailVerifyRepository from "../repositorys/email_verify_repository";
 import crypto from "crypto";
 import axios from "axios";
-import { IUser, User, UserModel } from "../models/user_model";
-import { ProviderType, TokenType } from "../../constant/default";
-import jwt from "jsonwebtoken";
+import { IUser, User } from "../models/user_model";
+import { ProviderType } from "../../constant/default";
 import { MailUtils } from "../../utils/mail_utils";
 import { EmailVerify } from "../models/email_verify_model";
 import * as bcrypt from "bcrypt";
-import { AuthUtils } from "../../utils/auth_utils";
+import { Types } from "mongoose";
 
 /**
  * @DESC email login
@@ -117,6 +116,19 @@ export const createEmailUser = async (email: string, password: string) => {
     } as IUser);
     const createdUser = await authRepository.createUser(userModel);
     return createdUser;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC delete email verification code
+ */
+
+export const deleteEmailVerify = async (email: string) => {
+  try {
+    await emailVerifyRepository.deleteEmailVerify(email);
+    return;
   } catch (error: any) {
     throw error;
   }

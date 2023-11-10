@@ -16,15 +16,10 @@ export const kakaoJoin = async (
 ) => {
   try {
     const { code } = req.body;
-    const user = await authService.createKakaoUser(code);
-    const accessToken = AuthUtils.createJwt(
-      user!._id.toString(),
-      TokenType.ACCESS
-    );
-    const refreshToken = AuthUtils.createJwt(
-      user!._id.toString(),
-      TokenType.REFRESH
-    );
+    const userId = (await authService.createKakaoUser(code))!._id.toString();
+
+    const refreshToken: string = await AuthUtils.createRefreshToken(userId);
+    const accessToken: string = AuthUtils.createAccessToken(userId);
 
     return res
       .status(200)
@@ -100,15 +95,12 @@ export const emailJoin = async (
 
     // 3. 회원가입(사용자 생성)
     const user = await authService.createEmailUser(email, password);
-    // 4. 토큰 생성
-    const accessToken = AuthUtils.createJwt(
-      user!._id.toString(),
-      TokenType.ACCESS
-    );
-    const refreshToken = AuthUtils.createJwt(
-      user!._id.toString(),
-      TokenType.REFRESH
-    );
+    const userId = user._id.toString();
+    // 4. 이메일 인증 완료 처리(삭제)
+    await authService.deleteEmailVerify(email);
+    // 5. 토큰 생성
+    const refreshToken = await AuthUtils.createRefreshToken(userId);
+    const accessToken = AuthUtils.createAccessToken(userId);
 
     return res
       .status(200)
@@ -131,19 +123,47 @@ export const emailLogin = async (
   try {
     const { email, password } = req.body;
     // 1. email, password 검증
-    const user = await authService.emailLogin(email, password);
+    const userId = (
+      await authService.emailLogin(email, password)
+    )._id.toString();
     // 2. 토큰 생성
-    const accessToken = AuthUtils.createJwt(
-      user!._id.toString(),
-      TokenType.ACCESS
-    );
-    const refreshToken = AuthUtils.createJwt(
-      user!._id.toString(),
-      TokenType.REFRESH
-    );
+    const refreshToken: string = await AuthUtils.createRefreshToken(userId);
+    const accessToken: string = AuthUtils.createAccessToken(userId);
     return res
       .status(200)
       .cookie("refreshToken", refreshToken, CookieOption)
+      .json({ accessToken });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC issue access token
+ * access token 발급
+ * RTR 적용
+ */
+
+export const getAccessToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // 만약 해커가 refresh token payload 상 id를 변경하였을 경우
+  // 어차피 Redis에 저장되어있지 않을 것임
+  try {
+    const { refreshToken } = req.cookies;
+
+    // 1. token 검증(redis + jwt 검증)
+    const decoded = await AuthUtils.verifyRefreshToken(refreshToken);
+    // 2. 토큰 생성
+    const accessToken: string = AuthUtils.createAccessToken(decoded.id);
+    const newRefreshToken: string = await AuthUtils.createRefreshToken(
+      decoded.id
+    );
+    return res
+      .status(200)
+      .cookie("refreshToken", newRefreshToken, CookieOption)
       .json({ accessToken });
   } catch (error: any) {
     next(error);

@@ -50,3 +50,15 @@ export const updateEmailVerify = async (
     throw error;
   }
 };
+
+/**
+ * @DESC delete EmailVerify
+ */
+export const deleteEmailVerify = async (email: string) => {
+  try {
+    const result = EmailVerifyModel.deleteOne({ email });
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};

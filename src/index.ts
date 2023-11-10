@@ -8,6 +8,7 @@ import morgan from "morgan";
 import { accessLogStream } from "./utils/log_utils";
 import { PRODUCTION } from "./constant/default";
 import cookieParser from "cookie-parser";
+import { Redis } from "./redis/redis";
 
 // 반복적으로 나오는 try catch나 에러 처리 같은 경우에는 express에 미들웨어를 통해 진행함
 const server = async () => {
@@ -26,8 +27,15 @@ const server = async () => {
   } else {
     app.use(morgan("dev"));
   }
-  const { MONGO_URI, MONGO_URI_SUFFIX, NODE_ENV, PORT, COOKIE_SECRET } =
-    process.env;
+  const {
+    MONGO_URI,
+    MONGO_URI_SUFFIX,
+    NODE_ENV,
+    PORT,
+    COOKIE_SECRET,
+    // REDIS_HOST,
+    // REDIS_PORT,
+  } = process.env;
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
@@ -41,10 +49,13 @@ const server = async () => {
 
   // mongoose를 통해 MongoDB에 연결
   await mongoose.connect(MONGO_URI + NODE_ENV + MONGO_URI_SUFFIX);
-
   // mongoose의 debug 모드를 활성화
   mongoose.set("debug", true);
   console.log("MongoDB connected");
+
+  // redis를 통해 Redis에 연결
+  await Redis.getInstance().connect();
+  console.log("Redis connected");
 
   // express의 미들웨어를 통해 req.body를 사용할 수 있도록 함
   // 추가적으로 해당 체계는 routes -> controllers -> services -> repository로 이어짐
