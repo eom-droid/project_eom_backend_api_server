@@ -1,4 +1,5 @@
 import { S3AlbumCoverPath } from "../../constant/default";
+import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import { MusicPaginateReqModel } from "../../models/music_paginate_req_model";
 import { PaginateReturnModel } from "../../models/paginate_res_model";
 import { AWSUtils } from "../../utils/aws_utils";
@@ -65,7 +66,10 @@ export const updateMusic = async (
     const oldMusic = await musicRepository.getMusic(id);
 
     if (oldMusic === null) {
-      throw { status: 400, message: "값이 존재하지 않습니다." };
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "값이 존재하지 않습니다.",
+      });
     }
 
     if (albumCover !== undefined) {
@@ -100,7 +104,10 @@ export const deleteMusic = async (id: string) => {
     const music = await musicRepository.getMusic(id);
 
     if (music === null) {
-      throw { status: 400, message: "값이 존재하지 않습니다." };
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "값이 존재하지 않습니다.",
+      });
     }
 
     if (music.albumCover !== undefined) {

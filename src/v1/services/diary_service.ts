@@ -4,6 +4,7 @@ import { Diary, IDiary } from "../models/diary_model";
 
 import * as diaryRepository from "../repositorys/diary_repository";
 import { AWSUtils } from "../../utils/aws_utils";
+import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 
 /**
  * @DESC create new diary
@@ -52,7 +53,10 @@ export const updateDiary = async (
   try {
     const oldDiary = await diaryRepository.getDiary(id);
     if (oldDiary == null) {
-      throw { status: 400, message: "값이 존재하지 않습니다." };
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "값이 존재하지 않습니다.",
+      });
     }
 
     // 삭제 파일 filter
@@ -110,7 +114,10 @@ export const getDiaries = async (
 export const getDiary = async (diaryId: string): Promise<Diary> => {
   const result = await diaryRepository.getDiary(diaryId);
   if (result == null) {
-    throw { status: 400, message: "값이 존재하지 않습니다." };
+    throw new CustomHttpErrorModel({
+      status: 400,
+      message: "값이 존재하지 않습니다.",
+    });
   } else {
     return result;
   }

@@ -26,7 +26,7 @@ export const searchEmailVerify = async (
   verificationCode: string
 ) => {
   try {
-    const result = EmailVerifyModel.findOne({
+    const result = await EmailVerifyModel.findOne({
       email,
       verificationCode,
     });
@@ -44,7 +44,7 @@ export const updateEmailVerify = async (
   updateObj: Object
 ) => {
   try {
-    const result = EmailVerifyModel.updateOne({ _id: id }, updateObj);
+    const result = await EmailVerifyModel.updateOne({ _id: id }, updateObj);
     return result;
   } catch (error) {
     throw error;
@@ -56,7 +56,7 @@ export const updateEmailVerify = async (
  */
 export const deleteEmailVerify = async (email: string) => {
   try {
-    const result = EmailVerifyModel.deleteOne({ email });
+    const result = await EmailVerifyModel.deleteOne({ email });
     return result;
   } catch (error) {
     throw error;

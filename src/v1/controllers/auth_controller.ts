@@ -3,6 +3,7 @@ import * as authService from "../services/auth_service";
 import jwt from "jsonwebtoken";
 import { AuthUtils } from "../../utils/auth_utils";
 import { CookieOption, TokenType } from "../../constant/default";
+import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 
 /**
  * @DESC get kakao token
@@ -47,7 +48,10 @@ export const sendVerificationCode = async (
       await authService.sendVerificationCode(email);
       return res.status(200).send({ status: "SUCCESS" });
     } else {
-      throw { status: 400, message: "이미 가입된 이메일입니다." };
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "이미 가입된 이메일입니다.",
+      });
     }
   } catch (error: any) {
     next(error);
@@ -90,7 +94,10 @@ export const emailJoin = async (
     await authService.verifyEmail(email, verificationCode);
     // 2, email 중복 여부 확인
     if (await authService.checkEmailDuplicate(email)) {
-      throw { status: 400, message: "이미 가입된 이메일입니다." };
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "이미 가입된 이메일입니다.",
+      });
     }
 
     // 3. 회원가입(사용자 생성)

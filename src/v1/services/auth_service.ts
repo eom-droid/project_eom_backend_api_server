@@ -8,6 +8,7 @@ import { MailUtils } from "../../utils/mail_utils";
 import { EmailVerify } from "../models/email_verify_model";
 import * as bcrypt from "bcrypt";
 import { Types } from "mongoose";
+import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 
 /**
  * @DESC email login
@@ -20,10 +21,16 @@ export const emailLogin = async (email: string, password: string) => {
       if (result) {
         return exUser;
       } else {
-        throw { status: 400, message: "비밀번호가 일치하지 않습니다." };
+        throw new CustomHttpErrorModel({
+          status: 400,
+          message: "비밀번호가 일치하지 않습니다.",
+        });
       }
     } else {
-      throw { status: 400, message: "가입되지 않은 이메일입니다." };
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "가입되지 않은 이메일입니다.",
+      });
     }
   } catch (error: any) {
     throw error;
@@ -67,7 +74,10 @@ export const sendVerificationCode = async (email: string) => {
       );
       return;
     } else {
-      throw { status: 500, message: "메일 전송에 실패하였습니다." };
+      throw new CustomHttpErrorModel({
+        status: 500,
+        message: "메일 전송에 실패하였습니다.",
+      });
     }
   } catch (error: any) {
     throw error;
@@ -91,11 +101,17 @@ export const verifyEmail = async (email: string, verificationCode: string) => {
       const createdAt = new Date(emailVerifyResult.createdAt);
       const diff = now.getTime() - createdAt.getTime();
       if (diff > 1000 * 60 * 30) {
-        throw { status: 400, message: "인증시간이 만료되었습니다." };
+        throw new CustomHttpErrorModel({
+          status: 400,
+          message: "인증시간이 만료되었습니다.",
+        });
       }
     } else {
       // 검색 결과가 없으면 인증번호가 일치하지 않음
-      throw { status: 400, message: "인증번호가 일치하지 않습니다." };
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "인증번호가 일치하지 않습니다.",
+      });
     }
     return;
   } catch (error: any) {

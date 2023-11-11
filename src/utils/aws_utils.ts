@@ -4,6 +4,7 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { DataUtils } from "./data_utils";
+import { CustomHttpErrorModel } from "../models/custom_http_error_model";
 
 const s3 = new S3Client({
   region: process.env.S3_REGION!,
@@ -31,7 +32,10 @@ export class AWSUtils {
       );
     } catch (error) {
       console.log(new Date().toISOString() + ": npm log: " + error);
-      throw { status: 400, message: "값이 존재하지 않습니다." };
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "값이 존재하지 않습니다.",
+      });
     }
   };
 
