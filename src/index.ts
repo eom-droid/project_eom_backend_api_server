@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { diaryRouter } from "./v1/routes/diary_routes";
 import { musicRouter } from "./v1/routes/music_routes";
 import { authRouter } from "./v1/routes/auth_routes";
+import { userRouter } from "./v1/routes/user_routes";
 import { CustomHttpErrorModel } from "./models/custom_http_error_model";
 import morgan from "morgan";
 import { accessLogStream } from "./utils/log_utils";
@@ -66,6 +67,7 @@ const server = async () => {
   app.use("/api/v1/diaries", diaryRouter);
   app.use("/api/v1/musics", musicRouter);
   app.use("/api/v1/auth", authRouter);
+  app.use("/api/v1/user", userRouter);
 
   // 404 에러를 처리하는 부분
   app.use((req, res, next) => {

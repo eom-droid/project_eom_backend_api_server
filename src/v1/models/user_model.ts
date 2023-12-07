@@ -10,8 +10,8 @@ export interface IUser {
   email: string | undefined;
   // password : 비밀번호
   password: string | undefined;
-  // nick : 닉네임
-  nick: string;
+  // nickName : 닉네임
+  nickName: string;
   // birthday : 생일
   birthday: Date | undefined;
   // profileImg : 프로필 이미지
@@ -27,8 +27,8 @@ export class User {
   email: string | undefined;
   // password : 비밀번호
   password: string | undefined;
-  // nick : 닉네임
-  nick: string;
+  // nickName : 닉네임
+  nickName: string;
   // birthday : 생일
   birthday: Date | undefined;
   // profileImg : 프로필 이미지
@@ -41,7 +41,7 @@ export class User {
   constructor({
     email,
     password,
-    nick,
+    nickName,
     birthday,
     profileImg,
     snsId,
@@ -49,7 +49,7 @@ export class User {
   }: IUser) {
     this.email = email;
     this.password = password;
-    this.nick = nick;
+    this.nickName = nickName;
     this.birthday = birthday;
     this.profileImg = profileImg;
     this.snsId = snsId;
@@ -59,8 +59,7 @@ export class User {
   toJson() {
     return {
       email: this.email,
-      password: this.password,
-      nick: this.nick,
+      nickName: this.nickName,
       birthday: this.birthday,
       profileImg: this.profileImg,
       snsId: this.snsId,
@@ -71,7 +70,7 @@ export class User {
     return new User({
       email: json.email ?? undefined,
       password: json.password ?? undefined,
-      nick: json.nick,
+      nickName: json.nickName,
       birthday: json.birthday ?? undefined,
       profileImg: json.profileImg ?? undefined,
       snsId: json.snsId ?? undefined,
@@ -82,11 +81,30 @@ export class User {
     return new UserModel({
       email: this.email,
       password: this.password,
-      nick: this.nick,
+      nickName: this.nickName,
       birthday: this.birthday,
       profileImg: this.profileImg,
       snsId: this.snsId,
       provider: this.provider,
+    });
+  }
+  copyWith({
+    email,
+    password,
+    nickName,
+    birthday,
+    profileImg,
+    snsId,
+    provider,
+  }: IUser) {
+    return new User({
+      email: email ?? this.email,
+      password: password ?? this.password,
+      nickName: nickName ?? this.nickName,
+      birthday: birthday ?? this.birthday,
+      profileImg: profileImg ?? this.profileImg,
+      snsId: snsId ?? this.snsId,
+      provider: provider ?? this.provider,
     });
   }
 }
@@ -95,7 +113,7 @@ const UserSchema = new Schema(
   {
     email: { type: String, required: false },
     password: { type: String, required: false },
-    nick: { type: String, required: true },
+    nickName: { type: String, required: true },
     birthday: { type: Date, required: false },
     profileImg: { type: String, required: false },
     snsId: { type: String, required: false },

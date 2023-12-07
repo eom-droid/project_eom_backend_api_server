@@ -1,4 +1,4 @@
-import * as authRepository from "../repositorys/auth_repository";
+import * as authRepository from "../repositorys/user_repository";
 import * as emailVerifyRepository from "../repositorys/email_verify_repository";
 import crypto from "crypto";
 import axios from "axios";
@@ -9,6 +9,7 @@ import { EmailVerify } from "../models/email_verify_model";
 import * as bcrypt from "bcrypt";
 import { Types } from "mongoose";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
+import { AuthUtils } from "../../utils/auth_utils";
 
 /**
  * @DESC email login
@@ -128,7 +129,7 @@ export const createEmailUser = async (email: string, password: string) => {
     const userModel = new User({
       email,
       password: hashedPassword,
-      nick: email.split("@")[0],
+      nickName: email.split("@")[0],
     } as IUser);
     const createdUser = await authRepository.createUser(userModel);
     return createdUser;
@@ -153,7 +154,7 @@ export const deleteEmailVerify = async (email: string) => {
 /**
  * @DESC create new member with kakao
  */
-export const createKakaoUser = async (code: string) => {
+export const createKakaoUserByWeb = async (code: string) => {
   try {
     // 1. 사용자가 발급받은 코드를 이용하여 토큰을 발급받는다.
     const result = await axios.post(
@@ -173,31 +174,49 @@ export const createKakaoUser = async (code: string) => {
     const { access_token: kakaoAccessToken, refresh_token: kakaoRefreshToken } =
       result.data;
 
-    // 2. 토큰을 이용하여 사용자 정보를 가져온다.
-    const userKakao = await axios.get("https://kapi.kakao.com/v2/user/me", {
-      headers: { Authorization: `Bearer ${kakaoAccessToken}` },
-    });
-
-    const searchedUser = await authRepository.searchSnsUser({
-      snsId: userKakao.data.id,
-      provider: ProviderType.KAKAO,
-    });
-
-    let user = searchedUser;
-    if (searchedUser === null) {
-      // 3. User 모델 제작
-      const userModel = new User({
-        email: userKakao.data.kakao_account.email ?? undefined,
-        nick: userKakao.data.properties.nickname,
-        provider: ProviderType.KAKAO,
-        snsId: userKakao.data.id,
-      } as IUser);
-
-      const createdUser = await authRepository.createUser(userModel);
-      user = createdUser;
-    }
-    return user;
+    return getUserByKakaoToken(kakaoAccessToken);
   } catch (error: any) {
     throw error;
   }
+};
+
+/**
+ * @DESC create new member with kakao
+ */
+export const createKakaoUserByApp = async (kakaoAccessToken: string) => {
+  try {
+    const token = AuthUtils.splitBaererToken(kakaoAccessToken);
+    return getUserByKakaoToken(token);
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+const getUserByKakaoToken = async (kakaoAccessToken: String) => {
+  console.log(kakaoAccessToken);
+
+  // 2. 토큰을 이용하여 사용자 정보를 가져온다.
+  const userKakao = await axios.get("https://kapi.kakao.com/v2/user/me", {
+    headers: { Authorization: `Bearer ${kakaoAccessToken}` },
+  });
+
+  const searchedUser = await authRepository.searchSnsUser({
+    snsId: userKakao.data.id,
+    provider: ProviderType.KAKAO,
+  });
+
+  let user = searchedUser;
+  if (searchedUser === null) {
+    // 3. User 모델 제작
+    const userModel = new User({
+      email: userKakao.data.kakao_account.email ?? undefined,
+      nickName: userKakao.data.properties.nickname,
+      provider: ProviderType.KAKAO,
+      snsId: userKakao.data.id,
+    } as IUser);
+
+    const createdUser = await authRepository.createUser(userModel);
+    user = createdUser;
+  }
+  return user;
 };

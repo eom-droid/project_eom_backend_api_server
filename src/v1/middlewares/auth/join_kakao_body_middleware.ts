@@ -13,3 +13,10 @@ export const joinKakaoBodyValidation = checkSchema({
     isString: { bail: true },
   },
 });
+
+export const joinKakaoHeaderValidation = checkSchema({
+  Authorization: {
+    in: ["headers"],
+    isString: true,
+  },
+});

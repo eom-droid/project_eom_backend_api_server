@@ -95,7 +95,7 @@ export class AuthUtils {
     }
   }
 
-  static decodeToken(token: string): customJwtPayload | null {
+  private static decodeToken(token: string): customJwtPayload | null {
     const decodedCode = jwt.decode(token);
     if (decodedCode === null || typeof decodedCode === "string") return null;
     const payload = new customJwtPayload(decodedCode as jwt.JwtPayload);
@@ -112,6 +112,18 @@ export class AuthUtils {
 
   static createAccessToken(id: string) {
     return this.createJwt(id, TokenType.ACCESS);
+  }
+
+  static splitBaererToken(token: string) {
+    const splitToken = token.split(" ");
+
+    if (splitToken.length !== 2 || splitToken[0] !== "Bearer") {
+      throw new CustomHttpErrorModel({
+        status: 401,
+        message: "토큰이 유효하지 않습니다.",
+      });
+    }
+    return splitToken[1];
   }
 
   private static createJwt(id: string, tokenType: string) {

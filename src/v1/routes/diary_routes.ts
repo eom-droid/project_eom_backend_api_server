@@ -26,7 +26,7 @@ export const diaryRouter = express.Router();
 // get에만 express.json() 미들웨어를 장착!
 diaryRouter.get(
   "/",
-  authCheck,
+  // authCheck,
   validate(diaryQueryValidation),
   diaryController.getDiaries
 );

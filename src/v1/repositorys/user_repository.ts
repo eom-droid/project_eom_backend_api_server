@@ -1,5 +1,6 @@
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import { User, UserModel } from "../models/user_model";
+import { Types } from "mongoose";
 
 /**
  * @DESC create new User
@@ -27,7 +28,7 @@ export const searchSnsUser = async ({
 };
 
 export const searchUserById = async (id: string) => {
-  return await searchUser({ id });
+  return await searchUser({ _id: new Types.ObjectId(id) });
 };
 
 export const searchUserByEmail = async (email: string) => {
