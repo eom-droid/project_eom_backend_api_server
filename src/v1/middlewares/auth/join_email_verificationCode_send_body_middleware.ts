@@ -9,6 +9,6 @@ import { checkSchema } from "express-validator";
 export const joinEmailVerificationCodeSendBodyValdiation = checkSchema({
   email: {
     in: ["body"],
-    isString: { bail: true },
+    isEmail: { bail: true },
   },
 });

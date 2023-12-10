@@ -12,8 +12,7 @@ export class MailUtils {
     email: string;
     subject: string;
     content: string;
-  }): Promise<boolean> => {
-    let result: boolean = true;
+  }): Promise<void> => {
     let transporter: nodeMailer.Transporter | null = null;
     try {
       transporter = nodeMailer.createTransport({
@@ -32,24 +31,10 @@ export class MailUtils {
         html: content,
       };
 
-      transporter.sendMail(mailOptions, (error, info) => {
-        // 뒤에서 error를 throw 하기 때문에
-        if (error !== null) {
-          throw error;
-        } else {
-          result = true;
-        }
-      });
+      await transporter.sendMail(mailOptions);
     } catch (error) {
-      result = false;
       console.log(new Date().toISOString() + ": npm log: " + error);
+      throw error;
     }
-    if (transporter !== null) transporter.close();
-    return result;
   };
 }
-
-// `
-//                 인증번호입니당.<br/>
-//                 ${verificationCode}
-//                 `

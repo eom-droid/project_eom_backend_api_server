@@ -56,7 +56,7 @@ export const sendVerificationCode = async (email: string) => {
     // 1. 인증번호 생성
     const sixDigitVerificationCode = crypto.randomBytes(3).toString("hex");
     // 2. 인증번호를 이메일로 전송
-    const mailResult = await MailUtils.sendMail({
+    await MailUtils.sendMail({
       email,
       subject: "엄태호 플랫폼 인증번호입니다.",
       content: `
@@ -64,24 +64,20 @@ export const sendVerificationCode = async (email: string) => {
                 <h1>${sixDigitVerificationCode}</h1>
                 `,
     });
-    if (mailResult) {
-      // 3. 인증번호를 DB에 저장(이메일, 인증번호, 생성시간)
-      const emailVerifyModel = new EmailVerify({
-        email,
-        verificationCode: sixDigitVerificationCode,
-      });
-      const emailVerify = await emailVerifyRepository.createEmailVerify(
-        emailVerifyModel
-      );
-      return;
-    } else {
-      throw new CustomHttpErrorModel({
-        status: 500,
-        message: "메일 전송에 실패하였습니다.",
-      });
-    }
+    // 3. 인증번호를 DB에 저장(이메일, 인증번호, 생성시간)
+    const emailVerifyModel = new EmailVerify({
+      email,
+      verificationCode: sixDigitVerificationCode,
+    });
+    const emailVerify = await emailVerifyRepository.createEmailVerify(
+      emailVerifyModel
+    );
+    return;
   } catch (error: any) {
-    throw error;
+    throw new CustomHttpErrorModel({
+      status: error.status || 500,
+      message: error.message || "인증번호 전송에 실패하였습니다.",
+    });
   }
 };
 
@@ -193,8 +189,6 @@ export const createKakaoUserByApp = async (kakaoAccessToken: string) => {
 };
 
 const getUserByKakaoToken = async (kakaoAccessToken: String) => {
-  console.log(kakaoAccessToken);
-
   // 2. 토큰을 이용하여 사용자 정보를 가져온다.
   const userKakao = await axios.get("https://kapi.kakao.com/v2/user/me", {
     headers: { Authorization: `Bearer ${kakaoAccessToken}` },

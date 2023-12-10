@@ -16,7 +16,7 @@ export const getMyInfo = async (
   // 6. user를 response
   try {
     const { authorization } = req.headers;
-    console.log(authorization);
+
     if (!authorization) {
       throw new CustomHttpErrorModel({
         status: 400,

@@ -24,11 +24,11 @@ authRouter.post(
 );
 
 /**
- * @POST /api/v1/auth/join/email/verificationCode/send
+ * @GET /api/v1/auth/join/email/verificationCode/send
  * @DESC 이메일 인증번호 전송 요청
  */
 
-authRouter.post(
+authRouter.get(
   "/join/email/verificationCode/send",
   validate(joinEmailVerificationCodeSendBodyValdiation),
   authController.sendVerificationCode
