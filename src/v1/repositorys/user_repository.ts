@@ -42,3 +42,12 @@ const searchUser = async (searchObj: Object) => {
     throw error;
   }
 };
+
+// 패스워드 업데이트 하기
+export const updateUserPassword = async (email: string, password: string) => {
+  try {
+    return await UserModel.findOneAndUpdate({ email }, { password });
+  } catch (error) {
+    throw error;
+  }
+};

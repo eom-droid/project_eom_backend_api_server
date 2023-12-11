@@ -32,3 +32,5 @@ export const CookieOption = {
   httpOnly: true,
   secure: true,
 };
+
+export const SaltOrRounds = 10;

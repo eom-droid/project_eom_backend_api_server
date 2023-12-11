@@ -54,6 +54,12 @@ authRouter.post(
   authController.emailLogin
 );
 
+authRouter.post(
+  "/password/reset",
+  validate(joinEmailBodyValidation),
+  authController.resetPassword
+);
+
 /**
  * @GET /api/v1/auth/email/access-token
  * @DESC access token 발급

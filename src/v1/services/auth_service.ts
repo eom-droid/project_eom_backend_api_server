@@ -3,11 +3,10 @@ import * as emailVerifyRepository from "../repositorys/email_verify_repository";
 import crypto from "crypto";
 import axios from "axios";
 import { IUser, User } from "../models/user_model";
-import { ProviderType } from "../../constant/default";
+import { ProviderType, SaltOrRounds } from "../../constant/default";
 import { MailUtils } from "../../utils/mail_utils";
 import { EmailVerify } from "../models/email_verify_model";
 import * as bcrypt from "bcrypt";
-import { Types } from "mongoose";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import { AuthUtils } from "../../utils/auth_utils";
 
@@ -33,6 +32,25 @@ export const emailLogin = async (email: string, password: string) => {
         message: "가입되지 않은 이메일입니다.",
       });
     }
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC reset password
+ */
+export const resetPassword = async (email: string, password: string) => {
+  try {
+    const hashedPassword = await bcrypt.hash(password, SaltOrRounds);
+    const user = await authRepository.updateUserPassword(email, hashedPassword);
+    if (user === null) {
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "가입되지 않은 이메일입니다.",
+      });
+    }
+    return user;
   } catch (error: any) {
     throw error;
   }
@@ -121,7 +139,7 @@ export const verifyEmail = async (email: string, verificationCode: string) => {
  */
 export const createEmailUser = async (email: string, password: string) => {
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, SaltOrRounds);
     const userModel = new User({
       email,
       password: hashedPassword,

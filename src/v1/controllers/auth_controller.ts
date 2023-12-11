@@ -91,6 +91,41 @@ export const sendVerificationCode = async (
 };
 
 /**
+ * @DESC reset password
+ * 비밀번호 재설정
+ */
+export const resetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email, password, verificationCode } = req.body;
+    // 1. verificationCode 검증
+    // 1번 이유 : 해당 url로 요청이 온경우 이메일 중복 여부부터 확인하는 경우, 해당 이메일의 회원가입 여부를 알 수 있기 때문에
+    await authService.verifyEmail(email, verificationCode);
+
+    // 2. 유저 비밀번호 변경
+    const userId = (
+      await authService.resetPassword(email, password)
+    )._id.toString();
+
+    // 4. 이메일 인증 완료 처리(삭제)
+    await authService.deleteEmailVerify(email);
+    // 5. 토큰 생성
+    const refreshToken = await AuthUtils.createRefreshToken(userId);
+    const accessToken = AuthUtils.createAccessToken(userId);
+
+    return res
+      .status(200)
+      .cookie("refreshToken", refreshToken, CookieOption)
+      .json({ accessToken });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+/**
  * @DESC verify email
  * 이메일 인증번호 검증 확인
  */
