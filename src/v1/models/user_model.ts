@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { ProviderType } from "../../constant/default";
+import { ProviderType, RoleType } from "../../constant/default";
 
 /**
  * 유저 모델
@@ -20,6 +20,8 @@ export interface IUser {
   snsId: string | undefined;
   // provider : 제공자
   provider: ProviderType | undefined;
+  // role : 권한
+  role: RoleType;
 }
 
 export class User {
@@ -37,6 +39,8 @@ export class User {
   snsId: string | undefined;
   // provider : 제공자
   provider: ProviderType | undefined;
+  // role : 권한
+  role: RoleType;
 
   constructor({
     email,
@@ -46,6 +50,7 @@ export class User {
     profileImg,
     snsId,
     provider,
+    role,
   }: IUser) {
     this.email = email;
     this.password = password;
@@ -54,6 +59,7 @@ export class User {
     this.profileImg = profileImg;
     this.snsId = snsId;
     this.provider = provider;
+    this.role = role;
   }
 
   toJson() {
@@ -64,6 +70,7 @@ export class User {
       profileImg: this.profileImg,
       snsId: this.snsId,
       provider: this.provider,
+      role: this.role,
     };
   }
   static fromJson(json: any): User {
@@ -75,6 +82,7 @@ export class User {
       profileImg: json.profileImg ?? undefined,
       snsId: json.snsId ?? undefined,
       provider: json.provider ?? undefined,
+      role: json.role ?? RoleType.USER,
     });
   }
   toUserModel() {
@@ -86,6 +94,7 @@ export class User {
       profileImg: this.profileImg,
       snsId: this.snsId,
       provider: this.provider,
+      role: this.role,
     });
   }
   copyWith({
@@ -96,6 +105,7 @@ export class User {
     profileImg,
     snsId,
     provider,
+    role,
   }: IUser) {
     return new User({
       email: email ?? this.email,
@@ -105,6 +115,7 @@ export class User {
       profileImg: profileImg ?? this.profileImg,
       snsId: snsId ?? this.snsId,
       provider: provider ?? this.provider,
+      role: role ?? this.role,
     });
   }
 }
@@ -118,6 +129,7 @@ const UserSchema = new Schema(
     profileImg: { type: String, required: false },
     snsId: { type: String, required: false },
     provider: { type: String, required: false },
+    role: { type: Number, required: true },
   },
   { timestamps: true }
 );

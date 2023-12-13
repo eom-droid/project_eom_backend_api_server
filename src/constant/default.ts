@@ -10,8 +10,15 @@ export const ProviderType = {
   KAKAO: "kakao",
   GOOGLE: "google",
 } as const;
-
 export type ProviderType = (typeof ProviderType)[keyof typeof ProviderType];
+
+export const RoleType = {
+  USER: 0,
+  MANAGER: 5,
+  ADMIN: 10,
+} as const;
+
+export type RoleType = (typeof RoleType)[keyof typeof RoleType];
 
 export const TokenType = {
   ACCESS: "access",

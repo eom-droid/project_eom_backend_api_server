@@ -25,6 +25,7 @@ export const getMyInfo = async (
     }
 
     const user = await userService.getMyInfo(authorization);
+
     if (user === null) {
       throw new CustomHttpErrorModel({
         status: 400,

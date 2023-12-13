@@ -76,15 +76,19 @@ export const sendVerificationCode = async (
 ) => {
   try {
     const { email } = req.body;
-    if (!(await authService.checkEmailDuplicate(email))) {
-      await authService.sendVerificationCode(email);
-      return res.status(200).send({ status: "SUCCESS" });
-    } else {
-      throw new CustomHttpErrorModel({
-        status: 400,
-        message: "이미 가입된 이메일입니다.",
-      });
-    }
+    // 기존에 db에 저장된 이메일이 있는지 확인했지만
+    // 이메일 중복 여부를 확인하지 않는것으로 변경
+    // if (!(await authService.checkEmailDuplicate(email))) {
+    //   await authService.sendVerificationCode(email);
+    //   return res.status(200).send({ status: "SUCCESS" });
+    // } else {
+    //   throw new CustomHttpErrorModel({
+    //     status: 400,
+    //     message: "이미 가입된 이메일입니다.",
+    //   });
+    // }
+    await authService.sendVerificationCode(email);
+    return res.status(200).send({ status: "SUCCESS" });
   } catch (error: any) {
     next(error);
   }
@@ -101,6 +105,7 @@ export const resetPassword = async (
 ) => {
   try {
     const { email, password, verificationCode } = req.body;
+    console.log(email, password, verificationCode);
     // 1. verificationCode 검증
     // 1번 이유 : 해당 url로 요청이 온경우 이메일 중복 여부부터 확인하는 경우, 해당 이메일의 회원가입 여부를 알 수 있기 때문에
     await authService.verifyEmail(email, verificationCode);
@@ -240,6 +245,7 @@ export const getAccessToken = async (
       .cookie("refreshToken", newRefreshToken, CookieOption)
       .json({ accessToken });
   } catch (error: any) {
+    console.log(error);
     next(error);
   }
 };

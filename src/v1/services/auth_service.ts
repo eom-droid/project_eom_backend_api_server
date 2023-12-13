@@ -3,7 +3,7 @@ import * as emailVerifyRepository from "../repositorys/email_verify_repository";
 import crypto from "crypto";
 import axios from "axios";
 import { IUser, User } from "../models/user_model";
-import { ProviderType, SaltOrRounds } from "../../constant/default";
+import { ProviderType, RoleType, SaltOrRounds } from "../../constant/default";
 import { MailUtils } from "../../utils/mail_utils";
 import { EmailVerify } from "../models/email_verify_model";
 import * as bcrypt from "bcrypt";
@@ -144,6 +144,7 @@ export const createEmailUser = async (email: string, password: string) => {
       email,
       password: hashedPassword,
       nickName: email.split("@")[0],
+      role: RoleType.USER,
     } as IUser);
     const createdUser = await authRepository.createUser(userModel);
     return createdUser;
@@ -225,6 +226,7 @@ const getUserByKakaoToken = async (kakaoAccessToken: String) => {
       nickName: userKakao.data.properties.nickname,
       provider: ProviderType.KAKAO,
       snsId: userKakao.data.id,
+      role: RoleType.USER,
     } as IUser);
 
     const createdUser = await authRepository.createUser(userModel);
