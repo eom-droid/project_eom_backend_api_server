@@ -23,13 +23,7 @@ export const diaryBodyValidation = checkSchema({
     in: ["body"],
     isArray: { bail: true },
   },
-  postDT: {
-    in: ["body"],
-    // String인지 먼저 확인 후
-    isString: { bail: true },
-    // Date로 변경
-    toDate: true,
-  },
+
   thumbnail: {
     in: ["body"],
     isString: {

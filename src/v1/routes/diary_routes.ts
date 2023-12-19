@@ -6,14 +6,10 @@ import { diaryQueryValidation } from "../middlewares/diary/query_middleware";
 import { diaryBodyValidation } from "../middlewares/diary/body_middleware";
 import { validate } from "../middlewares/validate_middleware";
 import { nestedBodyParser } from "../../middlewares/nested_body_parser";
-import {
-  checkIdExistMiddleware,
-  checkPostDTExistMiddleware,
-} from "../middlewares/check_id_exist_middleware";
+import { checkIdExistMiddleware } from "../middlewares/check_id_exist_middleware";
 import { DiaryModel } from "../models/diary_model";
 import { DIARY, RoleType } from "../../constant/default";
 import { authCheck } from "../middlewares/authenticate_middleware";
-import { diarySearchQueryValidation } from "../middlewares/diary/search_query_middleware";
 
 export const diaryRouter = express.Router();
 
@@ -26,7 +22,9 @@ export const diaryRouter = express.Router();
 // get에만 express.json() 미들웨어를 장착!
 diaryRouter.get(
   "/",
-  authCheck(RoleType.USER),
+  // authCheck({
+  //   role: RoleType.USER,
+  // }),
   validate(diaryQueryValidation),
   diaryController.getDiaries
 );
@@ -38,23 +36,13 @@ diaryRouter.get(
  */
 diaryRouter.get(
   "/:id/detail",
-  authCheck(RoleType.USER),
+  authCheck({
+    role: RoleType.USER,
+  }),
   validate(idParamValidation),
   // 여기 추후에 변경 필요 불필요 요청인가 생각해보기!!!
   checkIdExistMiddleware(DiaryModel),
   diaryController.getDiary
-);
-
-/**
- * @GET /api/v1/diaries/search
- * @DESC search diary with postDT
- * @TODO 추후 postDT가 아닌 다른 조건으로 검색할 경우도 포함예정
- */
-diaryRouter.get(
-  "/search",
-  authCheck(RoleType.USER),
-  validate(diarySearchQueryValidation),
-  checkPostDTExistMiddleware(DiaryModel)
 );
 
 /**
@@ -68,7 +56,10 @@ diaryRouter.get(
 // 4. validate로 body validation
 diaryRouter.post(
   "/",
-  authCheck(RoleType.ADMIN),
+  authCheck({
+    role: RoleType.ADMIN,
+    userRequire: true,
+  }),
   multerMiddleware,
   nestedBodyParser(DIARY),
   validate(diaryBodyValidation),
@@ -86,7 +77,10 @@ diaryRouter.post(
 // 5. checkIdExistMiddleware로 patch 할 diary id가 존재하는지 확인
 diaryRouter.patch(
   "/:id",
-  authCheck(RoleType.ADMIN),
+  authCheck({
+    role: RoleType.ADMIN,
+    userRequire: true,
+  }),
   multerMiddleware,
   nestedBodyParser(DIARY),
   validate(diaryBodyValidation.concat(idParamValidation)),
@@ -101,7 +95,10 @@ diaryRouter.patch(
  */
 diaryRouter.delete(
   "/:id",
-  authCheck(RoleType.ADMIN),
+  authCheck({
+    role: RoleType.ADMIN,
+    userRequire: true,
+  }),
   validate(idParamValidation),
   checkIdExistMiddleware(DiaryModel),
   diaryController.deleteDiary

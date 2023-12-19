@@ -1,9 +1,9 @@
 import { PAGINATE_COUNT_DEFAULT } from "../constant/default";
 import { CustomHttpErrorModel } from "./custom_http_error_model";
 
-export class MusicPaginateReqModel {
+class PaginateReqModel {
   count: number;
-  after?: string;
+  after: string | undefined;
 
   constructor({ count, after }: { count?: number; after?: string }) {
     try {
@@ -19,10 +19,31 @@ export class MusicPaginateReqModel {
       });
     }
   }
+}
+
+export class DiaryPaginateReqModel extends PaginateReqModel {
+  category: string | undefined;
+
+  constructor({
+    count,
+    after,
+    category,
+  }: {
+    count?: number;
+    after?: string;
+    category?: string;
+  }) {
+    super({ count, after });
+    this.category = category;
+    return this;
+  }
 
   generateQuery() {
     const query: any = {};
 
+    if (this.category !== undefined) {
+      query.category = this.category;
+    }
     if (this.after !== undefined) {
       query._id = {
         $lt: this.after,

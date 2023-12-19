@@ -27,19 +27,3 @@ export const checkIdExistMiddleware = (model: typeof Model<any>) => {
     return next();
   };
 };
-
-/**
- * @DESC check postDT exist
- * 해당 postDT가 존재하는지 확인
- */
-export const checkPostDTExistMiddleware = (model: typeof Model<any>) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
-    const { postDT } = req.query;
-
-    if ((await model.exists({ postDT: postDT })) === null) {
-      return res.status(201).send(false);
-    } else {
-      return res.status(200).send(true);
-    }
-  };
-};

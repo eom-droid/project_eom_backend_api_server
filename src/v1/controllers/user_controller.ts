@@ -24,9 +24,9 @@ export const getMyInfo = async (
       });
     }
 
-    const user = await userService.getMyInfo(authorization);
+    const user = req.user;
 
-    if (user === null) {
+    if (user === null || user === undefined) {
       throw new CustomHttpErrorModel({
         status: 400,
         message: "유저가 없습니다.",

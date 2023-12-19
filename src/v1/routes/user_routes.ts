@@ -4,6 +4,8 @@ import { validate } from "../middlewares/validate_middleware";
 
 import * as userController from "../controllers/user_controller";
 import { checkAccessTokenValidation } from "../middlewares/check_access_token_middleware";
+import { authCheck } from "../middlewares/authenticate_middleware";
+import { RoleType } from "../../constant/default";
 export const userRouter = express.Router();
 
 /**
@@ -13,7 +15,9 @@ export const userRouter = express.Router();
 
 userRouter.get(
   "/me",
-  // 이거 나중에 authCheck로 바꿀거임
-  validate(checkAccessTokenValidation),
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
   userController.getMyInfo
 );

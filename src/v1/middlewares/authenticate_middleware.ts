@@ -13,7 +13,13 @@ import * as UserRepository from "../repositorys/user_repository";
  * 2023.07.20
  * 1. role check
  */
-export const authCheck = (role: RoleType) => {
+export const authCheck = ({
+  role,
+  userRequire = false,
+}: {
+  role: RoleType;
+  userRequire?: boolean;
+}) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { authorization } = req.headers;
@@ -34,7 +40,7 @@ export const authCheck = (role: RoleType) => {
       }
       // 뒤에 오는 Handler에서 사용할 수 있도록 decoded에 저장
       req.decoded = AuthUtils.verifyToken(splitToken[1]);
-      if (role > RoleType.USER) {
+      if (userRequire) {
         const user = await UserRepository.searchUserById(req.decoded.id);
         if (user === null) {
           throw new CustomHttpErrorModel({

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as diaryService from "../services/diary_service";
 
 import { reqToDiary } from "../models/diary_model";
-import { DiaryPaginateReqModel } from "../../models/diary_paginate_req_model";
+import { DiaryPaginateReqModel } from "../../models/paginate_req_model";
 
 /**
  * @DESC create new diary
@@ -84,9 +84,6 @@ export const getDiaries = async (
 ) => {
   try {
     const paginateReq = new DiaryPaginateReqModel(req.query);
-    if (paginateReq.postDT === undefined) {
-      paginateReq.postDT = new Date();
-    }
 
     const data = await diaryService.getDiaries(paginateReq);
 

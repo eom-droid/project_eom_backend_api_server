@@ -1,5 +1,5 @@
-import { DiaryPaginateReqModel } from "../../models/diary_paginate_req_model";
-import { PaginateReturnModel } from "../../models/paginate_res_model";
+import { DiaryPaginateReqModel } from "../../models/paginate_req_model";
+import { PaginateResModel } from "../../models/paginate_res_model";
 import { Diary, IDiary } from "../models/diary_model";
 
 import * as diaryRepository from "../repositorys/diary_repository";
@@ -95,10 +95,10 @@ export const updateDiary = async (
  */
 export const getDiaries = async (
   paginateReq: DiaryPaginateReqModel
-): Promise<PaginateReturnModel<IDiary>> => {
+): Promise<PaginateResModel<IDiary>> => {
   const result = (await diaryRepository.getDiaries(paginateReq)) as IDiary[];
 
-  return new PaginateReturnModel<IDiary>({
+  return new PaginateResModel<IDiary>({
     meta: {
       count: result.length,
       hasMore: result.length === paginateReq.count,

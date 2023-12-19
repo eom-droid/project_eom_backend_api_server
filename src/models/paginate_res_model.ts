@@ -8,7 +8,7 @@ export class Meta {
   }
 }
 
-export class PaginateReturnModel<T> {
+export class PaginateResModel<T> {
   meta: { count: number; hasMore: boolean };
   data: T[];
 

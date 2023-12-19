@@ -1,4 +1,4 @@
-import { DiaryPaginateReqModel } from "../../models/diary_paginate_req_model";
+import { DiaryPaginateReqModel } from "../../models/paginate_req_model";
 import { Diary, DiaryModel } from "../models/diary_model";
 
 /**
@@ -47,7 +47,7 @@ export const getDiaries = async (paginateReq: DiaryPaginateReqModel) => {
     var filterQuery = paginateReq.generateQuery();
 
     return await DiaryModel.find(filterQuery, selectQuery)
-      .sort({ postDT: -1 })
+      .sort({ createdAt: -1 })
       .limit(paginateReq.count);
   } catch (error) {
     throw error;

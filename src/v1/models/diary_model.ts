@@ -8,14 +8,12 @@ import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 export interface IDiary {
   // title : 제목
   title: string;
-  // writer : 작성자
+  // writer : 작성자 ID
   writer: string;
   // weather : 날씨
   weather: string;
   // hashtags : 해시태그 리스트
   hashtags: string[];
-  // postDT : 표출 일자 -> 다이어리의 표출 일자, 사용자는 해당 값으로 ordering을 진행할 예정
-  postDT: Date;
   // thumbnail : 썸네일 -> S3에 저장된 이미지, vid 의 경로
   thumbnail: string;
   // category : 카테고리 -> 카테고리를 통해서 다이어리 리스트 페이지에서 필터링을 진행할 예정
@@ -42,8 +40,7 @@ export class Diary {
   weather: string;
   // hashtags : 해시태그 리스트
   hashtags: string[];
-  // postDT : 표출 일자 -> 다이어리의 표출 일자, 사용자는 해당 값으로 ordering을 진행할 예정
-  postDT: Date;
+
   // thumbnail : 썸네일 -> S3에 저장된 이미지, vid 의 경로
   thumbnail: string;
   // category : 카테고리 -> 카테고리를 통해서 다이어리 리스트 페이지에서 필터링을 진행할 예정
@@ -66,7 +63,6 @@ export class Diary {
     writer,
     weather,
     hashtags,
-    postDT,
     thumbnail,
     category,
     isShown,
@@ -79,7 +75,7 @@ export class Diary {
     this.writer = writer;
     this.weather = weather;
     this.hashtags = hashtags;
-    this.postDT = postDT;
+
     this.thumbnail = thumbnail;
     this.category = category;
     this.isShown = isShown;
@@ -94,7 +90,6 @@ export class Diary {
       writer: this.writer,
       weather: this.weather,
       hashtags: this.hashtags,
-      postDT: this.postDT,
       thumbnail: this.thumbnail,
       category: this.category,
       isShown: this.isShown,
@@ -111,7 +106,7 @@ export class Diary {
       writer: this.writer,
       weather: this.weather,
       hashtags: this.hashtags,
-      postDT: this.postDT,
+
       thumbnail: this.thumbnail,
       category: this.category,
       isShown: this.isShown,
@@ -127,7 +122,7 @@ export class Diary {
       writer: json.writer as string,
       weather: json.weather as string,
       hashtags: json.hashtags as string[],
-      postDT: new Date(json.postDT),
+
       thumbnail: json.thumbnail as string,
       category: json.category as string,
       isShown: json.isShown as boolean,
@@ -148,8 +143,7 @@ const DiarySchema = new Schema(
     weather: { type: String, required: true },
     // hashtags : 해시태그 리스트
     hashtags: [{ type: String, required: true }],
-    // postDT : 표출 일자 -> 다이어리의 표출 일자, 사용자는 해당 값으로 ordering을 진행할 예정
-    postDT: { type: Date, required: true },
+
     // thumbnail : 썸네일 -> S3에 저장된 이미지, vid 의 경로
     thumbnail: { type: String, required: true },
     // category : 카테고리 -> 카테고리를 통해서 다이어리 리스트 페이지에서 필터링을 진행할 예정
@@ -180,7 +174,6 @@ export const reqToDiary = (json: any): Diary => {
       writer: json.writer as string,
       weather: json.weather as string,
       hashtags: json.hashtags as string[],
-      postDT: new Date(json.postDT),
       thumbnail: json.thumbnail as string,
       category: json.category as string,
       isShown: json.isShown as boolean,
