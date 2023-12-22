@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import * as authService from "../services/auth_service";
-import jwt from "jsonwebtoken";
 import { AuthUtils } from "../../utils/auth_utils";
 import { CookieOption, TokenType } from "../../constant/default";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
@@ -105,7 +104,6 @@ export const resetPassword = async (
 ) => {
   try {
     const { email, password, verificationCode } = req.body;
-    console.log(email, password, verificationCode);
     // 1. verificationCode 검증
     // 1번 이유 : 해당 url로 요청이 온경우 이메일 중복 여부부터 확인하는 경우, 해당 이메일의 회원가입 여부를 알 수 있기 때문에
     await authService.verifyEmail(email, verificationCode);

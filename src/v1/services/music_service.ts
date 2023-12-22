@@ -1,9 +1,9 @@
 import { S3AlbumCoverPath } from "../../constant/default";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
-import { MusicPaginateReqModel } from "../../models/music_paginate_req_model";
+import { PaginateReqModel } from "../../models/paginate_req_model";
 import { PaginateResModel } from "../../models/paginate_res_model";
 import { AWSUtils } from "../../utils/aws_utils";
-import { IMusic, Music } from "../models/music_model";
+import { Music, MusicModel } from "../models/music_model";
 
 import * as musicRepository from "../repositorys/music_repository";
 
@@ -12,11 +12,11 @@ import * as musicRepository from "../repositorys/music_repository";
  * @RETURN musics
  */
 export const getMusics = async (
-  paginateReq: MusicPaginateReqModel
-): Promise<PaginateResModel<IMusic>> => {
-  const result = (await musicRepository.getMusics(paginateReq)) as IMusic[];
+  paginateReq: PaginateReqModel
+): Promise<PaginateResModel<Music>> => {
+  const result = await musicRepository.getMusics(paginateReq);
 
-  return new PaginateResModel<IMusic>({
+  return new PaginateResModel<Music>({
     meta: {
       count: result.length,
       hasMore: result.length === paginateReq.count,

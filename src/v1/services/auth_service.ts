@@ -2,10 +2,10 @@ import * as authRepository from "../repositorys/user_repository";
 import * as emailVerifyRepository from "../repositorys/email_verify_repository";
 import crypto from "crypto";
 import axios from "axios";
-import { IUser, User } from "../models/user_model";
+import { User, UserModel, userToUserModel } from "../models/user_model";
 import { ProviderType, RoleType, SaltOrRounds } from "../../constant/default";
 import { MailUtils } from "../../utils/mail_utils";
-import { EmailVerify } from "../models/email_verify_model";
+import { EmailVerifyModel } from "../models/email_verify_model";
 import * as bcrypt from "bcrypt";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import { AuthUtils } from "../../utils/auth_utils";
@@ -83,7 +83,7 @@ export const sendVerificationCode = async (email: string) => {
                 `,
     });
     // 3. 인증번호를 DB에 저장(이메일, 인증번호, 생성시간)
-    const emailVerifyModel = new EmailVerify({
+    const emailVerifyModel = new EmailVerifyModel({
       email,
       verificationCode: sixDigitVerificationCode,
     });
@@ -140,12 +140,12 @@ export const verifyEmail = async (email: string, verificationCode: string) => {
 export const createEmailUser = async (email: string, password: string) => {
   try {
     const hashedPassword = await bcrypt.hash(password, SaltOrRounds);
-    const userModel = new User({
-      email,
+    const userModel = new UserModel({
+      email: email,
       password: hashedPassword,
       nickName: email.split("@")[0],
       role: RoleType.USER,
-    } as IUser);
+    });
     const createdUser = await authRepository.createUser(userModel);
     return createdUser;
   } catch (error: any) {
@@ -221,13 +221,13 @@ const getUserByKakaoToken = async (kakaoAccessToken: String) => {
   let user = searchedUser;
   if (searchedUser === null) {
     // 3. User 모델 제작
-    const userModel = new User({
+    const userModel = new UserModel({
       email: userKakao.data.kakao_account.email ?? undefined,
       nickName: userKakao.data.properties.nickname,
       provider: ProviderType.KAKAO,
       snsId: userKakao.data.id,
       role: RoleType.USER,
-    } as IUser);
+    });
 
     const createdUser = await authRepository.createUser(userModel);
     user = createdUser;

@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import * as diaryService from "../services/diary_service";
 
-import { reqToDiary } from "../models/diary_model";
+import { jsonToDiary } from "../models/diary_model";
 import { DiaryPaginateReqModel } from "../../models/paginate_req_model";
+import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 
 /**
  * @DESC create new diary
@@ -15,7 +16,7 @@ export const createNewDiary = async (
   next: NextFunction
 ) => {
   try {
-    const diary = reqToDiary(req.body);
+    const diary = jsonToDiary(req.body);
 
     var data = await diaryService.createDiary(
       diary,
@@ -39,7 +40,7 @@ export const updateDiary = async (
   next: NextFunction
 ) => {
   try {
-    const diary = reqToDiary(req.body);
+    const diary = jsonToDiary(req.body);
 
     var data = await diaryService.updateDiary(
       req.params.id,
@@ -86,7 +87,7 @@ export const getDiaries = async (
     const paginateReq = new DiaryPaginateReqModel(req.query);
 
     const data = await diaryService.getDiaries(paginateReq);
-
+    console.log(data);
     return res.status(200).send(data);
   } catch (error: any) {
     next(error);
@@ -114,3 +115,26 @@ export const deleteDiary = async (
     next(error);
   }
 };
+
+// export const createDiaryLike = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const { id } = req.params;
+//     const user = req.user;
+//     if (user === null) {
+//       throw new CustomHttpErrorModel({
+//         status: 400,
+//         message: "로그인이 필요합니다.",
+//       });
+//     }
+
+//     await diaryService.createDiaryLike(id, user._id);
+
+//     return res.status(200).send({ status: "SUCCESS" });
+//   } catch (error: any) {
+//     next(error);
+//   }
+// };

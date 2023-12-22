@@ -1,10 +1,11 @@
 import { DiaryPaginateReqModel } from "../../models/paginate_req_model";
 import { PaginateResModel } from "../../models/paginate_res_model";
-import { Diary, IDiary } from "../models/diary_model";
+import { Diary } from "../models/diary_model";
 
 import * as diaryRepository from "../repositorys/diary_repository";
 import { AWSUtils } from "../../utils/aws_utils";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
+import { DiaryLikeModel } from "../models/diary_like_model";
 
 /**
  * @DESC create new diary
@@ -95,10 +96,10 @@ export const updateDiary = async (
  */
 export const getDiaries = async (
   paginateReq: DiaryPaginateReqModel
-): Promise<PaginateResModel<IDiary>> => {
-  const result = (await diaryRepository.getDiaries(paginateReq)) as IDiary[];
+): Promise<PaginateResModel<Diary>> => {
+  const result = await diaryRepository.getDiaries(paginateReq);
 
-  return new PaginateResModel<IDiary>({
+  return new PaginateResModel<Diary>({
     meta: {
       count: result.length,
       hasMore: result.length === paginateReq.count,
@@ -179,3 +180,20 @@ const matchFileNames = (diary: Diary, files: Express.Multer.File[]) => {
     }
   }
 };
+
+/**
+ * @DESC like diary
+ * 현재 좋아여 여부를 확인하고 diary를 좋아요함
+ */
+// export const createDiaryLike = async (diaryId: string, userId: string) => {
+//   try {
+//     // diary에 대한 존재 여부는 확인할 필요가 없음 --> middleware에서 확인함
+//     const result = await diaryRepository.getDiaryLike(diaryId, userId);
+//     if (result === null) {
+//       await diaryRepository.createDiaryLike(diaryId, userId);
+//     }
+//     return;
+//   } catch (error: any) {
+//     throw error;
+//   }
+// };

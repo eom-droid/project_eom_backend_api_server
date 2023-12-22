@@ -1,4 +1,4 @@
-import { MusicPaginateReqModel } from "../../models/music_paginate_req_model";
+import { PaginateReqModel } from "../../models/paginate_req_model";
 import { Music, MusicModel } from "../models/music_model";
 
 /**
@@ -9,9 +9,8 @@ import { Music, MusicModel } from "../models/music_model";
  */
 export const createMusic = async (music: Music) => {
   try {
-    const musicInstance = music.toMusicModel();
+    const savedMusic = await MusicModel.create(music);
 
-    const savedMusic = await musicInstance.save();
     return savedMusic;
   } catch (error) {
     throw error;
@@ -23,7 +22,7 @@ export const createMusic = async (music: Music) => {
  * 최신순으로 정렬하여 특정 갯수만큼의 music을 가져옴
  * @RETURN musics
  */
-export const getMusics = async (paginateReq: MusicPaginateReqModel) => {
+export const getMusics = async (paginateReq: PaginateReqModel) => {
   try {
     var filterQuery = paginateReq.generateQuery();
 
@@ -54,10 +53,7 @@ export const getMusic = async (id: string) => {
  */
 export const updateMusic = async (id: String, music: Music) => {
   try {
-    const updatedMusic = await MusicModel.updateOne(
-      { _id: id },
-      music.toJson()
-    );
+    const updatedMusic = await MusicModel.updateOne({ _id: id }, music);
     return updatedMusic;
   } catch (error) {
     throw error;

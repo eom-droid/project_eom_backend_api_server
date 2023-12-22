@@ -1,7 +1,7 @@
 import { PAGINATE_COUNT_DEFAULT } from "../constant/default";
 import { CustomHttpErrorModel } from "./custom_http_error_model";
 
-class PaginateReqModel {
+export class PaginateReqModel {
   count: number;
   after: string | undefined;
 
@@ -18,6 +18,17 @@ class PaginateReqModel {
         message: "잘못된 요청입니다.",
       });
     }
+  }
+  generateQuery() {
+    const query: any = {};
+
+    if (this.after !== undefined) {
+      query._id = {
+        $lt: this.after,
+      };
+    }
+
+    return query;
   }
 }
 
@@ -39,15 +50,10 @@ export class DiaryPaginateReqModel extends PaginateReqModel {
   }
 
   generateQuery() {
-    const query: any = {};
+    const query = super.generateQuery();
 
     if (this.category !== undefined) {
       query.category = this.category;
-    }
-    if (this.after !== undefined) {
-      query._id = {
-        $lt: this.after,
-      };
     }
 
     return query;

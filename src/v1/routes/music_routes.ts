@@ -22,9 +22,9 @@ import { checkAccessTokenValidation } from "../middlewares/check_access_token_mi
  */
 musicRouter.get(
   "/",
-  authCheck({
-    role: RoleType.USER,
-  }),
+  // authCheck({
+  //   role: RoleType.USER,
+  // }),
 
   validate(musicQueryValidation),
   musicController.getMusics

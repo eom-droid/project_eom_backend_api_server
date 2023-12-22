@@ -8,9 +8,7 @@ import { Types } from "mongoose";
  */
 export const createUser = async (user: User) => {
   try {
-    const userInstance = user.toUserModel();
-    // save 하기
-    const savedUser = await userInstance.save();
+    const savedUser = await UserModel.create(user);
     return savedUser;
   } catch (error: any) {
     throw error;

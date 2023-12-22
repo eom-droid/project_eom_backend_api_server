@@ -1,86 +1,10 @@
-import { Schema, model } from "mongoose";
+import { InferSchemaType, Schema, model } from "mongoose";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
+import { MUSIC } from "../../constant/default";
 
 /**
- * 다이어리 모델
+ * 음악 모델
  */
-
-export interface IMusic {
-  // title : 노래제목
-  title: string;
-  // artiste : 아티스트
-  artiste: string;
-  // review : 한줄평
-  review: string;
-  // albumCover : 앨범커버
-  albumCover: string;
-  // youtubeMusicId : 유투브 뮤직 아이디
-  youtubeMusicId: string;
-  // spotify Id : 스포티파이 아이디
-  spotifyId: string;
-}
-export class Music {
-  // title : 노래제목
-  title: string;
-  // artiste : 아티스트
-  artiste: string;
-  // review : 한줄평
-  review: string;
-  // albumCover : 앨범커버
-  albumCover: string;
-  // youtubeMusicId : 유투브 뮤직 아이디
-  youtubeMusicId: string;
-  // spotify Id : 스포티파이 아이디
-  spotifyId: string;
-
-  constructor({
-    title,
-    artiste,
-    review,
-    albumCover,
-    youtubeMusicId,
-    spotifyId,
-  }: IMusic) {
-    this.title = title;
-    this.artiste = artiste;
-    this.review = review;
-    this.albumCover = albumCover;
-    this.youtubeMusicId = youtubeMusicId;
-    this.spotifyId = spotifyId;
-  }
-  toJson() {
-    return {
-      title: this.title,
-      artiste: this.artiste,
-      review: this.review,
-      albumCover: this.albumCover,
-      youtubeMusicId: this.youtubeMusicId,
-      spotifyId: this.spotifyId,
-    };
-  }
-  static fromJson(json: any): Music {
-    return new Music({
-      title: json.title,
-      artiste: json.artiste,
-      review: json.review,
-      albumCover: json.albumCover,
-      youtubeMusicId: json.youtubeMusicId,
-      spotifyId: json.spotifyId,
-    });
-  }
-
-  toMusicModel() {
-    return new MusicModel({
-      title: this.title,
-      artiste: this.artiste,
-      review: this.review,
-      albumCover: this.albumCover,
-      youtubeMusicId: this.youtubeMusicId,
-      spotifyId: this.spotifyId,
-    });
-  }
-}
-
 const MusicSchema = new Schema(
   {
     title: { type: String, required: true },
@@ -93,12 +17,14 @@ const MusicSchema = new Schema(
   { timestamps: true }
 );
 
-export const MusicModel = model("music", MusicSchema);
+export type Music = InferSchemaType<typeof MusicSchema>;
+
+export const MusicModel = model(MUSIC, MusicSchema);
 
 // 추후 middleware화 예정
-export const reqToMusic = (json: any): Music => {
+export const jsonToMusic = (json: any) => {
   try {
-    const result = new Music({
+    const result = new MusicModel({
       title: json.title as string,
       artiste: json.artiste as string,
       review: json.review as string,

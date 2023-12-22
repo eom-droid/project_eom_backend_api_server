@@ -3,6 +3,7 @@ export const PAGINATE_COUNT_DEFAULT = 10;
 
 export const DIARY = "diary";
 export const MUSIC = "music";
+export const USER = "user";
 
 export const S3AlbumCoverPath = "eom/music/albumCover/";
 

@@ -1,4 +1,5 @@
 import { DiaryPaginateReqModel } from "../../models/paginate_req_model";
+import { DiaryLikeModel } from "../models/diary_like_model";
 import { Diary, DiaryModel } from "../models/diary_model";
 
 /**
@@ -8,9 +9,8 @@ import { Diary, DiaryModel } from "../models/diary_model";
  */
 export const createDiary = async (diary: Diary) => {
   try {
-    const diaryInstance = diary.toDiaryModel();
     // save 하기
-    const savedDiary = await diaryInstance.save();
+    const savedDiary = await DiaryModel.create(diary);
     return savedDiary;
   } catch (error) {
     throw error;
@@ -24,10 +24,7 @@ export const createDiary = async (diary: Diary) => {
 export const updateDiary = async (id: String, diary: Diary) => {
   try {
     // save 하기
-    const updatedDiary = await DiaryModel.updateOne(
-      { _id: id },
-      diary.toJson()
-    );
+    const updatedDiary = await DiaryModel.updateOne({ _id: id }, diary);
 
     return updatedDiary;
   } catch (error) {
@@ -78,3 +75,48 @@ export const deleteDiary = async (diaryId: string): Promise<void> => {
     throw error;
   }
 };
+
+/**
+ * @DESC like diary
+ * diary를 좋아요함
+ */
+// export const createDiaryLike = async (diaryId: string, userId: string) => {
+//   try {
+//     DiaryLikeModel.create({
+//       diaryId: diaryId,
+//       userId: userId,
+//     });
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+
+// /**
+//  * @DESC unlike diary
+//  * @param diaryId
+//  * @param userId
+//  * diary를 좋아요 취소함
+//  */
+// export const deleteDiaryLike = async (diaryId: string, userId: string) => {
+//   try {
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+
+// /**
+//  * @DESC get like diary
+//  * @param diaryId
+//  * @param userId
+//  * diary를 좋아요 했는지 확인함
+//  */
+// export const getDiaryLike = async (diaryId: string, userId: string) => {
+//   try {
+//     return await DiaryLikeModel.findOne({
+//       diaryId: diaryId,
+//       userId: userId,
+//     });
+//   } catch (error) {
+//     throw error;
+//   }
+// };

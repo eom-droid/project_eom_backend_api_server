@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { MusicPaginateReqModel } from "../../models/music_paginate_req_model";
+import { PaginateReqModel } from "../../models/paginate_req_model";
 import * as musicService from "../services/music_service";
-import { reqToMusic } from "../models/music_model";
+import { jsonToMusic } from "../models/music_model";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 
 /**
@@ -14,7 +14,7 @@ export const getMusics = async (
   next: NextFunction
 ) => {
   try {
-    const paginateReq = new MusicPaginateReqModel(req.query);
+    const paginateReq = new PaginateReqModel(req.query);
 
     const data = await musicService.getMusics(paginateReq);
 
@@ -34,7 +34,7 @@ export const createNewMusics = async (
   next: NextFunction
 ) => {
   try {
-    const music = reqToMusic(req.body);
+    const music = jsonToMusic(req.body);
     var file = req.files;
     if (file === undefined)
       throw new CustomHttpErrorModel({
@@ -60,7 +60,7 @@ export const updateMusic = async (
   next: NextFunction
 ) => {
   try {
-    const music = reqToMusic(req.body);
+    const music = jsonToMusic(req.body);
 
     var data = await musicService.updateMusic(
       req.params.id,

@@ -103,3 +103,19 @@ diaryRouter.delete(
   checkIdExistMiddleware(DiaryModel),
   diaryController.deleteDiary
 );
+
+/**
+ * @POST /api/v1/diaries/{id}/like
+ * @DESC like diary
+ */
+
+// diaryRouter.post(
+//   "/:id/like",
+//   authCheck({
+//     role: RoleType.USER,
+//     userRequire: true,
+//   }),
+//   validate(idParamValidation),
+//   checkIdExistMiddleware(DiaryModel),
+//   diaryController.createDiaryLike
+// );
