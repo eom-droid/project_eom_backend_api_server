@@ -6,6 +6,7 @@ import * as diaryRepository from "../repositorys/diary_repository";
 import { AWSUtils } from "../../utils/aws_utils";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import { DiaryLikeModel } from "../models/diary_like_model";
+import { RoleType } from "../../constant/default";
 
 /**
  * @DESC create new diary
@@ -95,9 +96,10 @@ export const updateDiary = async (
  * pagination을 통해 특정 갯수만큼의 diary를 가져옴
  */
 export const getDiaries = async (
-  paginateReq: DiaryPaginateReqModel
+  paginateReq: DiaryPaginateReqModel,
+  userId: string
 ): Promise<PaginateResModel<Diary>> => {
-  const result = await diaryRepository.getDiaries(paginateReq);
+  const result = await diaryRepository.getDiaries(paginateReq, userId);
 
   return new PaginateResModel<Diary>({
     meta: {
@@ -185,15 +187,119 @@ const matchFileNames = (diary: Diary, files: Express.Multer.File[]) => {
  * @DESC like diary
  * 현재 좋아여 여부를 확인하고 diary를 좋아요함
  */
-// export const createDiaryLike = async (diaryId: string, userId: string) => {
-//   try {
-//     // diary에 대한 존재 여부는 확인할 필요가 없음 --> middleware에서 확인함
-//     const result = await diaryRepository.getDiaryLike(diaryId, userId);
-//     if (result === null) {
-//       await diaryRepository.createDiaryLike(diaryId, userId);
-//     }
-//     return;
-//   } catch (error: any) {
-//     throw error;
-//   }
-// };
+export const createDiaryLike = async (diaryId: string, userId: string) => {
+  try {
+    // diary에 대한 존재 여부는 확인할 필요가 없음 --> middleware에서 확인함
+    const result = await diaryRepository.getDiaryLike(diaryId, userId);
+    // 좋아요를 한적이 없다면
+    if (result === null) {
+      await diaryRepository.createDiaryLike(diaryId, userId);
+    }
+    return;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC unlike diary
+ * diary를 좋아요 취소함
+ */
+export const deleteDiaryLike = async (diaryId: string, userId: string) => {
+  try {
+    // diary에 대한 존재 여부는 확인할 필요가 없음 --> middleware에서 확인함
+    const result = await diaryRepository.getDiaryLike(diaryId, userId);
+    // 좋아요를 한적이 있다면
+    if (result !== null) {
+      await diaryRepository.deleteDiaryLike(diaryId, userId);
+    }
+    return;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC create diary comment
+ * diary에 댓글을 생성함
+ */
+export const createDiaryComment = async (
+  diaryId: string,
+  userId: string,
+  content: string
+) => {
+  try {
+    const result = await diaryRepository.createDiaryComment(
+      diaryId,
+      userId,
+      content
+    );
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC delete diary comment
+ * diary에 댓글을 삭제함
+ */
+export const deleteDiaryComment = async (
+  commentId: string,
+  userId: string,
+  userRole: RoleType
+) => {
+  try {
+    if (userRole !== RoleType.ADMIN) {
+      const comment = await diaryRepository.getDiaryCommentById(commentId);
+      if (comment == null) {
+        throw new CustomHttpErrorModel({
+          status: 400,
+          message: "값이 존재하지 않습니다.",
+        });
+      }
+      if (comment.userId !== userId) {
+        throw new CustomHttpErrorModel({
+          status: 400,
+          message: "권한이 없습니다.",
+        });
+      }
+    }
+    const result = await diaryRepository.deleteDiaryComment(commentId);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC update diary comment
+ * diary에 댓글을 수정함
+ */
+
+export const updateDiaryComment = async (
+  commentId: string,
+  userId: string,
+  content: string
+) => {
+  try {
+    const comment = await diaryRepository.getDiaryCommentById(commentId);
+    if (comment == null) {
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "값이 존재하지 않습니다.",
+      });
+    }
+    if (comment.userId !== userId) {
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "권한이 없습니다.",
+      });
+    }
+
+    const result = await diaryRepository.updateDiaryComment(commentId, content);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};

@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
-import * as userService from "../services/user_service";
 
 export const getMyInfo = async (
   req: Request,

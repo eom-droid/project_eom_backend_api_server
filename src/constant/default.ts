@@ -1,4 +1,4 @@
-export const PAGINATE_LIMIT = 20;
+export const PAGINATE_LIMIT = 10;
 export const PAGINATE_COUNT_DEFAULT = 10;
 
 export const DIARY = "diary";
@@ -20,6 +20,18 @@ export const RoleType = {
 } as const;
 
 export type RoleType = (typeof RoleType)[keyof typeof RoleType];
+export const numberToRoleType = (num: number) => {
+  switch (num) {
+    case 0:
+      return RoleType.USER;
+    case 5:
+      return RoleType.MANAGER;
+    case 10:
+      return RoleType.ADMIN;
+    default:
+      return RoleType.USER;
+  }
+};
 
 export const TokenType = {
   ACCESS: "access",
@@ -27,6 +39,14 @@ export const TokenType = {
 } as const;
 
 export type TokenType = (typeof TokenType)[keyof typeof TokenType];
+
+export const DataPassType = {
+  PARAMS: "params",
+  BODY: "body",
+  QUERY: "query",
+} as const;
+
+export type DataPassType = (typeof DataPassType)[keyof typeof DataPassType];
 
 export const PRODUCTION = "production";
 export const DEVELOPMENT = "development";

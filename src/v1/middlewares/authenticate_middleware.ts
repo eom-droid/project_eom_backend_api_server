@@ -42,6 +42,7 @@ export const authCheck = ({
       req.decoded = AuthUtils.verifyToken(splitToken[1]);
       if (userRequire) {
         const user = await UserRepository.searchUserById(req.decoded.id);
+
         if (user === null || user.role < role) {
           throw new CustomHttpErrorModel({
             message: "No authorization",

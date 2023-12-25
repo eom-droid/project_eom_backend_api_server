@@ -4,6 +4,7 @@ import * as diaryService from "../services/diary_service";
 import { jsonToDiary } from "../models/diary_model";
 import { DiaryPaginateReqModel } from "../../models/paginate_req_model";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
+import { RoleType, numberToRoleType } from "../../constant/default";
 
 /**
  * @DESC create new diary
@@ -86,7 +87,7 @@ export const getDiaries = async (
   try {
     const paginateReq = new DiaryPaginateReqModel(req.query);
 
-    const data = await diaryService.getDiaries(paginateReq);
+    const data = await diaryService.getDiaries(paginateReq, req.decoded!.id);
     console.log(data);
     return res.status(200).send(data);
   } catch (error: any) {
@@ -116,25 +117,112 @@ export const deleteDiary = async (
   }
 };
 
-// export const createDiaryLike = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//     const { id } = req.params;
-//     const user = req.user;
-//     if (user === null) {
-//       throw new CustomHttpErrorModel({
-//         status: 400,
-//         message: "로그인이 필요합니다.",
-//       });
-//     }
+/**
+ * @DESC like diary
+ * diary를 좋아요함
+ */
+export const createDiaryLike = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    // middleware에서 decode를 했고, validate를 진행했기 때문에 여기서는 id만 가져오면 됨
+    const userId = req.decoded!.id;
 
-//     await diaryService.createDiaryLike(id, user._id);
+    await diaryService.createDiaryLike(id, userId);
 
-//     return res.status(200).send({ status: "SUCCESS" });
-//   } catch (error: any) {
-//     next(error);
-//   }
-// };
+    return res.status(200).send({ status: "SUCCESS" });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC unlike diary
+ * diary를 좋아요 취소함
+ */
+
+export const deleteDiaryLike = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    // middleware에서 decode를 했고, validate를 진행했기 때문에 여기서는 id만 가져오면 됨
+    const userId = req.decoded!.id;
+
+    await diaryService.deleteDiaryLike(id, userId);
+
+    return res.status(200).send({ status: "SUCCESS" });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC create diary comment
+ * diary에 댓글을 생성함
+ */
+export const createDiaryComment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const userId = req.decoded!.id;
+    const { content } = req.body;
+
+    await diaryService.createDiaryComment(id, userId, content);
+
+    return res.status(200).send({ status: "SUCCESS" });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC delete diary comment
+ * diary에 댓글을 삭제함
+ */
+export const deleteDiaryComment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.decoded!.id;
+    const userRole = numberToRoleType(req.user!.role);
+    const { commentId } = req.body;
+
+    await diaryService.deleteDiaryComment(commentId, userId, userRole);
+
+    return res.status(200).send({ status: "SUCCESS" });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC update diary comment
+ * diary에 댓글을 수정함
+ */
+export const updateDiaryComment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.decoded!.id;
+    const { commentId, content } = req.body;
+
+    await diaryService.updateDiaryComment(commentId, userId, content);
+
+    return res.status(200).send({ status: "SUCCESS" });
+  } catch (error: any) {
+    next(error);
+  }
+};

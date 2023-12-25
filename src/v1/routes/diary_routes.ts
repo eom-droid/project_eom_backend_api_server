@@ -1,15 +1,16 @@
 import express from "express";
 import * as diaryController from "../controllers/diary_controller";
 import { multerMiddleware } from "../middlewares/multer_middleware";
-import { idParamValidation } from "../middlewares/detail_param_middleware";
+import { idParamValidation } from "../middlewares/id_param_middleware";
 import { diaryQueryValidation } from "../middlewares/diary/query_middleware";
 import { diaryBodyValidation } from "../middlewares/diary/body_middleware";
 import { validate } from "../middlewares/validate_middleware";
 import { nestedBodyParser } from "../../middlewares/nested_body_parser";
 import { checkIdExistMiddleware } from "../middlewares/check_id_exist_middleware";
 import { DiaryModel } from "../models/diary_model";
-import { DIARY, RoleType } from "../../constant/default";
+import { DIARY, DataPassType, RoleType } from "../../constant/default";
 import { authCheck } from "../middlewares/authenticate_middleware";
+import { DiaryCommentModel } from "../models/diary_comment_model";
 
 export const diaryRouter = express.Router();
 
@@ -22,9 +23,9 @@ export const diaryRouter = express.Router();
 // get에만 express.json() 미들웨어를 장착!
 diaryRouter.get(
   "/",
-  // authCheck({
-  //   role: RoleType.USER,
-  // }),
+  authCheck({
+    role: RoleType.USER,
+  }),
   validate(diaryQueryValidation),
   diaryController.getDiaries
 );
@@ -41,7 +42,7 @@ diaryRouter.get(
   }),
   validate(idParamValidation),
   // 여기 추후에 변경 필요 불필요 요청인가 생각해보기!!!
-  checkIdExistMiddleware(DiaryModel),
+  checkIdExistMiddleware(DiaryModel, DataPassType.PARAMS),
   diaryController.getDiary
 );
 
@@ -109,13 +110,81 @@ diaryRouter.delete(
  * @DESC like diary
  */
 
-// diaryRouter.post(
-//   "/:id/like",
-//   authCheck({
-//     role: RoleType.USER,
-//     userRequire: true,
-//   }),
-//   validate(idParamValidation),
-//   checkIdExistMiddleware(DiaryModel),
-//   diaryController.createDiaryLike
-// );
+diaryRouter.post(
+  "/:id/like",
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
+  validate(idParamValidation),
+  checkIdExistMiddleware(DiaryModel),
+  diaryController.createDiaryLike
+);
+
+/**
+ * @DELETE /api/v1/diaries/{id}/like
+ * @DESC disLike diary
+ */
+
+diaryRouter.post(
+  "/:id/like",
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
+  validate(idParamValidation),
+  checkIdExistMiddleware(DiaryModel),
+  diaryController.deleteDiaryLike
+);
+
+/**
+ * @POST /api/v1/diaries/{id}/comment
+ * @DESC create diary comment
+ */
+
+diaryRouter.post(
+  "/:id/comment",
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
+  validate(idParamValidation),
+  checkIdExistMiddleware(DiaryModel),
+  diaryController.createDiaryComment
+);
+
+/**
+ * @PATCH /api/v1/diaries/{id}/comment
+ * @DESC update diary comment
+ */
+diaryRouter.patch(
+  "/:id/comment",
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
+  // 존재여부 확인
+  validate(idParamValidation),
+  // validate(id),
+  // diary의 존재 여부는 중요하지 않음
+  checkIdExistMiddleware(DiaryCommentModel, DataPassType.BODY, "commentId"),
+  diaryController.updateDiaryComment
+);
+
+/**
+ * @DELETE /api/v1/diaries/{id}/comment
+ * @DESC delete diary comment
+ */
+diaryRouter.delete(
+  "/:id/comment",
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
+  // 존재여부 확인
+  validate(idParamValidation),
+  // validate(id),
+  // diary의 존재 여부는 중요하지 않음
+  checkIdExistMiddleware(DiaryCommentModel, DataPassType.BODY, "commentId"),
+  diaryController.deleteDiaryComment
+);

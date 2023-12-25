@@ -11,7 +11,7 @@ import { multerMiddleware } from "../middlewares/multer_middleware";
 import { nestedBodyParser } from "../../middlewares/nested_body_parser";
 import { authCheck } from "../middlewares/authenticate_middleware";
 import { MUSIC, RoleType } from "../../constant/default";
-import { idParamValidation } from "../middlewares/detail_param_middleware";
+import { idParamValidation } from "../middlewares/id_param_middleware";
 import { checkIdExistMiddleware } from "../middlewares/check_id_exist_middleware";
 import { MusicModel } from "../models/music_model";
 import { checkAccessTokenValidation } from "../middlewares/check_access_token_middleware";

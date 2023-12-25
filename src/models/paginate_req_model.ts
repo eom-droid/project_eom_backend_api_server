@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { PAGINATE_COUNT_DEFAULT } from "../constant/default";
 import { CustomHttpErrorModel } from "./custom_http_error_model";
 
@@ -24,7 +25,7 @@ export class PaginateReqModel {
 
     if (this.after !== undefined) {
       query._id = {
-        $lt: this.after,
+        $lt: new Types.ObjectId(this.after),
       };
     }
 
