@@ -2,7 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import * as diaryService from "../services/diary_service";
 
 import { jsonToDiary } from "../models/diary_model";
-import { DiaryPaginateReqModel } from "../../models/paginate_req_model";
+import {
+  DiaryPaginateReqModel,
+  PaginateReqModel,
+} from "../../models/paginate_req_model";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import { RoleType, numberToRoleType } from "../../constant/default";
 
@@ -157,6 +160,27 @@ export const deleteDiaryLike = async (
     await diaryService.deleteDiaryLike(id, userId);
 
     return res.status(200).send({ status: "SUCCESS" });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC get diary comment
+ * diary에 댓글을 가져옴
+ */
+export const getDiaryComments = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const paginateReq = new PaginateReqModel(req.query);
+
+    const data = await diaryService.getDiaryComments(id, paginateReq);
+
+    return res.status(200).send(data);
   } catch (error: any) {
     next(error);
   }

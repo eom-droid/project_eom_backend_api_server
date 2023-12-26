@@ -1,4 +1,7 @@
-import { DiaryPaginateReqModel } from "../../models/paginate_req_model";
+import {
+  DiaryPaginateReqModel,
+  PaginateReqModel,
+} from "../../models/paginate_req_model";
 import { PaginateResModel } from "../../models/paginate_res_model";
 import { Diary } from "../models/diary_model";
 
@@ -114,8 +117,8 @@ export const getDiaries = async (
  * @DESC get diary detail
  * 파라미터에 존재하는 id를 통해 특정 diary의 모든 정보를 가져옴
  */
-export const getDiary = async (diaryId: string): Promise<Diary> => {
-  const result = await diaryRepository.getDiary(diaryId);
+export const getDiary = async (diaryId: string) => {
+  const result = await diaryRepository.getDiaryWithLike(diaryId);
   if (result == null) {
     throw new CustomHttpErrorModel({
       status: 400,
@@ -214,6 +217,30 @@ export const deleteDiaryLike = async (diaryId: string, userId: string) => {
       await diaryRepository.deleteDiaryLike(diaryId, userId);
     }
     return;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC get diary comment
+ * diary에 댓글을 가져옴
+ */
+
+export const getDiaryComments = async (
+  diaryId: string,
+  paginateReq: PaginateReqModel
+) => {
+  try {
+    const result = await diaryRepository.getDiaryComments(diaryId, paginateReq);
+
+    return new PaginateResModel<Diary>({
+      meta: {
+        count: result.length,
+        hasMore: result.length === paginateReq.count,
+      },
+      data: result,
+    });
   } catch (error: any) {
     throw error;
   }

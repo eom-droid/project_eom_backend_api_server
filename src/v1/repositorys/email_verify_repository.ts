@@ -7,9 +7,8 @@ import { EmailVerify, EmailVerifyModel } from "../models/email_verify_model";
  */
 export const createEmailVerify = async (emailVerify: EmailVerify) => {
   try {
-    const emailVerifyInstance = emailVerify.toEmailVerifyModel();
+    const savedEmailVerify = EmailVerifyModel.create(emailVerify);
     // save 하기
-    const savedEmailVerify = await emailVerifyInstance.save();
     return savedEmailVerify;
   } catch (error) {
     throw error;

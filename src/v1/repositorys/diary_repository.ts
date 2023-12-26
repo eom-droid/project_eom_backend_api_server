@@ -1,5 +1,8 @@
 import { Types } from "mongoose";
-import { DiaryPaginateReqModel } from "../../models/paginate_req_model";
+import {
+  DiaryPaginateReqModel,
+  PaginateReqModel,
+} from "../../models/paginate_req_model";
 import { DiaryLikeModel } from "../models/diary_like_model";
 import { Diary, DiaryModel } from "../models/diary_model";
 import { DiaryCommentModel } from "../models/diary_comment_model";
@@ -90,6 +93,60 @@ export const getDiaries = async (
 };
 
 /**
+ * @DESC get diary detail with likeCount and isLike
+ * findById를 통해 특정 diary의 모든 정보를 가져옴(DiaryDetail을 가져옴)
+ */
+export const getDiaryWithLike = async (diaryId: string) => {
+  try {
+    const result = await DiaryModel.aggregate([
+      { $match: { _id: new Types.ObjectId(diaryId) } },
+      {
+        $lookup: {
+          from: "diarylikes",
+          localField: "_id",
+          foreignField: "diaryId",
+          as: "diaryLikes",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          writer: 1,
+          weather: 1,
+          hashtags: 1,
+          thumbnail: 1,
+          category: 1,
+          isShown: 1,
+          txts: 1,
+          imgs: 1,
+          vids: 1,
+          contentOrder: 1,
+          createdAt: 1,
+          likeCount: { $size: "$diaryLikes" },
+          isLike: {
+            $cond: {
+              if: {
+                $in: [new Types.ObjectId(diaryId), "$diaryLikes.diaryId"],
+              },
+              then: true,
+              else: false,
+            },
+          },
+        },
+      },
+    ]);
+    if (result.length == 0) {
+      return null;
+    }
+
+    return result[0];
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
  * @DESC get diary detail
  * findById를 통해 특정 diary의 모든 정보를 가져옴(DiaryDetail을 가져옴)
  */
@@ -164,37 +221,41 @@ export const getDiaryLike = async (diaryId: string, userId: string) => {
 };
 
 /**
- * @DESC get diaries like count and isLike
- * diary array의 좋아요 갯수 와 내가 좋아요를 했는지 확인함
+ * @DESC get diary comments
+ * diary의 댓글을 가져옴
+ * 미완성
  */
-export const getDiariesLikeCountAndIsLike = async (
-  diaryList: Array<Types.ObjectId>,
-  userId: String
+export const getDiaryComments = async (
+  diaryId: string,
+  paginateReq: PaginateReqModel
 ) => {
   try {
-    // 아래에 pagination을 적용하면 좋을듯
-    const result = await DiaryModel.aggregate([
-      {
-        $match: { _id: { $in: diaryList } },
-      },
+    const filterQuery = paginateReq.generateQuery();
+    const result = await DiaryCommentModel.aggregate([
+      // req.query에 따라서 after를 적용하여 pagination을 진행함
+      { $match: filterQuery },
+      // createdAt을 기준으로 내림차순 정렬 -> 최신순으로 정렬
+      // 이 부분은 mongodb는 기본으로 id를 기준점으로 정렬하기 때문에 뺐음
+      { $sort: { _id: -1 } },
+      // 위에서 sorting 후 limit을 적용하여 pagination을 진행함
+      { $limit: paginateReq.count },
       {
         $lookup: {
-          from: "diarylikes",
-          localField: "_id",
-          foreignField: "diaryId",
-          as: "diaryLikes",
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
         },
       },
       {
         $project: {
           _id: 1,
-          likeCount: { $size: "$diaryLikes" },
-          isLike: {
-            $cond: {
-              if: { $in: [userId, "$diaryLikes.userId"] },
-              then: true,
-              else: false,
-            },
+          diaryId: 1,
+          userId: 1,
+          content: 1,
+          createdAt: 1,
+          user: {
+            $arrayElemAt: ["$user", 0],
           },
         },
       },

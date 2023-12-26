@@ -37,9 +37,9 @@ diaryRouter.get(
  */
 diaryRouter.get(
   "/:id/detail",
-  authCheck({
-    role: RoleType.USER,
-  }),
+  // authCheck({
+  //   role: RoleType.USER,
+  // }),
   validate(idParamValidation),
   // 여기 추후에 변경 필요 불필요 요청인가 생각해보기!!!
   checkIdExistMiddleware(DiaryModel, DataPassType.PARAMS),
@@ -126,7 +126,7 @@ diaryRouter.post(
  * @DESC disLike diary
  */
 
-diaryRouter.post(
+diaryRouter.delete(
   "/:id/like",
   authCheck({
     role: RoleType.USER,
@@ -135,6 +135,21 @@ diaryRouter.post(
   validate(idParamValidation),
   checkIdExistMiddleware(DiaryModel),
   diaryController.deleteDiaryLike
+);
+
+/**
+ * @GET /api/v1/diaries/{id}/comment
+ * @DESC get diary comment
+ */
+diaryRouter.get(
+  "/:id/comment",
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
+  validate(idParamValidation),
+  checkIdExistMiddleware(DiaryModel),
+  diaryController.getDiaryComments
 );
 
 /**
@@ -159,6 +174,7 @@ diaryRouter.post(
  */
 diaryRouter.patch(
   "/:id/comment",
+
   authCheck({
     role: RoleType.USER,
     userRequire: true,
