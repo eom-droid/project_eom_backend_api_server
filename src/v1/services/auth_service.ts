@@ -143,7 +143,7 @@ export const createEmailUser = async (email: string, password: string) => {
     const userModel = new UserModel({
       email: email,
       password: hashedPassword,
-      nickName: email.split("@")[0],
+      nickname: email.split("@")[0],
       role: RoleType.USER,
     });
     const createdUser = await authRepository.createUser(userModel);
@@ -223,7 +223,7 @@ const getUserByKakaoToken = async (kakaoAccessToken: String) => {
     // 3. User 모델 제작
     const userModel = new UserModel({
       email: userKakao.data.kakao_account.email ?? undefined,
-      nickName: userKakao.data.properties.nickname,
+      nickname: userKakao.data.properties.nickname,
       provider: ProviderType.KAKAO,
       snsId: userKakao.data.id,
       role: RoleType.USER,

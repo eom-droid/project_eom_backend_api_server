@@ -3,7 +3,7 @@ import { InferSchemaType, Schema, model } from "mongoose";
 /**
  * 다이어리 좋아요 모델
  */
-const DiaryLikeSchema = new Schema({
+const DiaryCommentLikeSchema = new Schema({
   // user : 작성자 ID
   userId: {
     type: Schema.Types.ObjectId,
@@ -11,13 +11,16 @@ const DiaryLikeSchema = new Schema({
     ref: "user",
   },
   // diary : 다이어리 ID
-  diaryId: {
+  commentId: {
     type: Schema.Types.ObjectId,
     required: true,
-    ref: "diary",
+    ref: "diaryComment",
   },
 });
 
-export type DiaryLike = InferSchemaType<typeof DiaryLikeSchema>;
+export type DiaryCommentLike = InferSchemaType<typeof DiaryCommentLikeSchema>;
 
-export const DiaryLikeModel = model("diaryLike", DiaryLikeSchema);
+export const DiaryCommentLikeModel = model(
+  "diaryCommentLike",
+  DiaryCommentLikeSchema
+);

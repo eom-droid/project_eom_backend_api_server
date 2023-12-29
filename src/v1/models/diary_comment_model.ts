@@ -8,13 +8,13 @@ const DiaryCommentSchema = new Schema(
   {
     // user : 작성자 ID
     userId: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: true,
       ref: "user",
     },
     // diary : 다이어리 ID
     diaryId: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: true,
       ref: "diary",
     },

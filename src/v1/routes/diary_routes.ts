@@ -143,10 +143,10 @@ diaryRouter.delete(
  */
 diaryRouter.get(
   "/:id/comment",
-  authCheck({
-    role: RoleType.USER,
-    userRequire: true,
-  }),
+  // authCheck({
+  //   role: RoleType.USER,
+  //   userRequire: true,
+  // }),
   validate(idParamValidation),
   checkIdExistMiddleware(DiaryModel),
   diaryController.getDiaryComments

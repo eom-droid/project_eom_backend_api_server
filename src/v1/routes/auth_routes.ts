@@ -61,7 +61,7 @@ authRouter.post(
 );
 
 /**
- * @GET /api/v1/auth/email/access-token
+ * @GET /api/v1/auth/access-token
  * @DESC access token 발급
  */
 // 추후 cookie값을 확인하는 middleware를 추가해야함

@@ -66,7 +66,14 @@ const server = async () => {
   // repository : DB에 접근하는 부분을 담당하며 mongoose를 통해 DB에 접근함
   app.use("/api/v1/diaries", diaryRouter);
   app.use("/api/v1/musics", musicRouter);
-  app.use("/api/v1/auth", authRouter);
+  app.use(
+    "/api/v1/auth",
+    (req: Request, res: Response, next: NextFunction) => {
+      console.log("authRouter");
+      next();
+    },
+    authRouter
+  );
   app.use("/api/v1/user", userRouter);
 
   // 404 에러를 처리하는 부분
@@ -80,6 +87,7 @@ const server = async () => {
 
   // 전체적 에러 처리 부분
   app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    console.log(err);
     // err 가 httpErrorModel 이면 expected
     // err 가 httpErrorModel 이 아니면 unexpected
     console.error(

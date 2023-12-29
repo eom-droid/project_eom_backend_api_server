@@ -9,7 +9,7 @@ const UserSchema = new Schema(
   {
     email: { type: String, required: false },
     password: { type: String, required: false },
-    nickName: { type: String, required: true },
+    nickname: { type: String, required: true },
     birthday: { type: Date, required: false },
     profileImg: { type: String, required: false },
     snsId: { type: String, required: false },
@@ -28,7 +28,7 @@ export const UserModel = model("user", UserSchema);
 //     const result = new UserModel({
 //       email: json.email as string,
 //       password: json.password as string,
-//       nickName: json.nickName as string,
+//       nickname: json.nickname as string,
 //       birthday: json.birthday as Date,
 //       profileImg: json.profileImg as string,
 //       snsId: json.snsId as string,
@@ -39,7 +39,6 @@ export const UserModel = model("user", UserSchema);
 //     return result;
 //   } catch (error) {
 //     console.log(new Date().toISOString() + ": npm log: " + error);
-
 //     throw new CustomHttpErrorModel({
 //       message: "입력값이 유효하지 않습니다.",
 //       status: 400,
@@ -52,7 +51,7 @@ export const userToUserModel = (user: User) => {
     const result = new UserModel({
       email: user.email,
       password: user.password,
-      nickName: user.nickName,
+      nickname: user.nickname,
       birthday: user.birthday,
       profileImg: user.profileImg,
       snsId: user.snsId,

@@ -6,10 +6,13 @@ import { PaginateResModel } from "../../models/paginate_res_model";
 import { Diary } from "../models/diary_model";
 
 import * as diaryRepository from "../repositorys/diary_repository";
+import * as diaryCommentRepository from "../repositorys/diary_comment_repository";
+import * as diaryLikeRepository from "../repositorys/diary_like_repository";
 import { AWSUtils } from "../../utils/aws_utils";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import { DiaryLikeModel } from "../models/diary_like_model";
 import { RoleType } from "../../constant/default";
+import { Types } from "mongoose";
 
 /**
  * @DESC create new diary
@@ -193,10 +196,10 @@ const matchFileNames = (diary: Diary, files: Express.Multer.File[]) => {
 export const createDiaryLike = async (diaryId: string, userId: string) => {
   try {
     // diary에 대한 존재 여부는 확인할 필요가 없음 --> middleware에서 확인함
-    const result = await diaryRepository.getDiaryLike(diaryId, userId);
+    const result = await diaryLikeRepository.getDiaryLike(diaryId, userId);
     // 좋아요를 한적이 없다면
     if (result === null) {
-      await diaryRepository.createDiaryLike(diaryId, userId);
+      await diaryLikeRepository.createDiaryLike(diaryId, userId);
     }
     return;
   } catch (error: any) {
@@ -211,10 +214,10 @@ export const createDiaryLike = async (diaryId: string, userId: string) => {
 export const deleteDiaryLike = async (diaryId: string, userId: string) => {
   try {
     // diary에 대한 존재 여부는 확인할 필요가 없음 --> middleware에서 확인함
-    const result = await diaryRepository.getDiaryLike(diaryId, userId);
+    const result = await diaryLikeRepository.getDiaryLike(diaryId, userId);
     // 좋아요를 한적이 있다면
     if (result !== null) {
-      await diaryRepository.deleteDiaryLike(diaryId, userId);
+      await diaryLikeRepository.deleteDiaryLike(diaryId, userId);
     }
     return;
   } catch (error: any) {
@@ -232,9 +235,12 @@ export const getDiaryComments = async (
   paginateReq: PaginateReqModel
 ) => {
   try {
-    const result = await diaryRepository.getDiaryComments(diaryId, paginateReq);
+    const result = await diaryCommentRepository.getDiaryComments(
+      diaryId,
+      paginateReq
+    );
 
-    return new PaginateResModel<Diary>({
+    return new PaginateResModel({
       meta: {
         count: result.length,
         hasMore: result.length === paginateReq.count,
@@ -256,7 +262,7 @@ export const createDiaryComment = async (
   content: string
 ) => {
   try {
-    const result = await diaryRepository.createDiaryComment(
+    const result = await diaryCommentRepository.createDiaryComment(
       diaryId,
       userId,
       content
@@ -278,21 +284,23 @@ export const deleteDiaryComment = async (
 ) => {
   try {
     if (userRole !== RoleType.ADMIN) {
-      const comment = await diaryRepository.getDiaryCommentById(commentId);
+      const comment = await diaryCommentRepository.getDiaryCommentById(
+        commentId
+      );
       if (comment == null) {
         throw new CustomHttpErrorModel({
           status: 400,
           message: "값이 존재하지 않습니다.",
         });
       }
-      if (comment.userId !== userId) {
+      if (comment.userId !== new Types.ObjectId(userId)) {
         throw new CustomHttpErrorModel({
           status: 400,
           message: "권한이 없습니다.",
         });
       }
     }
-    const result = await diaryRepository.deleteDiaryComment(commentId);
+    const result = await diaryCommentRepository.deleteDiaryComment(commentId);
     return result;
   } catch (error: any) {
     throw error;
@@ -310,21 +318,24 @@ export const updateDiaryComment = async (
   content: string
 ) => {
   try {
-    const comment = await diaryRepository.getDiaryCommentById(commentId);
+    const comment = await diaryCommentRepository.getDiaryCommentById(commentId);
     if (comment == null) {
       throw new CustomHttpErrorModel({
         status: 400,
         message: "값이 존재하지 않습니다.",
       });
     }
-    if (comment.userId !== userId) {
+    if (comment.userId !== new Types.ObjectId(userId)) {
       throw new CustomHttpErrorModel({
         status: 400,
         message: "권한이 없습니다.",
       });
     }
 
-    const result = await diaryRepository.updateDiaryComment(commentId, content);
+    const result = await diaryCommentRepository.updateDiaryComment(
+      commentId,
+      content
+    );
     return result;
   } catch (error: any) {
     throw error;
