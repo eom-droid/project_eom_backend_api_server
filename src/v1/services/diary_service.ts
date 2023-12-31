@@ -8,6 +8,7 @@ import { Diary } from "../models/diary_model";
 import * as diaryRepository from "../repositorys/diary_repository";
 import * as diaryCommentRepository from "../repositorys/diary_comment_repository";
 import * as diaryLikeRepository from "../repositorys/diary_like_repository";
+import * as diaryCommentLikeRepository from "../repositorys/diary_comment_like_repository";
 import { AWSUtils } from "../../utils/aws_utils";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import { DiaryLikeModel } from "../models/diary_like_model";
@@ -121,6 +122,14 @@ export const getDiaries = async (
  * 파라미터에 존재하는 id를 통해 특정 diary의 모든 정보를 가져옴
  */
 export const getDiary = async (diaryId: string) => {
+  const temp = await diaryRepository.getDiary(diaryId);
+  if (temp == null || temp.isDeleted) {
+    throw new CustomHttpErrorModel({
+      status: 400,
+      message: "값이 존재하지 않습니다.",
+    });
+  }
+
   const result = await diaryRepository.getDiaryWithLike(diaryId);
   if (result == null) {
     throw new CustomHttpErrorModel({
@@ -144,16 +153,18 @@ export const deleteDiary = async (diaryId: string): Promise<void> => {
   const result = await diaryRepository.getDiary(diaryId);
 
   if (result != null) {
-    const deletingFiles = result.imgs.concat(result.vids);
+    // diary의
+    // const deletingFiles = result.imgs.concat(result.vids);
 
-    await Promise.all(
-      deletingFiles.map((e) => {
-        AWSUtils.deleteFileFromS3({
-          files: [e],
-        });
-      })
-    );
-    await diaryRepository.deleteDiary(diaryId);
+    // await Promise.all(
+    //   deletingFiles.map((e) => {
+    //     AWSUtils.deleteFileFromS3({
+    //       files: [e],
+    //     });
+    //   })
+    // );
+    // await diaryRepository.deleteDiary(diaryId);
+    await diaryRepository.patchDiaryIsDeletedTrue(diaryId);
   }
   return;
 };
@@ -337,6 +348,60 @@ export const updateDiaryComment = async (
       content
     );
     return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC create diary comment like
+ * diary에 댓글을 좋아요함
+ */
+export const createDiaryCommentLike = async (
+  commentId: string,
+  userId: string
+) => {
+  try {
+    // diary에 대한 존재 여부는 확인할 필요가 없음 --> middleware에서 확인함
+    const result = await diaryCommentLikeRepository.getDiaryCommentLike(
+      commentId,
+      userId
+    );
+    // 좋아요를 한적이 없다면
+    if (result === null) {
+      await diaryCommentLikeRepository.createDiaryCommentLike(
+        commentId,
+        userId
+      );
+    }
+    return;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC delete diary comment like
+ * diary에 댓글을 좋아요 취소함
+ */
+export const deleteDiaryCommentLike = async (
+  commentId: string,
+  userId: string
+) => {
+  try {
+    // diary에 대한 존재 여부는 확인할 필요가 없음 --> middleware에서 확인함
+    const result = await diaryCommentLikeRepository.getDiaryCommentLike(
+      commentId,
+      userId
+    );
+    // 좋아요를 한적이 있다면
+    if (result !== null) {
+      await diaryCommentLikeRepository.deleteDiaryCommentLike(
+        commentId,
+        userId
+      );
+    }
+    return;
   } catch (error: any) {
     throw error;
   }

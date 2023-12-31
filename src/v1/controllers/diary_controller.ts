@@ -250,3 +250,48 @@ export const updateDiaryComment = async (
     next(error);
   }
 };
+
+/**
+ * @DESC like comment
+ * comment를 좋아요함
+ */
+export const createDiaryCommentLike = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    // middleware에서 decode를 했고, validate를 진행했기 때문에 여기서는 id만 가져오면 됨
+    const userId = req.decoded!.id;
+
+    await diaryService.createDiaryCommentLike(id, userId);
+
+    return res.status(200).send({ status: "SUCCESS" });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC unlike comment
+ * comment를 좋아요 취소함
+ */
+
+export const deleteDiaryCommentLike = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    // middleware에서 decode를 했고, validate를 진행했기 때문에 여기서는 id만 가져오면 됨
+    const userId = req.decoded!.id;
+
+    await diaryService.deleteDiaryCommentLike(id, userId);
+
+    return res.status(200).send({ status: "SUCCESS" });
+  } catch (error: any) {
+    next(error);
+  }
+};

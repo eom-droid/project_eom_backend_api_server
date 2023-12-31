@@ -14,12 +14,14 @@ export const getDiaryComments = async (
   try {
     const filterQuery = paginateReq.generateQuery();
     const result = await DiaryCommentModel.aggregate([
-      // req.query에 따라서 after를 적용하여 pagination을 진행함
-      { $match: filterQuery },
-      // createdAt을 기준으로 내림차순 정렬 -> 최신순으로 정렬
-      // 이 부분은 mongodb는 기본으로 id를 기준점으로 정렬하기 때문에 뺐음
-      { $sort: { _id: -1 } },
-      // 위에서 sorting 후 limit을 적용하여 pagination을 진행함
+      {
+        $match: {
+          diaryId: new Types.ObjectId(diaryId),
+          isDeleted: { $ne: true },
+          ...filterQuery,
+        },
+      },
+      { $sort: { _id: 1 } },
       { $limit: paginateReq.count },
       {
         $lookup: {
@@ -32,26 +34,45 @@ export const getDiaryComments = async (
       {
         $lookup: {
           from: "users",
-          localField: "userId",
-          foreignField: "_id",
+          let: { userId: "$userId" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ["$_id", "$$userId"] },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                nickname: 1,
+                profileImg: 1,
+                role: 1,
+              },
+            },
+          ],
           as: "writer",
         },
       },
       {
-        $unwind: "$writer",
+        $addFields: {
+          writer: {
+            $cond: {
+              if: { $ne: [{ $size: "$writer" }, 0] },
+              then: { $arrayElemAt: ["$writer", 0] },
+              else: null,
+            },
+          },
+        },
       },
-
+      {
+        $match: {
+          writer: { $ne: null },
+        },
+      },
       {
         $project: {
           _id: 1,
-          // diaryId: 1,
-          // user의 경우에는 user의 모든 정보를 가져오기 때문에 필요한 정보만 가져오도록 함
-          writer: {
-            _id: "$writer._id",
-            nickname: "$writer.nickname",
-            profileImg: "$writer.profileImg",
-            role: "$writer.role",
-          },
+          writer: "$writer",
           content: 1,
           createdAt: 1,
           likeCount: { $size: "$diaryCommentLikes" },
@@ -67,10 +88,10 @@ export const getDiaryComments = async (
               else: false,
             },
           },
+          // 필요한 다른 필드들 추가
         },
       },
     ]);
-    console.log(result);
     return result;
   } catch (error) {
     throw error;
@@ -121,6 +142,21 @@ export const deleteDiaryComment = async (commentId: string) => {
     });
     return result;
   } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC patch isDeleted diary comment
+ * diary의 댓글을 삭제함
+ */
+export const patchDiaryCommentIsDeletedTrue = async (
+  commentId: string
+): Promise<void> => {
+  try {
+    await DiaryCommentModel.updateOne({ _id: commentId }, { isDeleted: true });
+    return;
+  } catch (error) {
     throw error;
   }
 };

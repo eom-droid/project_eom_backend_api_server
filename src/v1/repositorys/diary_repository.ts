@@ -50,7 +50,14 @@ export const getDiaries = async (
     var filterQuery = paginateReq.generateQuery();
     const result = await DiaryModel.aggregate([
       // req.query에 따라서 after를 적용하여 pagination을 진행함
-      { $match: filterQuery },
+      {
+        $match: {
+          isDeleted: { $ne: true },
+          isShown: { $ne: false },
+          // Object를 ...로 풀어서 넣어줌
+          ...filterQuery,
+        },
+      },
       // createdAt을 기준으로 내림차순 정렬 -> 최신순으로 정렬
       // 이 부분은 mongodb는 기본으로 id를 기준점으로 정렬하기 때문에 뺐음
       { $sort: { _id: -1 } },
@@ -165,6 +172,21 @@ export const getDiary = async (diaryId: string): Promise<Diary | null> => {
 export const deleteDiary = async (diaryId: string): Promise<void> => {
   try {
     await DiaryModel.deleteOne({ _id: diaryId });
+    return;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC patch isDeleted diary
+ * diary의 isDeleted를 true로 변경함
+ */
+export const patchDiaryIsDeletedTrue = async (
+  diaryId: string
+): Promise<void> => {
+  try {
+    await DiaryModel.updateOne({ _id: diaryId }, { isDeleted: true });
     return;
   } catch (error) {
     throw error;
