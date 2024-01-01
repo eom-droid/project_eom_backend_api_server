@@ -11,6 +11,13 @@ export const idParamValidation = checkSchema({
   },
 });
 
+export const commentIdParamValidation = checkSchema({
+  commentId: {
+    in: ["params"],
+    isString: { bail: true },
+  },
+});
+
 export const idBodyValidation = checkSchema({
   id: {
     in: ["body"],

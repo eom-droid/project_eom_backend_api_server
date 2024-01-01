@@ -9,6 +9,7 @@ import { DiaryCommentModel } from "../models/diary_comment_model";
  */
 export const getDiaryComments = async (
   diaryId: string,
+  userId: string,
   paginateReq: PaginateReqModel
 ) => {
   try {
@@ -16,58 +17,38 @@ export const getDiaryComments = async (
     const result = await DiaryCommentModel.aggregate([
       {
         $match: {
+          // diaryId가 일치하고, isDeleted가 false인 것만 가져옴
           diaryId: new Types.ObjectId(diaryId),
           isDeleted: { $ne: true },
+          // after값을 삽입하여 이후의 document만 가져옴
           ...filterQuery,
         },
       },
+      // _id를 기준으로 정렬함
       { $sort: { _id: 1 } },
+      // limit을 통해 가져올 document의 개수를 정함
       { $limit: paginateReq.count },
+      // lookup을 통해 diaryCommentLikes 정보를 가져옴
       {
         $lookup: {
           from: "diarycommentlikes",
           localField: "_id",
-          foreignField: "diaryId",
+          foreignField: "commentId",
           as: "diaryCommentLikes",
         },
       },
+      // lookup을 통해 user 정보를 가져옴
       {
         $lookup: {
           from: "users",
-          let: { userId: "$userId" },
-          pipeline: [
-            {
-              $match: {
-                $expr: { $eq: ["$_id", "$$userId"] },
-              },
-            },
-            {
-              $project: {
-                _id: 1,
-                nickname: 1,
-                profileImg: 1,
-                role: 1,
-              },
-            },
-          ],
+          localField: "userId",
+          foreignField: "_id",
           as: "writer",
         },
       },
+      // $unwind는 배열을 풀어서 하나의 document로 만들어줌
       {
-        $addFields: {
-          writer: {
-            $cond: {
-              if: { $ne: [{ $size: "$writer" }, 0] },
-              then: { $arrayElemAt: ["$writer", 0] },
-              else: null,
-            },
-          },
-        },
-      },
-      {
-        $match: {
-          writer: { $ne: null },
-        },
+        $unwind: "$writer",
       },
       {
         $project: {
@@ -79,16 +60,12 @@ export const getDiaryComments = async (
           isLike: {
             $cond: {
               if: {
-                $in: [
-                  new Types.ObjectId(diaryId),
-                  "$diaryCommentLikes.diaryId",
-                ],
+                $in: [new Types.ObjectId(userId), "$diaryCommentLikes.userId"],
               },
               then: true,
               else: false,
             },
           },
-          // 필요한 다른 필드들 추가
         },
       },
     ]);

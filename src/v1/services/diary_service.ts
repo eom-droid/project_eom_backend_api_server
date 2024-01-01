@@ -243,11 +243,13 @@ export const deleteDiaryLike = async (diaryId: string, userId: string) => {
 
 export const getDiaryComments = async (
   diaryId: string,
+  userId: string,
   paginateReq: PaginateReqModel
 ) => {
   try {
     const result = await diaryCommentRepository.getDiaryComments(
       diaryId,
+      userId,
       paginateReq
     );
 
@@ -312,6 +314,10 @@ export const deleteDiaryComment = async (
       }
     }
     const result = await diaryCommentRepository.deleteDiaryComment(commentId);
+    const diaryCommentLikeDeleteResult =
+      await diaryCommentLikeRepository.deleteDiaryCommentLikeByCommentId(
+        commentId
+      );
     return result;
   } catch (error: any) {
     throw error;

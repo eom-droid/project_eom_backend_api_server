@@ -1,7 +1,10 @@
 import express from "express";
 import * as diaryController from "../controllers/diary_controller";
 import { multerMiddleware } from "../middlewares/multer_middleware";
-import { idParamValidation } from "../middlewares/id_param_middleware";
+import {
+  commentIdParamValidation,
+  idParamValidation,
+} from "../middlewares/id_param_middleware";
 import { diaryQueryValidation } from "../middlewares/diary/query_middleware";
 import { diaryBodyValidation } from "../middlewares/diary/body_middleware";
 import { validate } from "../middlewares/validate_middleware";
@@ -37,9 +40,9 @@ diaryRouter.get(
  */
 diaryRouter.get(
   "/:id/detail",
-  // authCheck({
-  //   role: RoleType.USER,
-  // }),
+  authCheck({
+    role: RoleType.USER,
+  }),
   validate(idParamValidation),
   // 여기 추후에 변경 필요 불필요 요청인가 생각해보기!!!
   checkIdExistMiddleware(DiaryModel, DataPassType.PARAMS),
@@ -143,10 +146,10 @@ diaryRouter.delete(
  */
 diaryRouter.get(
   "/:id/comment",
-  // authCheck({
-  //   role: RoleType.USER,
-  //   userRequire: true,
-  // }),
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
   validate(idParamValidation),
   checkIdExistMiddleware(DiaryModel),
   diaryController.getDiaryComments
@@ -169,11 +172,11 @@ diaryRouter.post(
 );
 
 /**
- * @PATCH /api/v1/diaries/{id}/comment
+ * @PATCH /api/v1/diaries/{id}/comment/{:id}
  * @DESC update diary comment
  */
 diaryRouter.patch(
-  "/:id/comment",
+  "/:id/comment/:commentId",
 
   authCheck({
     role: RoleType.USER,
@@ -188,20 +191,18 @@ diaryRouter.patch(
 );
 
 /**
- * @DELETE /api/v1/diaries/{id}/comment
+ * @DELETE /api/v1/diaries/{id}/comment/{:id}
  * @DESC delete diary comment
  */
 diaryRouter.delete(
-  "/:id/comment",
+  "/:diaryId/comment/:id",
   authCheck({
     role: RoleType.USER,
     userRequire: true,
   }),
   // 존재여부 확인
   validate(idParamValidation),
-  // validate(id),
-  // diary의 존재 여부는 중요하지 않음
-  checkIdExistMiddleware(DiaryCommentModel, DataPassType.BODY, "commentId"),
+  checkIdExistMiddleware(DiaryCommentModel),
   diaryController.deleteDiaryComment
 );
 

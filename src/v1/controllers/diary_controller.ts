@@ -177,8 +177,13 @@ export const getDiaryComments = async (
   try {
     const { id } = req.params;
     const paginateReq = new PaginateReqModel(req.query);
+    console.log(req.decoded);
 
-    const data = await diaryService.getDiaryComments(id, paginateReq);
+    const data = await diaryService.getDiaryComments(
+      id,
+      req.decoded!.id,
+      paginateReq
+    );
 
     return res.status(200).send(data);
   } catch (error: any) {
@@ -200,9 +205,11 @@ export const createDiaryComment = async (
     const userId = req.decoded!.id;
     const { content } = req.body;
 
-    await diaryService.createDiaryComment(id, userId, content);
+    const result = await diaryService.createDiaryComment(id, userId, content);
 
-    return res.status(200).send({ status: "SUCCESS" });
+    // _id는 object이기 때문에 string으로 변환해줘야 함
+    // 아니면 받을때 "" 값도 같이 받게됨
+    return res.status(200).send(result._id.toString());
   } catch (error: any) {
     next(error);
   }
@@ -220,9 +227,9 @@ export const deleteDiaryComment = async (
   try {
     const userId = req.decoded!.id;
     const userRole = numberToRoleType(req.user!.role);
-    const { commentId } = req.body;
+    const { id } = req.params;
 
-    await diaryService.deleteDiaryComment(commentId, userId, userRole);
+    await diaryService.deleteDiaryComment(id, userId, userRole);
 
     return res.status(200).send({ status: "SUCCESS" });
   } catch (error: any) {
