@@ -7,6 +7,7 @@ import { Diary } from "../models/diary_model";
 
 import * as diaryRepository from "../repositorys/diary_repository";
 import * as diaryCommentRepository from "../repositorys/diary_comment_repository";
+import * as diaryReplyRepository from "../repositorys/diary_reply_repository";
 import * as diaryLikeRepository from "../repositorys/diary_like_repository";
 import * as diaryCommentLikeRepository from "../repositorys/diary_comment_like_repository";
 import { AWSUtils } from "../../utils/aws_utils";
@@ -408,6 +409,55 @@ export const deleteDiaryCommentLike = async (
       );
     }
     return;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC get diary comment's reply
+ * diary에 댓글의 댓글을 가져옴
+ */
+export const getDiaryReplys = async (
+  commentId: string,
+  userId: string,
+  paginateReq: PaginateReqModel
+) => {
+  try {
+    const result = await diaryReplyRepository.getDiaryReplys(
+      commentId,
+      userId,
+      paginateReq
+    );
+
+    return new PaginateResModel({
+      meta: {
+        count: result.length,
+        hasMore: result.length === paginateReq.count,
+      },
+      data: result,
+    });
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC create diary reply
+ * diary에 댓글의 댓글을 생성함
+ */
+export const createDiaryReply = async (
+  commentId: string,
+  userId: string,
+  content: string
+) => {
+  try {
+    const result = await diaryReplyRepository.createDiaryReply(
+      commentId,
+      userId,
+      content
+    );
+    return result;
   } catch (error: any) {
     throw error;
   }

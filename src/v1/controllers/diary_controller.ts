@@ -177,7 +177,6 @@ export const getDiaryComments = async (
   try {
     const { id } = req.params;
     const paginateReq = new PaginateReqModel(req.query);
-    console.log(req.decoded);
 
     const data = await diaryService.getDiaryComments(
       id,
@@ -298,6 +297,55 @@ export const deleteDiaryCommentLike = async (
     await diaryService.deleteDiaryCommentLike(id, userId);
 
     return res.status(200).send({ status: "SUCCESS" });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC get diary comment's reply
+ * diary에 댓글의 대댓글을 가져옴
+ */
+export const getDiaryReplys = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const paginateReq = new PaginateReqModel(req.query);
+
+    const data = await diaryService.getDiaryReplys(
+      id,
+      req.decoded!.id,
+      paginateReq
+    );
+
+    return res.status(200).send(data);
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC create diary reply
+ * diary에 댓글의 대댓글을 생성함
+ */
+export const createDiaryReply = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const userId = req.decoded!.id;
+    const { content } = req.body;
+
+    const result = await diaryService.createDiaryReply(id, userId, content);
+
+    // _id는 object이기 때문에 string으로 변환해줘야 함
+    // 아니면 받을때 "" 값도 같이 받게됨
+    return res.status(200).send(result._id.toString());
   } catch (error: any) {
     next(error);
   }

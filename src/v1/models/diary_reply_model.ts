@@ -19,11 +19,6 @@ const DiaryReplySchema = new Schema(
       type: String,
       required: true,
     },
-    // isDeleted : 삭제 여부
-    isDeleted: {
-      type: Boolean,
-      required: false,
-    },
   },
   {
     timestamps: {

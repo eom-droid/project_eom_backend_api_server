@@ -66,14 +66,7 @@ const server = async () => {
   // repository : DB에 접근하는 부분을 담당하며 mongoose를 통해 DB에 접근함
   app.use("/api/v1/diaries", diaryRouter);
   app.use("/api/v1/musics", musicRouter);
-  app.use(
-    "/api/v1/auth",
-    (req: Request, res: Response, next: NextFunction) => {
-      console.log("authRouter");
-      next();
-    },
-    authRouter
-  );
+  app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/user", userRouter);
 
   // 404 에러를 처리하는 부분

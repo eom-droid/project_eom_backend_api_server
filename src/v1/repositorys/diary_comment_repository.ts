@@ -17,9 +17,8 @@ export const getDiaryComments = async (
     const result = await DiaryCommentModel.aggregate([
       {
         $match: {
-          // diaryId가 일치하고, isDeleted가 false인 것만 가져옴
+          // diaryId가 일치하고
           diaryId: new Types.ObjectId(diaryId),
-          isDeleted: { $ne: true },
           // after값을 삽입하여 이후의 document만 가져옴
           ...filterQuery,
         },
@@ -46,6 +45,15 @@ export const getDiaryComments = async (
           as: "writer",
         },
       },
+      // lookup을 통해 reply의 count를 가져옴
+      {
+        $lookup: {
+          from: "diaryreplies",
+          localField: "_id",
+          foreignField: "commentId",
+          as: "reply",
+        },
+      },
       // $unwind는 배열을 풀어서 하나의 document로 만들어줌
       {
         $unwind: "$writer",
@@ -66,6 +74,7 @@ export const getDiaryComments = async (
               else: false,
             },
           },
+          replyCount: { $size: "$reply" },
         },
       },
     ]);
@@ -119,21 +128,6 @@ export const deleteDiaryComment = async (commentId: string) => {
     });
     return result;
   } catch (error: any) {
-    throw error;
-  }
-};
-
-/**
- * @DESC patch isDeleted diary comment
- * diary의 댓글을 삭제함
- */
-export const patchDiaryCommentIsDeletedTrue = async (
-  commentId: string
-): Promise<void> => {
-  try {
-    await DiaryCommentModel.updateOne({ _id: commentId }, { isDeleted: true });
-    return;
-  } catch (error) {
     throw error;
   }
 };

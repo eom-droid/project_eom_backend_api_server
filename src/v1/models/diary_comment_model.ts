@@ -23,11 +23,11 @@ const DiaryCommentSchema = new Schema(
       type: String,
       required: true,
     },
-    // isDeleted : 삭제 여부
-    isDeleted: {
-      type: Boolean,
-      required: false,
-    },
+    // // isDeleted : 삭제 여부 // 왜 넣었는지 모르겠음
+    // isDeleted: {
+    //   type: Boolean,
+    //   required: false,
+    // },
   },
   {
     timestamps: {

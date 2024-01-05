@@ -1,0 +1,156 @@
+import { Types } from "mongoose";
+import { PaginateReqModel } from "../../models/paginate_req_model";
+import { DiaryReplyModel } from "../models/diary_reply_model";
+
+/**
+ * @DESC get diary Replys
+ * diary의 대댓글을 가져옴
+ */
+export const getDiaryReplys = async (
+  commentId: string,
+  userId: string,
+  paginateReq: PaginateReqModel
+) => {
+  try {
+    const filterQuery = paginateReq.generateQuery();
+    const result = await DiaryReplyModel.aggregate([
+      {
+        $match: {
+          // commentId가 일치하고
+          commentId: new Types.ObjectId(commentId),
+          // after값을 삽입하여 이후의 document만 가져옴
+          ...filterQuery,
+        },
+      },
+      // _id를 기준으로 정렬함
+      { $sort: { _id: 1 } },
+      // limit을 통해 가져올 document의 개수를 정함
+      { $limit: paginateReq.count },
+      // lookup을 통해 diaryCommentLikes 정보를 가져옴
+      {
+        $lookup: {
+          from: "diaryreplylikes",
+          localField: "_id",
+          foreignField: "replyId",
+          as: "diaryReplyLikes",
+        },
+      },
+      // lookup을 통해 user 정보를 가져옴
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "writer",
+        },
+      },
+      // $unwind는 배열을 풀어서 하나의 document로 만들어줌
+      {
+        $unwind: "$writer",
+      },
+      {
+        $project: {
+          _id: 1,
+          writer: "$writer",
+          content: 1,
+          createdAt: 1,
+          likeCount: { $size: "$diaryReplyLikes" },
+          isLike: {
+            $cond: {
+              if: {
+                $in: [new Types.ObjectId(userId), "$diaryReplyLikes.userId"],
+              },
+              then: true,
+              else: false,
+            },
+          },
+        },
+      },
+    ]);
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// /**
+//  * @DESC get diary comment by id
+//  * diary의 댓글을 id로 가져옴
+//  */
+// export const getDiaryCommentById = async (commentId: string) => {
+//   try {
+//     return await DiaryCommentModel.findById(commentId);
+//   } catch (e) {
+//     throw e;
+//   }
+// };
+
+/**
+ * @DESC create diary reply
+ * diary에 대댓글을 생성함
+ */
+export const createDiaryReply = async (
+  commentId: string,
+  userId: string,
+  content: string
+) => {
+  try {
+    const result = await DiaryReplyModel.create({
+      commentId: commentId,
+      userId: userId,
+      content: content,
+    });
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+// /**
+//  * @DESC delete diary comment
+//  * diary에 댓글을 삭제함
+//  */
+// export const deleteDiaryComment = async (commentId: string) => {
+//   try {
+//     const result = await DiaryCommentModel.deleteOne({
+//       _id: commentId,
+//     });
+//     return result;
+//   } catch (error: any) {
+//     throw error;
+//   }
+// };
+
+// /**
+//  * @DESC patch isDeleted diary comment
+//  * diary의 댓글을 삭제함
+//  */
+// export const patchDiaryCommentIsDeletedTrue = async (
+//   commentId: string
+// ): Promise<void> => {
+//   try {
+//     await DiaryCommentModel.updateOne({ _id: commentId }, { isDeleted: true });
+//     return;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+
+// /**
+//  * @DESC update diary comment
+//  * diary에 댓글을 수정함
+//  */
+// export const updateDiaryComment = async (
+//   commentId: string,
+//   content: string
+// ) => {
+//   try {
+//     const result = await DiaryCommentModel.updateOne(
+//       { _id: commentId },
+//       { content: content }
+//     );
+//     return result;
+//   } catch (error: any) {
+//     throw error;
+//   }
+// };

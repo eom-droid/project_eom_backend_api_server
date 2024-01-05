@@ -249,3 +249,33 @@ diaryRouter.delete(
   checkIdExistMiddleware(DiaryCommentModel),
   diaryController.deleteDiaryCommentLike
 );
+
+/**
+ * @GET /api/v1/diaries/{diaryId}/comment/{:id}/reply
+ * @DESC get diary comment's reply
+ */
+diaryRouter.get(
+  "/:diaryId/comment/:id/reply",
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
+  validate(idParamValidation),
+  checkIdExistMiddleware(DiaryCommentModel),
+  diaryController.getDiaryReplys
+);
+
+/**
+ * @POST /api/v1/diaries/{diaryId}/comment/{:id}/reply
+ * @DESC post diary comment's reply
+ */
+diaryRouter.post(
+  "/:diaryId/comment/:id/reply",
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
+  validate(idParamValidation),
+  checkIdExistMiddleware(DiaryCommentModel),
+  diaryController.createDiaryReply
+);
