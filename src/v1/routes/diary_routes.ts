@@ -14,6 +14,8 @@ import { DiaryModel } from "../models/diary_model";
 import { DIARY, DataPassType, RoleType } from "../../constant/default";
 import { authCheck } from "../middlewares/authenticate_middleware";
 import { DiaryCommentModel } from "../models/diary_comment_model";
+import { DiaryReplyLikeModel } from "../models/diary_reply_like_model";
+import { DiaryReplyModel } from "../models/diary_reply_model";
 
 export const diaryRouter = express.Router();
 
@@ -217,21 +219,8 @@ diaryRouter.post(
     role: RoleType.USER,
     userRequire: true,
   }),
-  (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.log("before validate");
-    next();
-  },
   validate(idParamValidation),
-  (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.log("after validate");
-    next();
-  },
   checkIdExistMiddleware(DiaryCommentModel),
-  (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.log("after checkIdExistMiddleware");
-    next();
-  },
-
   diaryController.createDiaryCommentLike
 );
 
@@ -278,4 +267,34 @@ diaryRouter.post(
   validate(idParamValidation),
   checkIdExistMiddleware(DiaryCommentModel),
   diaryController.createDiaryReply
+);
+
+/**
+ * @POST /api/v1/diaries/{diaryId}/comment/{commentId}/reply/{:id}/like
+ * @DESC like diary comment's reply
+ */
+diaryRouter.post(
+  "/:diaryId/comment/:commentId/reply/:id/like",
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
+  validate(idParamValidation),
+  checkIdExistMiddleware(DiaryReplyModel),
+  diaryController.createDiaryReplyLike
+);
+
+/**
+ * @DELETE /api/v1/diaries/{diaryId}/comment/{commentId}/reply/{:id}/like
+ * @DESC disLike diary comment's reply
+ */
+diaryRouter.delete(
+  "/:diaryId/comment/:commentId/reply/:id/like",
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
+  validate(idParamValidation),
+  checkIdExistMiddleware(DiaryReplyModel),
+  diaryController.deleteDiaryReplyLike
 );

@@ -10,6 +10,7 @@ import * as diaryCommentRepository from "../repositorys/diary_comment_repository
 import * as diaryReplyRepository from "../repositorys/diary_reply_repository";
 import * as diaryLikeRepository from "../repositorys/diary_like_repository";
 import * as diaryCommentLikeRepository from "../repositorys/diary_comment_like_repository";
+import * as diaryReplyLikeRepository from "../repositorys/diary_reply_like_repository";
 import { AWSUtils } from "../../utils/aws_utils";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import { DiaryLikeModel } from "../models/diary_like_model";
@@ -458,6 +459,48 @@ export const createDiaryReply = async (
       content
     );
     return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC create diary reply like
+ * diary에 대댓글 좋아요함
+ */
+export const createDiaryReplyLike = async (replyId: string, userId: string) => {
+  try {
+    // diary comment에 대한 존재 여부는 확인할 필요가 없음 --> middleware에서 확인함
+    const result = await diaryReplyLikeRepository.getDiaryReplyLike(
+      replyId,
+      userId
+    );
+    // 좋아요를 한적이 없다면
+    if (result === null) {
+      await diaryReplyLikeRepository.createDiaryReplyLike(replyId, userId);
+    }
+    return;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC delete diary reply like
+ * diary에 대댓글 좋아요 취소함
+ */
+export const deleteDiaryReplyLike = async (replyId: string, userId: string) => {
+  try {
+    // diary comment에 대한 존재 여부는 확인할 필요가 없음 --> middleware에서 확인함
+    const result = await diaryReplyLikeRepository.getDiaryReplyLike(
+      replyId,
+      userId
+    );
+    // 좋아요를 한적이 있다면
+    if (result !== null) {
+      await diaryReplyLikeRepository.deleteDiaryReplyLike(replyId, userId);
+    }
+    return;
   } catch (error: any) {
     throw error;
   }

@@ -13,7 +13,7 @@ export const getDiaryComments = async (
   paginateReq: PaginateReqModel
 ) => {
   try {
-    const filterQuery = paginateReq.generateQuery();
+    const filterQuery = paginateReq.generateQuery(true);
     const result = await DiaryCommentModel.aggregate([
       {
         $match: {

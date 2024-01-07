@@ -16,6 +16,7 @@ export const checkIdExistMiddleware = (
     try {
       key = key ?? "id";
       var id = null;
+
       switch (dataPassBy) {
         case DataPassType.PARAMS:
           id = req.params[key];

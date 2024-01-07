@@ -12,7 +12,8 @@ export const getDiaryReplys = async (
   paginateReq: PaginateReqModel
 ) => {
   try {
-    const filterQuery = paginateReq.generateQuery();
+    const filterQuery = paginateReq.generateQuery(true);
+
     const result = await DiaryReplyModel.aggregate([
       {
         $match: {

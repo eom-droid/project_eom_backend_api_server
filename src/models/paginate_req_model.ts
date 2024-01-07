@@ -20,13 +20,19 @@ export class PaginateReqModel {
       });
     }
   }
-  generateQuery() {
+  generateQuery(greaterThan: boolean) {
     const query: any = {};
 
     if (this.after !== undefined) {
-      query._id = {
-        $lt: new Types.ObjectId(this.after),
-      };
+      if (greaterThan) {
+        query._id = {
+          $gt: new Types.ObjectId(this.after),
+        };
+      } else {
+        query._id = {
+          $lt: new Types.ObjectId(this.after),
+        };
+      }
     }
 
     return query;
@@ -51,7 +57,7 @@ export class DiaryPaginateReqModel extends PaginateReqModel {
   }
 
   generateQuery() {
-    const query = super.generateQuery();
+    const query = super.generateQuery(false);
 
     if (this.category !== undefined) {
       query.category = this.category;

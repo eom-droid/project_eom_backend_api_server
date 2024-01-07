@@ -4,13 +4,13 @@ const DiaryReplySchema = new Schema(
   {
     // user : 작성자 ID
     userId: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: true,
       ref: "user",
     },
     // comment : 댓글 ID
     commentId: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: true,
       ref: "diary",
     },

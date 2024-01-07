@@ -91,7 +91,6 @@ export const getDiaries = async (
     const paginateReq = new DiaryPaginateReqModel(req.query);
 
     const data = await diaryService.getDiaries(paginateReq, req.decoded!.id);
-    console.log(data);
     return res.status(200).send(data);
   } catch (error: any) {
     next(error);
@@ -346,6 +345,52 @@ export const createDiaryReply = async (
     // _id는 object이기 때문에 string으로 변환해줘야 함
     // 아니면 받을때 "" 값도 같이 받게됨
     return res.status(200).send(result._id.toString());
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC like reply
+ * reply를 좋아요함
+ */
+export const createDiaryReplyLike = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  console.log("createDiaryReplyLike");
+  try {
+    const { id } = req.params;
+    // middleware에서 decode를 했고, validate를 진행했기 때문에 여기서는 id만 가져오면 됨
+    const userId = req.decoded!.id;
+
+    await diaryService.createDiaryReplyLike(id, userId);
+
+    return res.status(200).send({ status: "SUCCESS" });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC unlike reply
+ * reply를 좋아요 취소함
+ */
+export const deleteDiaryReplyLike = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  console.log("deleteDiaryReplyLike");
+  try {
+    const { id } = req.params;
+    // middleware에서 decode를 했고, validate를 진행했기 때문에 여기서는 id만 가져오면 됨
+    const userId = req.decoded!.id;
+
+    await diaryService.deleteDiaryReplyLike(id, userId);
+
+    return res.status(200).send({ status: "SUCCESS" });
   } catch (error: any) {
     next(error);
   }
