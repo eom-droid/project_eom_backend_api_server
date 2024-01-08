@@ -178,8 +178,7 @@ diaryRouter.post(
  * @DESC update diary comment
  */
 diaryRouter.patch(
-  "/:id/comment/:commentId",
-
+  "/:diaryId/comment/:id",
   authCheck({
     role: RoleType.USER,
     userRequire: true,
@@ -188,7 +187,7 @@ diaryRouter.patch(
   validate(idParamValidation),
   // validate(id),
   // diary의 존재 여부는 중요하지 않음
-  checkIdExistMiddleware(DiaryCommentModel, DataPassType.BODY, "commentId"),
+  checkIdExistMiddleware(DiaryCommentModel),
   diaryController.updateDiaryComment
 );
 
@@ -267,6 +266,36 @@ diaryRouter.post(
   validate(idParamValidation),
   checkIdExistMiddleware(DiaryCommentModel),
   diaryController.createDiaryReply
+);
+
+/**
+ * @DELETE /api/v1/diaries/{diaryId}/comment/{commentId}/reply/{:id}
+ * @DESC delete diary comment's reply
+ */
+diaryRouter.delete(
+  "/:diaryId/comment/:commentId/reply/:id",
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
+  validate(idParamValidation),
+  checkIdExistMiddleware(DiaryReplyModel),
+  diaryController.deleteDiaryReply
+);
+
+/**
+ * @PATCH /api/v1/diaries/{diaryId}/comment/{commentId}/reply/{:id}
+ * @DESC update diary comment's reply
+ */
+diaryRouter.patch(
+  "/:diaryId/comment/:commentId/reply/:id",
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
+  validate(idParamValidation),
+  checkIdExistMiddleware(DiaryReplyModel),
+  diaryController.updateDiaryReply
 );
 
 /**

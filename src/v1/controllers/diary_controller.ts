@@ -246,9 +246,10 @@ export const updateDiaryComment = async (
 ) => {
   try {
     const userId = req.decoded!.id;
-    const { commentId, content } = req.body;
+    const { id } = req.params;
+    const { content } = req.body;
 
-    await diaryService.updateDiaryComment(commentId, userId, content);
+    await diaryService.updateDiaryComment(id, userId, content);
 
     return res.status(200).send({ status: "SUCCESS" });
   } catch (error: any) {
@@ -345,6 +346,50 @@ export const createDiaryReply = async (
     // _id는 object이기 때문에 string으로 변환해줘야 함
     // 아니면 받을때 "" 값도 같이 받게됨
     return res.status(200).send(result._id.toString());
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC delete diary reply
+ * diary에 댓글의 대댓글을 삭제함
+ */
+export const deleteDiaryReply = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.decoded!.id;
+    const userRole = numberToRoleType(req.user!.role);
+    const { id } = req.params;
+
+    await diaryService.deleteDiaryReply(id, userId, userRole);
+
+    return res.status(200).send({ status: "SUCCESS" });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC update diary reply
+ * diary에 댓글의 대댓글을 수정함
+ */
+export const updateDiaryReply = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.decoded!.id;
+    const { id } = req.params;
+    const { content } = req.body;
+
+    await diaryService.updateDiaryReply(id, userId, content);
+
+    return res.status(200).send({ status: "SUCCESS" });
   } catch (error: any) {
     next(error);
   }

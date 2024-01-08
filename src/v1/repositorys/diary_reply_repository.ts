@@ -74,17 +74,17 @@ export const getDiaryReplys = async (
   }
 };
 
-// /**
-//  * @DESC get diary comment by id
-//  * diary의 댓글을 id로 가져옴
-//  */
-// export const getDiaryCommentById = async (commentId: string) => {
-//   try {
-//     return await DiaryCommentModel.findById(commentId);
-//   } catch (e) {
-//     throw e;
-//   }
-// };
+/**
+ * @DESC get diary reply by id
+ * diary의 대댓글을 id로 가져옴
+ */
+export const getDiaryReplyById = async (replyId: string) => {
+  try {
+    return await DiaryReplyModel.findById(replyId);
+  } catch (e) {
+    throw e;
+  }
+};
 
 /**
  * @DESC create diary reply
@@ -107,35 +107,36 @@ export const createDiaryReply = async (
   }
 };
 
-// /**
-//  * @DESC delete diary comment
-//  * diary에 댓글을 삭제함
-//  */
-// export const deleteDiaryComment = async (commentId: string) => {
-//   try {
-//     const result = await DiaryCommentModel.deleteOne({
-//       _id: commentId,
-//     });
-//     return result;
-//   } catch (error: any) {
-//     throw error;
-//   }
-// };
+/**
+ * @DESC delete diary reply
+ * diary의 대댓글을 삭제함
+ */
+export const deleteDiaryReply = async (replyId: string) => {
+  try {
+    const result = await DiaryReplyModel.deleteOne({
+      _id: replyId,
+    });
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
 
-// /**
-//  * @DESC patch isDeleted diary comment
-//  * diary의 댓글을 삭제함
-//  */
-// export const patchDiaryCommentIsDeletedTrue = async (
-//   commentId: string
-// ): Promise<void> => {
-//   try {
-//     await DiaryCommentModel.updateOne({ _id: commentId }, { isDeleted: true });
-//     return;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
+/**
+ * @DESC update diary reply
+ * diary에 대댓글을 수정함
+ */
+export const updateDiaryReply = async (replyId: string, content: string) => {
+  try {
+    const result = await DiaryReplyModel.updateOne(
+      { _id: replyId },
+      { content: content }
+    );
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
 
 // /**
 //  * @DESC update diary comment

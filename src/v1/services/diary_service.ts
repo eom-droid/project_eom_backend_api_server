@@ -308,7 +308,7 @@ export const deleteDiaryComment = async (
           message: "값이 존재하지 않습니다.",
         });
       }
-      if (comment.userId !== new Types.ObjectId(userId)) {
+      if (comment.userId.toString() !== userId) {
         throw new CustomHttpErrorModel({
           status: 400,
           message: "권한이 없습니다.",
@@ -338,13 +338,15 @@ export const updateDiaryComment = async (
 ) => {
   try {
     const comment = await diaryCommentRepository.getDiaryCommentById(commentId);
+    console.log("comment.userId: ", comment?.userId);
+    console.log("userId: ", userId);
     if (comment == null) {
       throw new CustomHttpErrorModel({
         status: 400,
         message: "값이 존재하지 않습니다.",
       });
     }
-    if (comment.userId !== new Types.ObjectId(userId)) {
+    if (comment.userId.toString() !== userId) {
       throw new CustomHttpErrorModel({
         status: 400,
         message: "권한이 없습니다.",
@@ -456,6 +458,75 @@ export const createDiaryReply = async (
     const result = await diaryReplyRepository.createDiaryReply(
       commentId,
       userId,
+      content
+    );
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC delete diary reply
+ * diary에 댓글의 댓글을 삭제함
+ */
+export const deleteDiaryReply = async (
+  replyId: string,
+  userId: string,
+  userRole: RoleType
+) => {
+  try {
+    if (userRole !== RoleType.ADMIN) {
+      const reply = await diaryReplyRepository.getDiaryReplyById(replyId);
+      if (reply == null) {
+        throw new CustomHttpErrorModel({
+          status: 400,
+          message: "값이 존재하지 않습니다.",
+        });
+      }
+      if (reply.userId.toString() !== userId) {
+        throw new CustomHttpErrorModel({
+          status: 400,
+          message: "권한이 없습니다.",
+        });
+      }
+    }
+    const result = await diaryReplyRepository.deleteDiaryReply(replyId);
+    const diaryReplyLikeDeleteResult =
+      await diaryReplyLikeRepository.deleteDiaryReplyLikeByReplyId(replyId);
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC update diary reply
+ * diary에 댓글의 댓글을 수정함
+ */
+export const updateDiaryReply = async (
+  replyId: string,
+  userId: string,
+  content: string
+) => {
+  try {
+    // 불필요할 가능성이 있음 -> middleware에서 확인함
+    const reply = await diaryReplyRepository.getDiaryReplyById(replyId);
+    if (reply == null) {
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "값이 존재하지 않습니다.",
+      });
+    }
+    if (reply.userId.toString() !== userId) {
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "권한이 없습니다.",
+      });
+    }
+
+    const result = await diaryReplyRepository.updateDiaryReply(
+      replyId,
       content
     );
     return result;
