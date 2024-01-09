@@ -24,7 +24,7 @@ export const createMusic = async (music: Music) => {
  */
 export const getMusics = async (paginateReq: PaginateReqModel) => {
   try {
-    var filterQuery = paginateReq.generateQuery();
+    var filterQuery = paginateReq.generateQuery(false);
 
     return await MusicModel.find(filterQuery)
       .sort({ createdAt: -1 })
