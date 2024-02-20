@@ -49,3 +49,14 @@ export const updateUserPassword = async (email: string, password: string) => {
     throw error;
   }
 };
+
+export const updateNickname = async (userId: string, nickname: string) => {
+  try {
+    return await UserModel.findOneAndUpdate(
+      { _id: new Types.ObjectId(userId) },
+      { nickname }
+    );
+  } catch (error) {
+    throw error;
+  }
+};

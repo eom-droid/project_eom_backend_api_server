@@ -21,3 +21,16 @@ userRouter.get(
   }),
   userController.getMyInfo
 );
+
+/**
+ * @PATCH /api/v1/user/update/nickname
+ * @DESC 닉네임 변경
+ */
+
+userRouter.patch(
+  "/me/nickname",
+  authCheck({
+    role: RoleType.USER,
+  }),
+  userController.updateNickname
+);

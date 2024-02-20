@@ -38,7 +38,9 @@ const server = async () => {
     // REDIS_PORT,
   } = process.env;
 
+  // express.json() 설명 : https://expressjs.com/ko/api.html#express.json
   app.use(express.json());
+  // express.urlencoded() 설명 : https://expressjs.com/ko/api.html#express.urlencoded
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser(COOKIE_SECRET));
   // .env 파일 내에 있는 변수들을 불러옴

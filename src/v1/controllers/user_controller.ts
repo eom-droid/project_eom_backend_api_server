@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
+import * as userService from "../services/user_service";
 
 export const getMyInfo = async (
   req: Request,
@@ -34,6 +35,33 @@ export const getMyInfo = async (
     user.password = undefined;
 
     return res.status(200).json(user);
+
+    // return res.status(200).send({ status: "SUCCESS", user });
+  } catch (error: any) {
+    console.log(error);
+    next(error);
+  }
+};
+
+export const updateNickname = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { nickname } = req.body;
+
+    if (!nickname) {
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "닉네임이 없습니다.",
+      });
+    }
+
+    const userId = req.decoded!.id;
+    await userService.updateNickname(userId, nickname);
+
+    return res.status(200).json({});
 
     // return res.status(200).send({ status: "SUCCESS", user });
   } catch (error: any) {
