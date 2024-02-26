@@ -10,10 +10,18 @@ import { accessLogStream } from "./utils/log_utils";
 import { PRODUCTION } from "./constant/default";
 import cookieParser from "cookie-parser";
 import { Redis } from "./redis/redis";
+import cors from "cors";
 
 // 반복적으로 나오는 try catch나 에러 처리 같은 경우에는 express에 미들웨어를 통해 진행함
 const server = async () => {
   const app = express();
+  app.use(
+    cors({
+      origin: "http://localhost:5173", // 접근 권한을 부여하는 도메인
+      credentials: true, // 응답 헤더에 Access-Control-Allow-Credentials 추가
+      optionsSuccessStatus: 200, // 응답 상태 200으로 설정
+    })
+  );
 
   if (process.env.NODE_ENV === PRODUCTION) {
     app.use(
