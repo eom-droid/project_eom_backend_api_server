@@ -10,6 +10,8 @@ export const S3AlbumCoverPath = "eom/music/albumCover/";
 export const ProviderType = {
   KAKAO: "kakao",
   GOOGLE: "google",
+  NAVER: "naver",
+  APPLE: "apple",
 } as const;
 export type ProviderType = (typeof ProviderType)[keyof typeof ProviderType];
 

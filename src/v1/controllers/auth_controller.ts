@@ -7,7 +7,7 @@ import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 /**
  * @DESC get kakao token
  * @RETURN kakao
- * 오직 rest api만 사용 가능 추후 flutter sdk를 사용하여 진행할 예정
+ * 오직 rest api만 사용 가능
  */
 export const kakaoJoin = async (
   req: Request,
@@ -16,6 +16,7 @@ export const kakaoJoin = async (
 ) => {
   try {
     const { code } = req.body;
+
     const userId = (await authService.createKakaoUserByWeb(
       code
     ))!._id.toString();
@@ -26,7 +27,37 @@ export const kakaoJoin = async (
     return res
       .status(200)
       .cookie("refreshToken", refreshToken, CookieOption)
-      .json({ accessToken });
+      .json({ accessToken, refreshToken });
+  } catch (error: any) {
+    // 각 컨트롤러 별 예상가능한 에러에 대해서 종합 필요
+    next(error);
+  }
+};
+
+/**
+ * @DESC get google token
+ * @RETURN google
+ * 오직 rest api만 사용 가능
+ */
+export const googleJoin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { code } = req.body;
+
+    const userId = (await authService.createGoogleUserByWeb(
+      code
+    ))!._id.toString();
+
+    const refreshToken: string = await AuthUtils.createRefreshToken(userId);
+    const accessToken: string = AuthUtils.createAccessToken(userId);
+
+    return res
+      .status(200)
+      .cookie("refreshToken", refreshToken, CookieOption)
+      .json({ accessToken, refreshToken });
   } catch (error: any) {
     // 각 컨트롤러 별 예상가능한 에러에 대해서 종합 필요
     next(error);
@@ -209,7 +240,7 @@ export const emailLogin = async (
     return res
       .status(200)
       .cookie("refreshToken", refreshToken, CookieOption)
-      .json({ accessToken });
+      .json({ accessToken, refreshToken });
   } catch (error: any) {
     next(error);
   }

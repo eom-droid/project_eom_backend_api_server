@@ -171,13 +171,21 @@ export const deleteEmailVerify = async (email: string) => {
  */
 export const createKakaoUserByWeb = async (code: string) => {
   try {
+    const { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI } = process.env;
+
+    if (KAKAO_REDIRECT_URI === undefined || KAKAO_REST_API_KEY === undefined) {
+      throw new CustomHttpErrorModel({
+        status: 500,
+        message: "something went wrong",
+      });
+    }
     // 1. 사용자가 발급받은 코드를 이용하여 토큰을 발급받는다.
     const result = await axios.post(
       "https://kauth.kakao.com/oauth/token",
       {
         grant_type: "authorization_code",
-        client_id: process.env.KAKAO_REST_API_KEY,
-        redirect_uri: "http://localhost:13001/kakaoCallback",
+        client_id: KAKAO_REST_API_KEY,
+        redirect_uri: KAKAO_REDIRECT_URI,
         code: code,
       },
       {
@@ -191,6 +199,62 @@ export const createKakaoUserByWeb = async (code: string) => {
 
     return getUserByKakaoToken(kakaoAccessToken);
   } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC create new member with google
+ */
+export const createGoogleUserByWeb = async (code: string) => {
+  try {
+    const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } =
+      process.env;
+    if (
+      GOOGLE_CLIENT_ID === undefined ||
+      GOOGLE_CLIENT_SECRET === undefined ||
+      GOOGLE_REDIRECT_URI === undefined
+    ) {
+      throw new CustomHttpErrorModel({
+        status: 500,
+        message: "something went wrong",
+      });
+    }
+
+    // 1. 사용자가 발급받은 코드를 이용하여 토큰을 발급받는다.
+    const result = await axios.post(
+      "https://oauth2.googleapis.com/token" +
+        "?code=" +
+        code +
+        "&client_id=" +
+        GOOGLE_CLIENT_ID +
+        "&client_secret=" +
+        GOOGLE_CLIENT_SECRET +
+        "&redirect_uri=" +
+        GOOGLE_REDIRECT_URI +
+        "&grant_type=authorization_code",
+
+      // {
+      //   grant_type: "authorization_code",
+      //   client_id: GOOGLE_CLIENT_ID,
+      //   client_secret: GOOGLE_CLIENT_SECRET,
+      //   redirect_uri: GOOGLE_REDIRECT_URI,
+      //   code: code,
+      // },
+      {
+        headers: {
+          "Content-type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+    const {
+      access_token: googleAccessToken,
+      refresh_token: googleRefreshToken,
+    } = result.data;
+
+    return getUserByGoogleToken(googleAccessToken);
+  } catch (error: any) {
+    console.log(error);
     throw error;
   }
 };
@@ -226,6 +290,37 @@ const getUserByKakaoToken = async (kakaoAccessToken: String) => {
       nickname: userKakao.data.properties.nickname,
       provider: ProviderType.KAKAO,
       snsId: userKakao.data.id,
+      role: RoleType.USER,
+    });
+
+    const createdUser = await authRepository.createUser(userModel);
+    user = createdUser;
+  }
+  return user;
+};
+
+const getUserByGoogleToken = async (googleAccessToken: String) => {
+  // 2. 토큰을 이용하여 사용자 정보를 가져온다.
+  const userGoogle = await axios.get(
+    "https://www.googleapis.com/userinfo/v2/me?access_token=" +
+      googleAccessToken
+  );
+
+  console.log(userGoogle.data);
+
+  const searchedUser = await authRepository.searchSnsUser({
+    snsId: userGoogle.data.id,
+    provider: ProviderType.GOOGLE,
+  });
+
+  let user = searchedUser;
+  if (searchedUser === null) {
+    // 3. User 모델 제작
+    const userModel = new UserModel({
+      email: userGoogle.data.email ?? undefined,
+      nickname: "엄티#" + Math.floor(Math.random() * 1000),
+      provider: ProviderType.GOOGLE,
+      snsId: userGoogle.data.id,
       role: RoleType.USER,
     });
 

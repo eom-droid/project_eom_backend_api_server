@@ -10,6 +10,7 @@ import { loginEmailBodyValidation } from "../middlewares/auth/login_email_body_m
 import * as authController from "../controllers/auth_controller";
 import { joinEmailVerifyBodyValidation } from "../middlewares/auth/join_email_verify_body_middleware";
 import { joinEmailVerificationCodeSendBodyValdiation } from "../middlewares/auth/join_email_verificationCode_send_body_middleware";
+import { joinGoogleBodyValidation } from "../middlewares/auth/join_google_body_middleware";
 export const authRouter = express.Router();
 
 /**
@@ -69,12 +70,22 @@ authRouter.get("/access-token", authController.getAccessToken);
 
 /**
  * @POST /api/v1/auth/join/web/kakao
- * @DESC join kakao
+ * @DESC join or login kakao
  */
 authRouter.post(
   "/join/web/kakao",
   validate(joinKakaoBodyValidation),
   authController.kakaoJoin
+);
+
+/**
+ * @POST /api/v1/auth/join/web/google
+ * @DESC join or login google
+ */
+authRouter.post(
+  "/join/web/google",
+  validate(joinGoogleBodyValidation),
+  authController.googleJoin
 );
 
 /**
