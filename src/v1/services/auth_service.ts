@@ -9,6 +9,8 @@ import { EmailVerifyModel } from "../models/email_verify_model";
 import * as bcrypt from "bcrypt";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import { AuthUtils } from "../../utils/auth_utils";
+import fs from "fs";
+import jwt from "jsonwebtoken";
 
 /**
  * @DESC email login
@@ -253,6 +255,90 @@ export const createGoogleUserByWeb = async (code: string) => {
     } = result.data;
 
     return getUserByGoogleToken(googleAccessToken);
+  } catch (error: any) {
+    console.log(error);
+    throw error;
+  }
+};
+
+/**
+ * @DESC create new member with apple
+ */
+export const createAppleUserByWeb = async (code: string) => {
+  try {
+    const { APPLE_CLIENT_ID, APPLE_KEY_ID, APPLE_TEAM_ID, APPLE_REDIRECT_URL } =
+      process.env;
+    const algorithm = "ES256";
+    const audience = "https://appleid.apple.com";
+    const authkey = fs.readFileSync(
+      process.env.APPLE_AUTH_KEY_PATH as string,
+      "utf-8"
+    );
+
+    // 1. 사용자가 발급받은 코드를 이용하여 토큰을 발급받는다.
+    const client_secret = jwt.sign(
+      {
+        iss: APPLE_TEAM_ID,
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + 86400 * 180,
+        aud: audience,
+        sub: APPLE_CLIENT_ID,
+      },
+      authkey,
+      {
+        algorithm,
+        keyid: APPLE_KEY_ID,
+      }
+    );
+
+    // 2. 토큰을 이용하여 사용자 정보를 가져온다.
+    const response = await axios.post(
+      "https://appleid.apple.com/auth/token",
+      {
+        client_id: APPLE_CLIENT_ID,
+        client_secret,
+        code,
+        grant_type: "authorization_code",
+        redirect_uri: APPLE_REDIRECT_URL,
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    const { sub: appleId } = jwt.decode(
+      response.data.id_token
+    ) as jwt.JwtPayload;
+
+    if (appleId === undefined) {
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "apple id is undefined",
+      });
+    }
+
+    const searchedUser = await authRepository.searchSnsUser({
+      snsId: appleId,
+      provider: ProviderType.APPLE,
+    });
+
+    let user = searchedUser;
+    if (searchedUser === null) {
+      // 3. User 모델 제작
+      const userModel = new UserModel({
+        email: undefined,
+        nickname: "엄티#" + Math.floor(Math.random() * 1000),
+        provider: ProviderType.APPLE,
+        snsId: appleId,
+        role: RoleType.USER,
+      });
+
+      const createdUser = await authRepository.createUser(userModel);
+      user = createdUser;
+    }
+    return user;
   } catch (error: any) {
     console.log(error);
     throw error;

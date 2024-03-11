@@ -11,6 +11,7 @@ import * as authController from "../controllers/auth_controller";
 import { joinEmailVerifyBodyValidation } from "../middlewares/auth/join_email_verify_body_middleware";
 import { joinEmailVerificationCodeSendBodyValdiation } from "../middlewares/auth/join_email_verificationCode_send_body_middleware";
 import { joinGoogleBodyValidation } from "../middlewares/auth/join_google_body_middleware";
+import { joinAppleBodyValidation } from "../middlewares/auth/join_apple_body_middleware";
 export const authRouter = express.Router();
 
 /**
@@ -96,4 +97,14 @@ authRouter.get(
   "/join/app/kakao",
   validate(joinKakaoHeaderValidation),
   authController.kakaoJoinByApp
+);
+
+/**
+ * @POST /api/v1/auth/join/web/apple
+ * @DESC join or login apple
+ */
+authRouter.post(
+  "/join/web/apple",
+  validate(joinAppleBodyValidation),
+  authController.appleJoin
 );

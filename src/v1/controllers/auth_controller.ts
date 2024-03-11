@@ -65,6 +65,39 @@ export const googleJoin = async (
 };
 
 /**
+ * @DESC get apple token
+ * @RETURN apple
+ * 오직 rest api만 사용 가능
+ */
+export const appleJoin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { code } = req.body;
+
+    // const userId = (await authService.createAppleUserByWeb(
+    //   code
+    // ))!._id.toString();
+    const userId = (await authService.createAppleUserByWeb(
+      code
+    ))!._id.toString();
+
+    const refreshToken: string = await AuthUtils.createRefreshToken(userId);
+    const accessToken: string = AuthUtils.createAccessToken(userId);
+
+    return res
+      .status(200)
+      .cookie("refreshToken", refreshToken, CookieOption)
+      .json({ accessToken, refreshToken });
+  } catch (error: any) {
+    // 각 컨트롤러 별 예상가능한 에러에 대해서 종합 필요
+    next(error);
+  }
+};
+
+/**
  * @DESC get kakao token
  * @RETURN token and userData
  * 오직 rest api만 사용 가능 추후 flutter sdk를 사용하여 진행할 예정
