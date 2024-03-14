@@ -17,25 +17,13 @@ const server = async () => {
   const app = express();
   app.use(
     cors({
-      origin: "https://project-eom-account.web.app", // 접근 권한을 부여하는 도메인
+      // origin: "https://project-eom-account.web.app", // 접근 권한을 부여하는 도메인
+      origin: "http://localhost:5173", // 접근 권한을 부여하는 도메인
       credentials: true, // 응답 헤더에 Access-Control-Allow-Credentials 추가
       optionsSuccessStatus: 200, // 응답 상태 200으로 설정
     })
   );
 
-  if (process.env.NODE_ENV === PRODUCTION) {
-    app.use(
-      morgan("combined", {
-        stream: accessLogStream, // 배포 환경에서 combined 사용
-        skip: function (req, res) {
-          // 옵션으로 skip함수를 넣어 로그가 무거워지지 않도록 로깅의 스킵여부를 결정, 기본값은 false
-          return res.statusCode < 400; // 정상적인 응답인 경우는 로그를 기록하지 않음 => 에러인 경우만 로그 기록
-        },
-      })
-    );
-  } else {
-    app.use(morgan("dev"));
-  }
   const {
     MONGO_URI,
     MONGO_URI_SUFFIX,
@@ -61,7 +49,20 @@ const server = async () => {
   // mongoose를 통해 MongoDB에 연결
   await mongoose.connect(MONGO_URI + NODE_ENV + MONGO_URI_SUFFIX);
   // mongoose의 debug 모드를 활성화
-  mongoose.set("debug", true);
+  if (process.env.NODE_ENV === PRODUCTION) {
+    app.use(
+      morgan("combined", {
+        stream: accessLogStream, // 배포 환경에서 combined 사용
+        skip: function (req, res) {
+          // 옵션으로 skip함수를 넣어 로그가 무거워지지 않도록 로깅의 스킵여부를 결정, 기본값은 false
+          return res.statusCode < 400; // 정상적인 응답인 경우는 로그를 기록하지 않음 => 에러인 경우만 로그 기록
+        },
+      })
+    );
+  } else {
+    app.use(morgan("dev"));
+    mongoose.set("debug", true);
+  }
   console.log("MongoDB connected");
 
   // redis를 통해 Redis에 연결

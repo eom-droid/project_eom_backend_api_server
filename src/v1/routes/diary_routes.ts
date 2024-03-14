@@ -1,10 +1,7 @@
 import express from "express";
 import * as diaryController from "../controllers/diary_controller";
 import { multerMiddleware } from "../middlewares/multer_middleware";
-import {
-  commentIdParamValidation,
-  idParamValidation,
-} from "../middlewares/id_param_middleware";
+import { idParamValidation } from "../middlewares/id_param_middleware";
 import { diaryQueryValidation } from "../middlewares/diary/query_middleware";
 import { diaryBodyValidation } from "../middlewares/diary/body_middleware";
 import { validate } from "../middlewares/validate_middleware";
@@ -14,7 +11,6 @@ import { DiaryModel } from "../models/diary_model";
 import { DIARY, DataPassType, RoleType } from "../../constant/default";
 import { authCheck } from "../middlewares/authenticate_middleware";
 import { DiaryCommentModel } from "../models/diary_comment_model";
-import { DiaryReplyLikeModel } from "../models/diary_reply_like_model";
 import { DiaryReplyModel } from "../models/diary_reply_model";
 
 export const diaryRouter = express.Router();

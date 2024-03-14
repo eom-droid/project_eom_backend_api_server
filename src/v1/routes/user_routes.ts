@@ -34,3 +34,17 @@ userRouter.patch(
   }),
   userController.updateNickname
 );
+
+// 유저 탈퇴
+/**
+ * @DELETE /api/v1/user/me
+ * @DESC 유저 탈퇴
+ */
+userRouter.delete(
+  "/me",
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
+  userController.deleteUser
+);

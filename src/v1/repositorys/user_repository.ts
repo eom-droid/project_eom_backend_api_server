@@ -60,3 +60,11 @@ export const updateNickname = async (userId: string, nickname: string) => {
     throw error;
   }
 };
+
+export const deleteUser = async (userId: string) => {
+  try {
+    return await UserModel.deleteOne({ _id: userId });
+  } catch (error) {
+    throw error;
+  }
+};

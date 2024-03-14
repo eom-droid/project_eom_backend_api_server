@@ -15,16 +15,9 @@ export const getMyInfo = async (
   // 5. id를 통해 user를 찾음
   // 6. user를 response
   try {
-    const { authorization } = req.headers;
-
-    if (!authorization) {
-      throw new CustomHttpErrorModel({
-        status: 400,
-        message: "Authorization header가 없습니다.",
-      });
-    }
-
     const user = req.user;
+    console.log(user);
+    console.log(req.decoded?.id);
 
     if (user === null || user === undefined) {
       throw new CustomHttpErrorModel({
@@ -60,6 +53,34 @@ export const updateNickname = async (
 
     const userId = req.decoded!.id;
     await userService.updateNickname(userId, nickname);
+
+    return res.status(200).json({});
+
+    // return res.status(200).send({ status: "SUCCESS", user });
+  } catch (error: any) {
+    console.log(error);
+    next(error);
+  }
+};
+
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    const userId = req.decoded!.id;
+    console.log(user);
+
+    if (user === null || user === undefined) {
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "유저가 없습니다.",
+      });
+    }
+
+    await userService.deleteUser(user, userId);
 
     return res.status(200).json({});
 
