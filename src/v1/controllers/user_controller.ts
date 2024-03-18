@@ -36,7 +36,7 @@ export const getMyInfo = async (
   }
 };
 
-export const updateNickname = async (
+export const patchProfile = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -44,17 +44,20 @@ export const updateNickname = async (
   try {
     const { nickname } = req.body;
 
-    if (!nickname) {
-      throw new CustomHttpErrorModel({
-        status: 400,
-        message: "닉네임이 없습니다.",
-      });
-    }
-
     const userId = req.decoded!.id;
-    await userService.updateNickname(userId, nickname);
+    const user = req.user!;
+    const newUser = await userService.updateProfile({
+      userId,
+      user,
+      files:
+        req.files !== undefined
+          ? (req.files as Express.Multer.File[])
+          : undefined,
 
-    return res.status(200).json({});
+      nickname,
+    });
+
+    return res.status(200).json(newUser);
 
     // return res.status(200).send({ status: "SUCCESS", user });
   } catch (error: any) {
@@ -63,7 +66,7 @@ export const updateNickname = async (
   }
 };
 
-export const deleteUser = async (
+export const deleteKakaoUser = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -71,7 +74,6 @@ export const deleteUser = async (
   try {
     const user = req.user;
     const userId = req.decoded!.id;
-    console.log(user);
 
     if (user === null || user === undefined) {
       throw new CustomHttpErrorModel({
@@ -80,11 +82,68 @@ export const deleteUser = async (
       });
     }
 
-    await userService.deleteUser(user, userId);
+    await userService.deleteKakaoUser(user, userId);
 
     return res.status(200).json({});
+  } catch (error: any) {
+    console.log(error);
+    next(error);
+  }
+};
 
-    // return res.status(200).send({ status: "SUCCESS", user });
+export const deleteEmailUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    const userId = req.decoded!.id;
+
+    if (user === null || user === undefined) {
+      throw new CustomHttpErrorModel({
+        status: 400,
+        message: "유저가 없습니다.",
+      });
+    }
+
+    await userService.deleteEmailUser(user, userId);
+
+    return res.status(200).json({});
+  } catch (error: any) {
+    console.log(error);
+    next(error);
+  }
+};
+
+export const deleteGoogleUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { code } = req.body;
+
+    await userService.deleteGoogleUser(code);
+
+    return res.status(200).json({});
+  } catch (error: any) {
+    console.log(error);
+    next(error);
+  }
+};
+
+export const deleteAppleUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { code } = req.body;
+
+    await userService.deleteAppleUser(code);
+
+    return res.status(200).json({});
   } catch (error: any) {
     console.log(error);
     next(error);

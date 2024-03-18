@@ -3,6 +3,7 @@ import { TOKEN_EXPIRE_TIME, TokenType } from "../constant/default";
 import { CustomHttpErrorModel } from "../models/custom_http_error_model";
 import { EncryptUtils } from "./encrypt_utils";
 import { Redis } from "../redis/redis";
+import fs from "fs";
 
 export class customJwtPayload implements jwt.JwtPayload {
   id: string;
@@ -52,6 +53,36 @@ export class AuthUtils {
         status: 401,
         message: "토큰이 유효하지 않습니다.",
       });
+    }
+  }
+
+  static createAppleClientSecret() {
+    try {
+      const { APPLE_CLIENT_ID, APPLE_KEY_ID, APPLE_TEAM_ID } = process.env;
+      const algorithm = "ES256";
+      const audience = "https://appleid.apple.com";
+      const authkey = fs.readFileSync(
+        process.env.APPLE_AUTH_KEY_PATH as string,
+        "utf-8"
+      );
+
+      const client_secret = jwt.sign(
+        {
+          iss: APPLE_TEAM_ID,
+          iat: Math.floor(Date.now() / 1000),
+          exp: Math.floor(Date.now() / 1000) + 86400 * 180,
+          aud: audience,
+          sub: APPLE_CLIENT_ID,
+        },
+        authkey,
+        {
+          algorithm,
+          keyid: APPLE_KEY_ID,
+        }
+      );
+      return client_secret;
+    } catch (error) {
+      throw Error("애플 클라이언트 시크릿 생성에 실패했습니다.");
     }
   }
 

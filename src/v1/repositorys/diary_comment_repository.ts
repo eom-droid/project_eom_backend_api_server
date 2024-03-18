@@ -150,3 +150,18 @@ export const updateDiaryComment = async (
     throw error;
   }
 };
+
+/**
+ * @DESC delete diary comment by userId
+ * userId로 diary에 댓글을 삭제함
+ */
+export const deleteDiaryCommentByUserId = async (userId: string) => {
+  try {
+    const result = await DiaryCommentModel.deleteMany({
+      userId: userId,
+    });
+    return result;
+  } catch (error: any) {
+    throw error;
+  }
+};

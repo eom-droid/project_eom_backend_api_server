@@ -1,11 +1,4 @@
-import { Types } from "mongoose";
-import {
-  DiaryPaginateReqModel,
-  PaginateReqModel,
-} from "../../models/paginate_req_model";
 import { DiaryReplyLikeModel } from "../models/diary_reply_like_model";
-import { Diary, DiaryModel } from "../models/diary_model";
-import { DiaryReplyModel } from "../models/diary_reply_model";
 
 /**
  * @DESC create new diary reply like
@@ -61,6 +54,19 @@ export const deleteDiaryReplyLikeByReplyId = async (replyId: string) => {
     await DiaryReplyLikeModel.deleteMany({
       replyId: replyId,
     });
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * @DESC delete diary reply by userId
+ * @param userId
+ * userId로 diary reply 삭제
+ */
+export const deleteDiaryReplyLikeByUserId = async (userId: string) => {
+  try {
+    await DiaryReplyLikeModel.deleteMany({ userId });
   } catch (error) {
     throw error;
   }

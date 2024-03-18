@@ -10,7 +10,7 @@ import { loginEmailBodyValidation } from "../middlewares/auth/login_email_body_m
 import * as authController from "../controllers/auth_controller";
 import { joinEmailVerifyBodyValidation } from "../middlewares/auth/join_email_verify_body_middleware";
 import { joinEmailVerificationCodeSendBodyValdiation } from "../middlewares/auth/join_email_verificationCode_send_body_middleware";
-import { joinGoogleBodyValidation } from "../middlewares/auth/join_google_body_middleware";
+import { joinGoogleBodyValidation } from "../middlewares/auth/google_body_middleware";
 import { joinAppleBodyValidation } from "../middlewares/auth/join_apple_body_middleware";
 export const authRouter = express.Router();
 

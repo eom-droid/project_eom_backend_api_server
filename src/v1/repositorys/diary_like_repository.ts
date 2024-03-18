@@ -55,3 +55,16 @@ export const getDiaryLike = async (diaryId: string, userId: string) => {
     throw error;
   }
 };
+
+/**
+ * @DESC delete like diary by userId
+ * @param userId
+ * userId로 diary 좋아요 삭제
+ */
+export const deleteDiaryLikeByUserId = async (userId: string) => {
+  try {
+    await DiaryLikeModel.deleteMany({ userId });
+  } catch (error) {
+    throw error;
+  }
+};

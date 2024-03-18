@@ -48,9 +48,11 @@ export class AWSUtils {
     file,
     // 맨뒤에 /를 넣어줘야됨
     s3Path,
+    singleFileName,
   }: {
     file: Express.Multer.File | Express.Multer.File[];
     s3Path: string;
+    singleFileName?: string;
   }): Promise<Express.Multer.File[] | Express.Multer.File> => {
     var tempFile;
     if (file instanceof Array) {
@@ -66,7 +68,9 @@ export class AWSUtils {
           s3Path +
           (DataUtils.isImageFile(element.originalname) ? "image/" : "video/");
         const fileName =
-          directory + DataUtils.generateFileName() + "." + fileExtension;
+          (directory + singleFileName ?? DataUtils.generateFileName()) +
+          "." +
+          fileExtension;
         element.filename = fileName;
         return s3.send(
           new PutObjectCommand({

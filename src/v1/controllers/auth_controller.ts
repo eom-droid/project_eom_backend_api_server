@@ -47,9 +47,9 @@ export const googleJoin = async (
   try {
     const { code } = req.body;
 
-    const userId = (await authService.createGoogleUserByWeb(
-      code
-    ))!._id.toString();
+    const userId = (
+      await authService.getOrCreateGoogleUserByWeb(code)
+    ).user!._id.toString();
 
     const refreshToken: string = await AuthUtils.createRefreshToken(userId);
     const accessToken: string = AuthUtils.createAccessToken(userId);
@@ -80,9 +80,9 @@ export const appleJoin = async (
     // const userId = (await authService.createAppleUserByWeb(
     //   code
     // ))!._id.toString();
-    const userId = (await authService.createAppleUserByWeb(
-      code
-    ))!._id.toString();
+    const userId = (
+      await authService.getOrCreateAppleUserByWeb(code)
+    ).user!._id.toString();
 
     const refreshToken: string = await AuthUtils.createRefreshToken(userId);
     const accessToken: string = AuthUtils.createAccessToken(userId);

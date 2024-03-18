@@ -5,7 +5,11 @@ export const DIARY = "diary";
 export const MUSIC = "music";
 export const USER = "user";
 
-export const S3AlbumCoverPath = "eom/music/albumCover/";
+export const S3AlbumCoverPath =
+  "eom/" + process.env.NODE_ENV + "/music/albumCover/";
+export const S3DiaryPath = "eom/" + process.env.NODE_ENV + "/diary/";
+export const S3UserProfilePath =
+  "eom/" + process.env.NODE_ENV + "/user/profile/";
 
 export const ProviderType = {
   KAKAO: "kakao",

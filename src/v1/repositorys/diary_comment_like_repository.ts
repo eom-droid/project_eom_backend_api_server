@@ -74,3 +74,15 @@ export const deleteDiaryCommentLikeByCommentId = async (commentId: string) => {
     throw error;
   }
 };
+
+/**
+ * @DESC deleteDiarryCommentLike by userId
+ * userId로 diary comment like를 삭제함
+ */
+export const deleteDiaryCommentLikeByUserId = async (userId: string) => {
+  try {
+    await DiaryCommentLikeModel.deleteMany({ userId });
+  } catch (error) {
+    throw error;
+  }
+};

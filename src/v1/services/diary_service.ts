@@ -14,7 +14,7 @@ import * as diaryReplyLikeRepository from "../repositorys/diary_reply_like_repos
 import { AWSUtils } from "../../utils/aws_utils";
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import { DiaryLikeModel } from "../models/diary_like_model";
-import { RoleType } from "../../constant/default";
+import { RoleType, S3DiaryPath } from "../../constant/default";
 import { Types } from "mongoose";
 
 /**
@@ -31,7 +31,7 @@ export const createDiary = async (
     // 파일 업로드 및 이름 매칭
     if (files !== undefined) {
       const uploadCompleteFiles = await AWSUtils.uploadFileToS3({
-        s3Path: "eom/diary/",
+        s3Path: S3DiaryPath,
         file: files,
       });
 
@@ -82,7 +82,7 @@ export const updateDiary = async (
 
     if (files != undefined) {
       const uploadCompleteFiles = await AWSUtils.uploadFileToS3({
-        s3Path: "eom/diary/",
+        s3Path: S3DiaryPath,
         file: files,
       });
 

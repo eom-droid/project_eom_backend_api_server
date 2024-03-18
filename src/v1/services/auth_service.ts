@@ -206,9 +206,15 @@ export const createKakaoUserByWeb = async (code: string) => {
 };
 
 /**
- * @DESC create new member with google
+ * @DESC get member with google
  */
-export const createGoogleUserByWeb = async (code: string) => {
+export const getOrCreateGoogleUserByWeb = async ({
+  code,
+  redirect_uri,
+}: {
+  code: string;
+  redirect_uri?: string;
+}) => {
   try {
     const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } =
       process.env;
@@ -233,16 +239,9 @@ export const createGoogleUserByWeb = async (code: string) => {
         "&client_secret=" +
         GOOGLE_CLIENT_SECRET +
         "&redirect_uri=" +
-        GOOGLE_REDIRECT_URI +
+        (redirect_uri ?? GOOGLE_REDIRECT_URI) +
         "&grant_type=authorization_code",
 
-      // {
-      //   grant_type: "authorization_code",
-      //   client_id: GOOGLE_CLIENT_ID,
-      //   client_secret: GOOGLE_CLIENT_SECRET,
-      //   redirect_uri: GOOGLE_REDIRECT_URI,
-      //   code: code,
-      // },
       {
         headers: {
           "Content-type": "application/x-www-form-urlencoded",
@@ -254,7 +253,11 @@ export const createGoogleUserByWeb = async (code: string) => {
       refresh_token: googleRefreshToken,
     } = result.data;
 
-    return getUserByGoogleToken(googleAccessToken);
+    return {
+      googleAccessToken,
+      googleRefreshToken,
+      user: await getUserByGoogleToken(googleAccessToken),
+    };
   } catch (error: any) {
     console.log(error);
     throw error;
@@ -262,44 +265,28 @@ export const createGoogleUserByWeb = async (code: string) => {
 };
 
 /**
- * @DESC create new member with apple
+ * @DESC get member with apple
  */
-export const createAppleUserByWeb = async (code: string) => {
+export const getOrCreateAppleUserByWeb = async ({
+  code,
+  redirect_uri,
+}: {
+  code: string;
+  redirect_uri?: string;
+}) => {
   try {
-    const { APPLE_CLIENT_ID, APPLE_KEY_ID, APPLE_TEAM_ID, APPLE_REDIRECT_URL } =
-      process.env;
-    const algorithm = "ES256";
-    const audience = "https://appleid.apple.com";
-    const authkey = fs.readFileSync(
-      process.env.APPLE_AUTH_KEY_PATH as string,
-      "utf-8"
-    );
-
-    // 1. 사용자가 발급받은 코드를 이용하여 토큰을 발급받는다.
-    const client_secret = jwt.sign(
-      {
-        iss: APPLE_TEAM_ID,
-        iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000) + 86400 * 180,
-        aud: audience,
-        sub: APPLE_CLIENT_ID,
-      },
-      authkey,
-      {
-        algorithm,
-        keyid: APPLE_KEY_ID,
-      }
-    );
+    const { APPLE_CLIENT_ID, APPLE_REDIRECT_URL } = process.env;
+    const apple_client_secret = AuthUtils.createAppleClientSecret();
 
     // 2. 토큰을 이용하여 사용자 정보를 가져온다.
     const response = await axios.post(
       "https://appleid.apple.com/auth/token",
       {
         client_id: APPLE_CLIENT_ID,
-        client_secret,
+        client_secret: apple_client_secret,
         code,
         grant_type: "authorization_code",
-        redirect_uri: APPLE_REDIRECT_URL,
+        redirect_uri: redirect_uri ?? APPLE_REDIRECT_URL,
       },
       {
         headers: {
@@ -307,6 +294,9 @@ export const createAppleUserByWeb = async (code: string) => {
         },
       }
     );
+
+    const apple_access_token = response.data.access_token;
+    const apple_refresh_token = response.data.refresh_token;
 
     const { sub: appleId } = jwt.decode(
       response.data.id_token
@@ -338,7 +328,12 @@ export const createAppleUserByWeb = async (code: string) => {
       const createdUser = await authRepository.createUser(userModel);
       user = createdUser;
     }
-    return user;
+    return {
+      apple_access_token,
+      apple_refresh_token,
+      apple_client_secret,
+      user,
+    };
   } catch (error: any) {
     console.log(error);
     throw error;
@@ -382,7 +377,7 @@ const getUserByKakaoToken = async (kakaoAccessToken: String) => {
     const createdUser = await authRepository.createUser(userModel);
     user = createdUser;
   }
-  return user;
+  return user!;
 };
 
 const getUserByGoogleToken = async (googleAccessToken: String) => {

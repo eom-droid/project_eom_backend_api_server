@@ -138,6 +138,18 @@ export const updateDiaryReply = async (replyId: string, content: string) => {
   }
 };
 
+/**
+ * @DESC delete diary reply by userId
+ * userId로 diary 대댓글 삭제
+ */
+export const deleteDiaryReplyByUserId = async (userId: string) => {
+  try {
+    await DiaryReplyModel.deleteMany({ userId });
+  } catch (error) {
+    throw error;
+  }
+};
+
 // /**
 //  * @DESC update diary comment
 //  * diary에 댓글을 수정함

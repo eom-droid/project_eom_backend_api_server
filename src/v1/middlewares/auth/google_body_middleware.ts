@@ -14,9 +14,9 @@ export const joinGoogleBodyValidation = checkSchema({
   },
 });
 
-export const joinKakaoHeaderValidation = checkSchema({
-  Authorization: {
-    in: ["headers"],
-    isString: true,
+export const revokeGoogleBodyValidation = checkSchema({
+  code: {
+    in: ["body"],
+    isString: { bail: true },
   },
 });

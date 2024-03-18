@@ -61,6 +61,32 @@ export const updateNickname = async (userId: string, nickname: string) => {
   }
 };
 
+export const updateProfile = async ({
+  userId,
+  nickname,
+  profileImg,
+}: {
+  userId: string;
+  nickname: string;
+  profileImg?: string;
+}) => {
+  try {
+    if (profileImg === undefined) {
+      return await UserModel.findOneAndUpdate(
+        { _id: new Types.ObjectId(userId) },
+        { nickname, $unset: { profileImg: 1 } }
+      );
+    } else {
+      return await UserModel.findOneAndUpdate(
+        { _id: new Types.ObjectId(userId) },
+        { nickname, profileImg }
+      );
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const deleteUser = async (userId: string) => {
   try {
     return await UserModel.deleteOne({ _id: userId });
