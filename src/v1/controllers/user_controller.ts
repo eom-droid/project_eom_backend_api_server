@@ -42,6 +42,7 @@ export const patchProfile = async (
   next: NextFunction
 ) => {
   try {
+    console.log(req.body);
     const { nickname } = req.body;
 
     const userId = req.decoded!.id;

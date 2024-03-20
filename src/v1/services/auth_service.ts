@@ -89,6 +89,11 @@ export const sendVerificationCode = async (email: string) => {
       email,
       verificationCode: sixDigitVerificationCode,
     });
+
+    // 4. 기존 인증번호 삭제
+    await emailVerifyRepository.deleteAllEmailVerifyByEmail(email);
+
+    // 5. 생성하기
     const emailVerify = await emailVerifyRepository.createEmailVerify(
       emailVerifyModel
     );

@@ -61,3 +61,12 @@ export const deleteEmailVerify = async (email: string) => {
     throw error;
   }
 };
+
+/**
+ * @DESC delete all EmailVerify by email
+ */
+export const deleteAllEmailVerifyByEmail = async (email: string) => {
+  try {
+    const result = await EmailVerifyModel.deleteMany({ email });
+  } catch (error) {}
+};

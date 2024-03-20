@@ -49,8 +49,6 @@ export const updateProfile = async ({
     var filename = undefined;
 
     if (files !== undefined && files.length > 0) {
-      console.log(files[0].filename);
-      console.log(files[0].originalname);
       const uploadCompleteFiles = await AWSUtils.uploadFileToS3({
         s3Path: S3UserProfilePath,
         file: files,
@@ -63,11 +61,12 @@ export const updateProfile = async ({
         filename = uploadCompleteFiles.filename;
       }
     }
-    return await userRepository.updateProfile({
+    await userRepository.updateProfile({
       userId,
       nickname,
       profileImg: filename,
     });
+    return await userRepository.searchUserById(userId);
   } catch (error: any) {
     throw error;
   }

@@ -186,7 +186,7 @@ export const resetPassword = async (
     return res
       .status(200)
       .cookie("refreshToken", refreshToken, CookieOption)
-      .json({ accessToken });
+      .json({ accessToken, refreshToken });
   } catch (error: any) {
     next(error);
   }
@@ -246,7 +246,7 @@ export const emailJoin = async (
     return res
       .status(200)
       .cookie("refreshToken", refreshToken, CookieOption)
-      .json({ accessToken });
+      .json({ accessToken, refreshToken });
   } catch (error: any) {
     next(error);
   }
