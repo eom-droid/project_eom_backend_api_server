@@ -92,3 +92,16 @@ userRouter.delete(
   validate(revokeGoogleBodyValidation),
   userController.deleteAppleUser
 );
+
+// logout
+/**
+ * @POST /api/v1/user/logout
+ * @DESC 로그아웃
+ */
+userRouter.post(
+  "/logout",
+  authCheck({
+    role: RoleType.USER,
+  }),
+  userController.logout
+);

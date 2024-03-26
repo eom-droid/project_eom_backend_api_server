@@ -68,10 +68,14 @@ export class AWSUtils {
           s3Path +
           (DataUtils.isImageFile(element.originalname) ? "image/" : "video/");
         const fileName =
-          (directory + singleFileName ?? DataUtils.generateFileName()) +
+          directory +
+          (singleFileName === undefined
+            ? DataUtils.generateFileName()
+            : singleFileName) +
           "." +
           fileExtension;
         element.filename = fileName;
+
         return s3.send(
           new PutObjectCommand({
             Bucket: process.env.S3_BUCKET_NAME!,

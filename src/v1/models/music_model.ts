@@ -43,3 +43,14 @@ export const jsonToMusic = (json: any) => {
     });
   }
 };
+
+export const musicToJson = (music: Music) => {
+  return {
+    title: music.title,
+    artiste: music.artiste,
+    review: music.review,
+    albumCover: music.albumCover,
+    youtubeMusicId: music.youtubeMusicId,
+    spotifyId: music.spotifyId,
+  };
+};

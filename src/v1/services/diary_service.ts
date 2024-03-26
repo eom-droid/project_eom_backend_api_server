@@ -125,7 +125,9 @@ export const getDiaries = async (
  */
 export const getDiary = async (diaryId: string) => {
   const temp = await diaryRepository.getDiary(diaryId);
-  if (temp == null || temp.isDeleted) {
+  console.log(temp);
+
+  if (temp == null || (temp.isShown !== undefined && temp.isShown === false)) {
     throw new CustomHttpErrorModel({
       status: 400,
       message: "값이 존재하지 않습니다.",
@@ -166,7 +168,7 @@ export const deleteDiary = async (diaryId: string): Promise<void> => {
     //   })
     // );
     // await diaryRepository.deleteDiary(diaryId);
-    await diaryRepository.patchDiaryIsDeletedTrue(diaryId);
+    await diaryRepository.patchDiaryIsShownFalse(diaryId);
   }
   return;
 };

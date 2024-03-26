@@ -21,15 +21,14 @@ const DiarySchema = new Schema(
     // category : 카테고리 -> 카테고리를 통해서 다이어리 리스트 페이지에서 필터링을 진행할 예정
     category: { type: String, required: true },
     // isShown : 표출 여부
-    isShown: { type: Boolean, required: true },
+    isShown: { type: Boolean, required: false },
     // txts : 텍스트 리스트
     txts: [{ type: String, required: true }],
     // imgs : 이미지 리스트
     imgs: [{ type: String, required: true }],
     // vids : 비디오 리스트 -> 초기에는 직접 로딩하지 않고
     vids: [{ type: String, required: true }],
-    // isDeleted : 삭제 여부
-    isDeleted: { type: Boolean, required: false },
+
     // contentOrder : 컨텐츠 순서
     // 추후 markdown 형식으로 저장할 예정
     // 현재는 위 3가지 txt,img,vid의 표출 순서를 정의
@@ -57,7 +56,6 @@ export const jsonToDiary = (json: any) => {
       imgs: json.imgs as string[],
       vids: json.vids as string[],
       contentOrder: json.contentOrder as string[],
-      isDeleted: json.isDeleted as boolean,
     });
 
     return result;
@@ -69,4 +67,20 @@ export const jsonToDiary = (json: any) => {
       status: 400,
     });
   }
+};
+
+export const diaryToJson = (diary: Diary) => {
+  return {
+    title: diary.title,
+    writer: diary.writer,
+    weather: diary.weather,
+    hashtags: diary.hashtags,
+    thumbnail: diary.thumbnail,
+    category: diary.category,
+    isShown: diary.isShown,
+    txts: diary.txts,
+    imgs: diary.imgs,
+    vids: diary.vids,
+    contentOrder: diary.contentOrder,
+  };
 };

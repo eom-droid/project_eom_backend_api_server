@@ -23,7 +23,6 @@ export const diaryBodyValidation = checkSchema({
     in: ["body"],
     isArray: { bail: true },
   },
-
   thumbnail: {
     in: ["body"],
     isString: {
@@ -33,10 +32,6 @@ export const diaryBodyValidation = checkSchema({
   category: {
     in: ["body"],
     isString: { bail: true },
-  },
-  isShown: {
-    in: ["body"],
-    isBoolean: { bail: true },
   },
   txts: {
     in: ["body"],

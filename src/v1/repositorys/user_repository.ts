@@ -74,12 +74,14 @@ export const updateProfile = async ({
     if (profileImg === undefined) {
       return await UserModel.findOneAndUpdate(
         { _id: new Types.ObjectId(userId) },
-        { nickname, $unset: { profileImg: 1 } }
+        { nickname, $unset: { profileImg: 1 } },
+        { new: true }
       );
     } else {
       return await UserModel.findOneAndUpdate(
         { _id: new Types.ObjectId(userId) },
-        { nickname, profileImg }
+        { nickname, profileImg },
+        { new: true }
       );
     }
   } catch (error) {

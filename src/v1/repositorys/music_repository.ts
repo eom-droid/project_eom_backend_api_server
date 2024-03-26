@@ -1,5 +1,5 @@
 import { PaginateReqModel } from "../../models/paginate_req_model";
-import { Music, MusicModel } from "../models/music_model";
+import { Music, MusicModel, musicToJson } from "../models/music_model";
 
 /**
  * @DESC create new music
@@ -53,7 +53,10 @@ export const getMusic = async (id: string) => {
  */
 export const updateMusic = async (id: String, music: Music) => {
   try {
-    const updatedMusic = await MusicModel.updateOne({ _id: id }, music);
+    const updatedMusic = await MusicModel.updateOne(
+      { _id: id },
+      musicToJson(music)
+    );
     return updatedMusic;
   } catch (error) {
     throw error;

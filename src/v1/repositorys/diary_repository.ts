@@ -1,11 +1,8 @@
 import { Types } from "mongoose";
-import {
-  DiaryPaginateReqModel,
-  PaginateReqModel,
-} from "../../models/paginate_req_model";
-import { DiaryLikeModel } from "../models/diary_like_model";
+import { DiaryPaginateReqModel } from "../../models/paginate_req_model";
+
 import { Diary, DiaryModel } from "../models/diary_model";
-import { DiaryCommentModel } from "../models/diary_comment_model";
+import { diaryToJson } from "../models/diary_model";
 
 /**
  * @DESC create new diary
@@ -29,7 +26,10 @@ export const createDiary = async (diary: Diary) => {
 export const updateDiary = async (id: String, diary: Diary) => {
   try {
     // save 하기
-    const updatedDiary = await DiaryModel.updateOne({ _id: id }, diary);
+    const updatedDiary = await DiaryModel.updateOne(
+      { _id: id },
+      diaryToJson(diary)
+    );
 
     return updatedDiary;
   } catch (error) {
@@ -52,7 +52,6 @@ export const getDiaries = async (
       // req.query에 따라서 after를 적용하여 pagination을 진행함
       {
         $match: {
-          isDeleted: { $ne: true },
           isShown: { $ne: false },
           // Object를 ...로 풀어서 넣어줌
           ...filterQuery,
@@ -116,6 +115,15 @@ export const getDiaryWithLike = async (diaryId: string) => {
         },
       },
       {
+        // get comment count
+        $lookup: {
+          from: "diarycomments",
+          localField: "_id",
+          foreignField: "diaryId",
+          as: "diaryComments",
+        },
+      },
+      {
         $project: {
           _id: 1,
           title: 1,
@@ -131,6 +139,7 @@ export const getDiaryWithLike = async (diaryId: string) => {
           contentOrder: 1,
           createdAt: 1,
           likeCount: { $size: "$diaryLikes" },
+          commentCount: { $size: "$diaryComments" },
           isLike: {
             $cond: {
               if: {
@@ -179,14 +188,14 @@ export const deleteDiary = async (diaryId: string): Promise<void> => {
 };
 
 /**
- * @DESC patch isDeleted diary
- * diary의 isDeleted를 true로 변경함
+ * @DESC patch isShown diary
+ * diary의 isShown를 false로 변경함
  */
-export const patchDiaryIsDeletedTrue = async (
+export const patchDiaryIsShownFalse = async (
   diaryId: string
 ): Promise<void> => {
   try {
-    await DiaryModel.updateOne({ _id: diaryId }, { isDeleted: true });
+    await DiaryModel.updateOne({ _id: diaryId }, { isShown: false });
     return;
   } catch (error) {
     throw error;

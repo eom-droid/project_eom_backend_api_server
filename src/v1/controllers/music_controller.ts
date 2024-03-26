@@ -61,6 +61,7 @@ export const updateMusic = async (
 ) => {
   try {
     const music = jsonToMusic(req.body);
+    console.log(music);
 
     var data = await musicService.updateMusic(
       req.params.id,

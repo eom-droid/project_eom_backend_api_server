@@ -10,6 +10,8 @@ import {
 } from "./auth_service";
 import { AWSUtils } from "../../utils/aws_utils";
 import { S3UserProfilePath } from "../../constant/default";
+import { profileEnd } from "console";
+import { Redis } from "../../redis/redis";
 
 /**
  * @DESC email login
@@ -38,35 +40,56 @@ export const updateProfile = async ({
   userId,
   user,
   nickname,
+  newProfileImg,
   files,
 }: {
   userId: string;
   user: User;
   nickname: string;
+  newProfileImg: string | undefined;
   files: Express.Multer.File[] | undefined;
 }) => {
   try {
-    var filename = undefined;
-
-    if (files !== undefined && files.length > 0) {
+    const oldProfileImg = user.profileImg;
+    var profileImg = undefined;
+    const havNewProfile = files !== undefined && files.length === 1;
+    // 만약 업로드할 파일이 있다면
+    if (havNewProfile) {
+      // 그런데 기존 프로필 이미지가 있다면 -> 삭제한다
+      if (oldProfileImg !== undefined) {
+        await AWSUtils.deleteFileFromS3({
+          files: [oldProfileImg],
+        });
+      }
+      // 새로운 프로필 이미지를 업로드한다
       const uploadCompleteFiles = await AWSUtils.uploadFileToS3({
         s3Path: S3UserProfilePath,
         file: files,
-        singleFileName: userId,
       });
 
       if (uploadCompleteFiles instanceof Array) {
-        filename = uploadCompleteFiles[0].filename;
+        profileImg = uploadCompleteFiles[0].filename;
       } else {
-        filename = uploadCompleteFiles.filename;
+        profileImg = uploadCompleteFiles.filename;
+      }
+    } else {
+      // 만약 업로드할 파일이 없다면
+      // 그런데 newProfileImg가 http로 시작하지 않고 undefined라면 -> 삭제한다
+      if (newProfileImg === undefined && oldProfileImg !== undefined) {
+        await AWSUtils.deleteFileFromS3({
+          files: [oldProfileImg],
+        });
+        profileImg = undefined;
+      } else {
+        profileImg = oldProfileImg;
       }
     }
-    await userRepository.updateProfile({
+
+    return await userRepository.updateProfile({
       userId,
       nickname,
-      profileImg: filename,
+      profileImg,
     });
-    return await userRepository.searchUserById(userId);
   } catch (error: any) {
     throw error;
   }
@@ -142,6 +165,14 @@ export const deleteAppleUser = async (code: string) => {
       userToDeletedUserModel(user!, userId)
     );
     await userRepository.deleteUser(userId);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const logout = async (userId: string) => {
+  try {
+    await Redis.getInstance().del(userId);
   } catch (error) {
     throw error;
   }

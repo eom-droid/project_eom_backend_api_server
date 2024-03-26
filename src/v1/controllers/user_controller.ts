@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import * as userService from "../services/user_service";
+import { profile } from "console";
 
 export const getMyInfo = async (
   req: Request,
@@ -16,8 +17,6 @@ export const getMyInfo = async (
   // 6. user를 response
   try {
     const user = req.user;
-    console.log(user);
-    console.log(req.decoded?.id);
 
     if (user === null || user === undefined) {
       throw new CustomHttpErrorModel({
@@ -42,8 +41,8 @@ export const patchProfile = async (
   next: NextFunction
 ) => {
   try {
-    console.log(req.body);
-    const { nickname } = req.body;
+    const { nickname, profileImg } = req.body;
+    console.log(profileImg);
 
     const userId = req.decoded!.id;
     const user = req.user!;
@@ -56,7 +55,10 @@ export const patchProfile = async (
           : undefined,
 
       nickname,
+      newProfileImg: profileImg,
     });
+
+    console.log(newUser);
 
     return res.status(200).json(newUser);
 
@@ -144,6 +146,20 @@ export const deleteAppleUser = async (
 
     await userService.deleteAppleUser(code);
 
+    return res.status(200).json({});
+  } catch (error: any) {
+    console.log(error);
+    next(error);
+  }
+};
+
+export const logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await userService.logout(req.decoded!.id);
     return res.status(200).json({});
   } catch (error: any) {
     console.log(error);
