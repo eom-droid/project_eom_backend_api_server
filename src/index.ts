@@ -60,11 +60,11 @@ const server = async () => {
     app.use(morgan("dev"));
     mongoose.set("debug", true);
   }
-  console.log("MongoDB connected");
+  console.log(new Date().toISOString() + ": npm log: MongoDB connected");
 
   // redis를 통해 Redis에 연결
   await Redis.getInstance().connect();
-  console.log("Redis connected");
+  console.log(new Date().toISOString() + ": npm log: Redis connected");
 
   // express의 미들웨어를 통해 req.body를 사용할 수 있도록 함
   // 추가적으로 해당 체계는 routes -> controllers -> services -> repository로 이어짐
@@ -108,7 +108,11 @@ const server = async () => {
 
   // 서버를 실행함
   app.listen(PORT, async () => {
-    console.log(`server listening on port ${PORT}`);
+    console.log(
+      new Date().toISOString() +
+        ": npm log: " +
+        `server listening on port ${PORT}`
+    );
   });
 };
 
