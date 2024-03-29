@@ -125,7 +125,6 @@ export const getDiaries = async (
  */
 export const getDiary = async (diaryId: string) => {
   const temp = await diaryRepository.getDiary(diaryId);
-  console.log(temp);
 
   if (temp == null || (temp.isShown !== undefined && temp.isShown === false)) {
     throw new CustomHttpErrorModel({
@@ -340,8 +339,7 @@ export const updateDiaryComment = async (
 ) => {
   try {
     const comment = await diaryCommentRepository.getDiaryCommentById(commentId);
-    console.log("comment.userId: ", comment?.userId);
-    console.log("userId: ", userId);
+
     if (comment == null) {
       throw new CustomHttpErrorModel({
         status: 400,

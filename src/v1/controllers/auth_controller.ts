@@ -307,7 +307,6 @@ export const getAccessToken = async (
       .cookie("refreshToken", newRefreshToken, CookieOption)
       .json({ accessToken });
   } catch (error: any) {
-    console.log(error);
     next(error);
   }
 };

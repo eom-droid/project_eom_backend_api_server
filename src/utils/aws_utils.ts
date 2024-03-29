@@ -31,11 +31,7 @@ export class AWSUtils {
         })
       );
     } catch (error) {
-      console.log(new Date().toISOString() + ": npm log: " + error);
-      throw new CustomHttpErrorModel({
-        status: 400,
-        message: "값이 존재하지 않습니다.",
-      });
+      throw error;
     }
   };
 

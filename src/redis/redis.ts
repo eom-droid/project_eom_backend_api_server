@@ -6,7 +6,13 @@ export class Redis {
 
   public static getInstance(): RedisClientType {
     if (!Redis.instance) {
-      Redis.instance = createClient();
+      const { REDIS_HOST, REDIS_PORT } = process.env;
+      Redis.instance = createClient({
+        socket: {
+          host: REDIS_HOST ?? "127.0.0.1",
+          port: REDIS_PORT === undefined ? 6379 : Number(REDIS_PORT),
+        },
+      });
     }
     return Redis.instance;
   }

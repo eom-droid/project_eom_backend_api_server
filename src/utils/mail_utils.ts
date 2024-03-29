@@ -33,7 +33,6 @@ export class MailUtils {
 
       await transporter.sendMail(mailOptions);
     } catch (error) {
-      console.log(new Date().toISOString() + ": npm log: " + error);
       throw error;
     }
   };

@@ -12,12 +12,7 @@ export class PaginateReqModel {
       this.after = after;
       return this;
     } catch (error) {
-      console.log(new Date().toISOString() + ": npm log: " + error);
-
-      throw new CustomHttpErrorModel({
-        status: 400,
-        message: "잘못된 요청입니다.",
-      });
+      throw error;
     }
   }
   generateQuery(greaterThan: boolean) {

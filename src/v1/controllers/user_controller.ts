@@ -30,7 +30,6 @@ export const getMyInfo = async (
 
     // return res.status(200).send({ status: "SUCCESS", user });
   } catch (error: any) {
-    console.log(error);
     next(error);
   }
 };
@@ -42,7 +41,6 @@ export const patchProfile = async (
 ) => {
   try {
     const { nickname, profileImg } = req.body;
-    console.log(profileImg);
 
     const userId = req.decoded!.id;
     const user = req.user!;
@@ -58,13 +56,10 @@ export const patchProfile = async (
       newProfileImg: profileImg,
     });
 
-    console.log(newUser);
-
     return res.status(200).json(newUser);
 
     // return res.status(200).send({ status: "SUCCESS", user });
   } catch (error: any) {
-    console.log(error);
     next(error);
   }
 };
@@ -89,7 +84,6 @@ export const deleteKakaoUser = async (
 
     return res.status(200).json({});
   } catch (error: any) {
-    console.log(error);
     next(error);
   }
 };
@@ -114,7 +108,6 @@ export const deleteEmailUser = async (
 
     return res.status(200).json({});
   } catch (error: any) {
-    console.log(error);
     next(error);
   }
 };
@@ -131,7 +124,6 @@ export const deleteGoogleUser = async (
 
     return res.status(200).json({});
   } catch (error: any) {
-    console.log(error);
     next(error);
   }
 };
@@ -148,7 +140,6 @@ export const deleteAppleUser = async (
 
     return res.status(200).json({});
   } catch (error: any) {
-    console.log(error);
     next(error);
   }
 };
@@ -162,7 +153,6 @@ export const logout = async (
     await userService.logout(req.decoded!.id);
     return res.status(200).json({});
   } catch (error: any) {
-    console.log(error);
     next(error);
   }
 };

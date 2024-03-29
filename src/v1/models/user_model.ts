@@ -23,29 +23,6 @@ export type User = InferSchemaType<typeof UserSchema>;
 
 export const UserModel = model("user", UserSchema);
 
-// export const jsonToUser = (json: any) => {
-//   try {
-//     const result = new UserModel({
-//       email: json.email as string,
-//       password: json.password as string,
-//       nickname: json.nickname as string,
-//       birthday: json.birthday as Date,
-//       profileImg: json.profileImg as string,
-//       snsId: json.snsId as string,
-//       provider: json.provider as string,
-//       role: json.role as number,
-//     });
-
-//     return result;
-//   } catch (error) {
-//     console.log(new Date().toISOString() + ": npm log: " + error);
-//     throw new CustomHttpErrorModel({
-//       message: "입력값이 유효하지 않습니다.",
-//       status: 400,
-//     });
-//   }
-// };
-
 export const userToUserModel = (user: User) => {
   try {
     const result = new UserModel({
@@ -61,8 +38,6 @@ export const userToUserModel = (user: User) => {
 
     return result;
   } catch (error) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
     throw new CustomHttpErrorModel({
       message: "입력값이 유효하지 않습니다.",
       status: 400,

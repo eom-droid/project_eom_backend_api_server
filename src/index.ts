@@ -15,24 +15,21 @@ import cors from "cors";
 // 반복적으로 나오는 try catch나 에러 처리 같은 경우에는 express에 미들웨어를 통해 진행함
 const server = async () => {
   const app = express();
-  app.use(
-    cors({
-      // origin: "https://project-eom-account.web.app", // 접근 권한을 부여하는 도메인
-      origin: "http://localhost:5173", // 접근 권한을 부여하는 도메인
-      credentials: true, // 응답 헤더에 Access-Control-Allow-Credentials 추가
-      optionsSuccessStatus: 200, // 응답 상태 200으로 설정
-    })
-  );
-
   const {
     MONGO_URI,
     MONGO_URI_SUFFIX,
     NODE_ENV,
     PORT,
     COOKIE_SECRET,
-    // REDIS_HOST,
-    // REDIS_PORT,
+    CORS_URL,
   } = process.env;
+  app.use(
+    cors({
+      origin: CORS_URL,
+      credentials: true, // 응답 헤더에 Access-Control-Allow-Credentials 추가
+      optionsSuccessStatus: 200, // 응답 상태 200으로 설정
+    })
+  );
 
   // express.json() 설명 : https://expressjs.com/ko/api.html#express.json
   app.use(express.json());
@@ -91,14 +88,15 @@ const server = async () => {
 
   // 전체적 에러 처리 부분
   app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    console.log(err);
     // err 가 httpErrorModel 이면 expected
     // err 가 httpErrorModel 이 아니면 unexpected
+    var ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
     console.error(
       new Date().toISOString() + ": " + (err instanceof CustomHttpErrorModel)
         ? ""
-        : "un" + "expected npm log: " + err
+        : "un" + "expected npm log: " + err + " from " + ip
     );
+
     return res.status(err.status || 500).json(
       NODE_ENV === PRODUCTION
         ? {}

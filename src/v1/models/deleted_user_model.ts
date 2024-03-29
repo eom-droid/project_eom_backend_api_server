@@ -41,36 +41,6 @@ export const userToDeletedUserModel = (user: User, userId: string) => {
 
     return result;
   } catch (error) {
-    console.log(new Date().toISOString() + ": npm log: " + error);
-
-    throw new CustomHttpErrorModel({
-      message: "입력값이 유효하지 않습니다.",
-      status: 400,
-    });
+    throw error;
   }
 };
-
-// export const deletedUserToUserModel = (user: DeletedUser) => {
-//   try {
-//     const result = new DeletedUserModel({
-//       userId: user.userId,
-//       email: user.email,
-//       password: user.password,
-//       nickname: user.nickname,
-//       birthday: user.birthday,
-//       profileImg: user.profileImg,
-//       snsId: user.snsId,
-//       provider: user.provider,
-//       role: user.role,
-//     });
-
-//     return result;
-//   } catch (error) {
-//     console.log(new Date().toISOString() + ": npm log: " + error);
-
-//     throw new CustomHttpErrorModel({
-//       message: "입력값이 유효하지 않습니다.",
-//       status: 400,
-//     });
-//   }
-// };

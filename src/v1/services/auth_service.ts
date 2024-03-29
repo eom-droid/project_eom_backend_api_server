@@ -264,7 +264,6 @@ export const getOrCreateGoogleUserByWeb = async ({
       user: await getUserByGoogleToken(googleAccessToken),
     };
   } catch (error: any) {
-    console.log(error);
     throw error;
   }
 };
@@ -340,7 +339,6 @@ export const getOrCreateAppleUserByWeb = async ({
       user,
     };
   } catch (error: any) {
-    console.log(error);
     throw error;
   }
 };
@@ -391,8 +389,6 @@ const getUserByGoogleToken = async (googleAccessToken: String) => {
     "https://www.googleapis.com/userinfo/v2/me?access_token=" +
       googleAccessToken
   );
-
-  console.log(userGoogle.data);
 
   const searchedUser = await authRepository.searchSnsUser({
     snsId: userGoogle.data.id,

@@ -54,7 +54,10 @@ export const authCheck = ({
       }
       next();
     } catch (error: any) {
-      console.log(new Date().toISOString() + ": npm log: " + error);
+      const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+      console.error(
+        new Date().toISOString() + ": npm log: " + error + " from " + ip
+      );
       if (error.name === "TokenExpiredError") {
         return res
           .status(419)
@@ -67,62 +70,3 @@ export const authCheck = ({
     }
   };
 };
-
-// export const authCheck = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction,
-// ) => {
-//   try {
-//     const { authorization } = req.headers;
-//     if (!authorization) {
-//       throw new CustomHttpErrorModel({
-//         message: "No authorization",
-//         status: 401,
-//       });
-//     }
-
-//     const splitToken = authorization.split(" ");
-
-//     if (splitToken.length !== 2 || splitToken[0] !== "Bearer") {
-//       throw new CustomHttpErrorModel({
-//         message: "No authorization",
-//         status: 401,
-//       });
-//     }
-//     // 뒤에 오는 Handler에서 사용할 수 있도록 decoded에 저장
-//     req.decoded = AuthUtils.verifyToken(splitToken[1]);
-//     next();
-
-//     // const { MANAGER_TOKEN, CLIENT_TOKEN } = process.env;
-//     // // 1. GET 메소드는 클라이언트도 접근 가능하도록 허용
-//     // if (req.method === "GET") {
-//     //   if (splitToken[1] !== MANAGER_TOKEN && splitToken[1] !== CLIENT_TOKEN) {
-//     //     throw new CustomHttpErrorModel({
-//     //       message: "No authorization",
-//     //       status: 401,
-//     //     });
-//     //   }
-//     // }
-//     // // 2. POST, PATCH, DELETE 메소드는 관리자만 접근 가능하도록 허용
-//     // else {
-//     //   if (splitToken[1] !== MANAGER_TOKEN) {
-//     //     throw new CustomHttpErrorModel({
-//     //       message: "No authorization",
-//     //       status: 401,
-//     //     });
-//     //   }
-//     // }
-//   } catch (error: any) {
-//     // console.log(new Date().toISOString() + ": npm log: " + error);
-//     // if (error.name === "TokenExpiredError") {
-//     //   return res
-//     //     .status(419)
-//     //     .send({ status: "FAILED", data: { error: "Token Expired" } });
-//     // }
-
-//     return res
-//       .status(error?.status || 500)
-//       .send({ status: "FAILED", data: { error: error?.message || error } });
-//   }
-// };

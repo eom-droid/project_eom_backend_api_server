@@ -24,8 +24,6 @@ export class DataUtils {
       date >= 10 ? date : "0" + date
     }_${uuidv4()}`;
 
-    console.log(fileName);
-
     return fileName;
   }
 

@@ -404,7 +404,6 @@ export const createDiaryReplyLike = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("createDiaryReplyLike");
   try {
     const { id } = req.params;
     // middleware에서 decode를 했고, validate를 진행했기 때문에 여기서는 id만 가져오면 됨
@@ -427,7 +426,6 @@ export const deleteDiaryReplyLike = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("deleteDiaryReplyLike");
   try {
     const { id } = req.params;
     // middleware에서 decode를 했고, validate를 진행했기 때문에 여기서는 id만 가져오면 됨

@@ -14,7 +14,10 @@ export const nestedBodyParser = (nestedPath: string) => {
       req.body = JSON.parse(req.body[nestedPath]);
       return next();
     } catch (error) {
-      console.log(new Date().toISOString() + ": npm log: " + error);
+      const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+      console.error(
+        new Date().toISOString() + ": npm log: " + error + " from " + ip
+      );
 
       return res.status(400).send({
         status: "FAILED",
