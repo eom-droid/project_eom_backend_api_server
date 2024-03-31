@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator/src/validation-result";
 import { Request, Response, NextFunction } from "express";
 import { ValidationChain } from "express-validator/src/chain/validation-chain";
+import { DateUtils } from "../../utils/date_utils";
 
 /**
  * @DESC validate request(express-validation)
@@ -17,6 +18,14 @@ export const validate = (schemas: ValidationChain[]) => {
     if (result.isEmpty()) {
       return next();
     }
+    var ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    console.error(
+      DateUtils.generateNowDateTime() +
+        ": " +
+        "validation error" +
+        " from " +
+        ip
+    );
     return res
       .status(400)
       .send({ status: "FAILED", data: { error: "잘못된 요청입니다." } });
