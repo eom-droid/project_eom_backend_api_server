@@ -1,4 +1,5 @@
 import { Response, Request, NextFunction } from "express";
+import { DateUtils } from "../utils/date_utils";
 
 /**
  * @DESC nested body를 flat하게 만들어주는 미들웨어
@@ -16,7 +17,7 @@ export const nestedBodyParser = (nestedPath: string) => {
     } catch (error) {
       const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
       console.error(
-        new Date().toISOString() + ": npm log: " + error + " from " + ip
+        DateUtils.generateNowDateTime() + ": npm log: " + error + " from " + ip
       );
 
       return res.status(400).send({

@@ -11,6 +11,7 @@ import { PRODUCTION } from "./constant/default";
 import cookieParser from "cookie-parser";
 import { Redis } from "./redis/redis";
 import cors from "cors";
+import { DateUtils } from "./utils/date_utils";
 
 // 반복적으로 나오는 try catch나 에러 처리 같은 경우에는 express에 미들웨어를 통해 진행함
 async function server() {
@@ -60,11 +61,11 @@ async function server() {
     app.use(morgan("dev"));
     mongoose.set("debug", true);
   }
-  console.log(new Date().toISOString() + ": npm log: MongoDB connected");
+  console.log(DateUtils.generateNowDateTime() + ": npm log: MongoDB connected");
 
   // redis를 통해 Redis에 연결
   await Redis.getInstance().connect();
-  console.log(new Date().toISOString() + ": npm log: Redis connected");
+  console.log(DateUtils.generateNowDateTime() + ": npm log: Redis connected");
 
   // express의 미들웨어를 통해 req.body를 사용할 수 있도록 함
   // 추가적으로 해당 체계는 routes -> controllers -> services -> repository로 이어짐
@@ -92,7 +93,9 @@ async function server() {
     // err 가 httpErrorModel 이 아니면 unexpected
     var ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
     console.error(
-      new Date().toISOString() + ": " + (err instanceof CustomHttpErrorModel)
+      DateUtils.generateNowDateTime() +
+        ": " +
+        (err instanceof CustomHttpErrorModel)
         ? ""
         : "un" + "expected npm log: " + err + " from " + ip
     );
@@ -109,7 +112,7 @@ async function server() {
   // 서버를 실행함
   app.listen(PORT, async () => {
     console.log(
-      new Date().toISOString() +
+      DateUtils.generateNowDateTime() +
         ": npm log: " +
         `server listening on port ${PORT}`
     );
