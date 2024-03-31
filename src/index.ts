@@ -12,10 +12,16 @@ import cookieParser from "cookie-parser";
 import { Redis } from "./redis/redis";
 import cors from "cors";
 import { DateUtils } from "./utils/date_utils";
+import fs from "fs";
+import https from "https";
 
 // 반복적으로 나오는 try catch나 에러 처리 같은 경우에는 express에 미들웨어를 통해 진행함
 async function server() {
   const app = express();
+  const options = {
+    key: fs.readFileSync("./keys/private.pem"),
+    cert: fs.readFileSync("./keys/public.pem"),
+  };
   const {
     MONGO_URI,
     MONGO_URI_SUFFIX,
@@ -108,9 +114,10 @@ async function server() {
           }
     );
   });
+  const server = https.createServer(options, app);
 
   // 서버를 실행함
-  app.listen(PORT, async () => {
+  server.listen(PORT, async () => {
     console.log(
       DateUtils.generateNowDateTime() +
         ": npm log: " +

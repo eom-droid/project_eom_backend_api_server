@@ -5,3 +5,4 @@ dist
 /uploads
 
 *.p8*
+*.pem
