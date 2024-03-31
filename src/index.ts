@@ -13,7 +13,7 @@ import { Redis } from "./redis/redis";
 import cors from "cors";
 
 // 반복적으로 나오는 try catch나 에러 처리 같은 경우에는 express에 미들웨어를 통해 진행함
-const server = async () => {
+async function server() {
   const app = express();
   const {
     MONGO_URI,
@@ -114,6 +114,6 @@ const server = async () => {
         `server listening on port ${PORT}`
     );
   });
-};
+}
 
 server();
