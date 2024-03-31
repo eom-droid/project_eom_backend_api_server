@@ -101,9 +101,9 @@ async function server() {
     console.error(
       DateUtils.generateNowDateTime() +
         ": " +
-        (err instanceof CustomHttpErrorModel)
-        ? ""
-        : "un" + "expected npm log: " + err + " from " + ip
+        (err instanceof CustomHttpErrorModel
+          ? "expected npm log: " + err + " from " + ip
+          : "un" + "expected npm log: " + err + " from " + ip)
     );
 
     return res.status(err.status || 500).json(
