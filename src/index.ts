@@ -105,6 +105,7 @@ async function server() {
           ? "expected npm log: " + err + " from " + ip
           : "un" + "expected npm log: " + err + " from " + ip)
     );
+    console.error("????????????");
 
     return res.status(err.status || 500).json(
       NODE_ENV === PRODUCTION
