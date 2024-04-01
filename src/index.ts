@@ -18,10 +18,7 @@ import https from "https";
 // 반복적으로 나오는 try catch나 에러 처리 같은 경우에는 express에 미들웨어를 통해 진행함
 async function server() {
   const app = express();
-  // const options = {
-  //   key: fs.readFileSync("./keys/private.pem"),
-  //   cert: fs.readFileSync("./keys/public.pem"),
-  // };
+
   const {
     MONGO_URI,
     MONGO_URI_SUFFIX,
@@ -29,6 +26,7 @@ async function server() {
     PORT,
     COOKIE_SECRET,
     CORS_URL,
+    HOST_NAME,
   } = process.env;
   app.use(
     cors({
@@ -114,16 +112,44 @@ async function server() {
           }
     );
   });
-  // const server = https.createServer(options, app);
-
-  // 서버를 실행함
-  app.listen(PORT, async () => {
-    console.log(
-      DateUtils.generateNowDateTime() +
-        ": npm log: " +
-        `server listening on port ${PORT}`
+  try {
+    var privateKey = fs.readFileSync(
+      "/etc/letsencrypt/live/" + HOST_NAME + "/privkey.pem"
     );
-  });
+    var certificate = fs.readFileSync(
+      "/etc/letsencrypt/live/" + HOST_NAME + "/cert.pem"
+    );
+    var ca = fs.readFileSync(
+      "/etc/letsencrypt/live/" + HOST_NAME + "/chain.pem"
+    );
+    const credentails = {
+      key: privateKey,
+      cert: certificate,
+      ca: ca,
+    };
+    const server = https.createServer(credentails, app);
+    server.listen(PORT, async () => {
+      console.log(
+        DateUtils.generateNowDateTime() +
+          ": npm log: " +
+          `server listening on port ${PORT}`
+      );
+    });
+  } catch (e) {
+    console.log(
+      DateUtils.generateNowDateTime() + ": npm log: " + "https error"
+    );
+    // 서버를 https 없이 실행함
+    app.listen(PORT, async () => {
+      console.log(
+        DateUtils.generateNowDateTime() +
+          ": npm log: " +
+          `server listening on port ${PORT}`
+      );
+    });
+  }
+
+  // const server = https.createServer(options, app);
 }
 
 server();
