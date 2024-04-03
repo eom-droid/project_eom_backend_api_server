@@ -85,7 +85,7 @@ async function server() {
   // 404 에러를 처리하는 부분
   app.use((req, res, next) => {
     const error = new CustomHttpErrorModel({
-      message: "Could not find this route.",
+      message: "Could not find  '" + req.originalUrl + "' route.",
       status: 404,
     });
     next(error);
