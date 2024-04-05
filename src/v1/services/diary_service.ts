@@ -123,7 +123,7 @@ export const getDiaries = async (
  * @DESC get diary detail
  * 파라미터에 존재하는 id를 통해 특정 diary의 모든 정보를 가져옴
  */
-export const getDiary = async (diaryId: string) => {
+export const getDiary = async (diaryId: string, userId: string) => {
   const temp = await diaryRepository.getDiary(diaryId);
 
   if (temp == null || (temp.isShown !== undefined && temp.isShown === false)) {
@@ -133,7 +133,7 @@ export const getDiary = async (diaryId: string) => {
     });
   }
 
-  const result = await diaryRepository.getDiaryWithLike(diaryId);
+  const result = await diaryRepository.getDiaryWithLike(diaryId, userId);
   if (result == null) {
     throw new CustomHttpErrorModel({
       status: 400,

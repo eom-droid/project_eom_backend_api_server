@@ -69,8 +69,9 @@ export const getDiary = async (
 ) => {
   try {
     const diaryId = req.params.id;
+    const userId = req.decoded?.id!;
 
-    const data = await diaryService.getDiary(diaryId);
+    const data = await diaryService.getDiary(diaryId, userId);
 
     return res.status(200).send(data);
   } catch (error: any) {

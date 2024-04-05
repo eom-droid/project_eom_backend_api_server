@@ -102,7 +102,7 @@ export const getDiaries = async (
  * @DESC get diary detail with likeCount and isLike
  * findById를 통해 특정 diary의 모든 정보를 가져옴(DiaryDetail을 가져옴)
  */
-export const getDiaryWithLike = async (diaryId: string) => {
+export const getDiaryWithLike = async (diaryId: string, userId: string) => {
   try {
     const result = await DiaryModel.aggregate([
       { $match: { _id: new Types.ObjectId(diaryId) } },
@@ -142,9 +142,8 @@ export const getDiaryWithLike = async (diaryId: string) => {
           commentCount: { $size: "$diaryComments" },
           isLike: {
             $cond: {
-              if: {
-                $in: [new Types.ObjectId(diaryId), "$diaryLikes.diaryId"],
-              },
+              if: { $in: [new Types.ObjectId(userId), "$diaryLikes.userId"] },
+
               then: true,
               else: false,
             },
