@@ -82,14 +82,15 @@ async function server() {
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/user", userRouter);
 
-  // 404 에러를 처리하는 부분
-  app.use((req, res, next) => {
-    const error = new CustomHttpErrorModel({
-      message: "Could not find  '" + req.originalUrl + "' route.",
-      status: 404,
-    });
-    next(error);
-  });
+  // // 404 에러를 처리하는 부분
+  // app.use((req, res, next) => {
+
+  //   const error = new CustomHttpErrorModel({
+  //     message: "Could not find  '" + req.originalUrl + "' route.",
+  //     status: 404,
+  //   });
+  //   next(error);
+  // });
 
   // 전체적 에러 처리 부분
   app.use((err: any, req: Request, res: Response, next: NextFunction) => {
@@ -100,8 +101,19 @@ async function server() {
       DateUtils.generateNowDateTime() +
         ": " +
         (err instanceof CustomHttpErrorModel
-          ? "expected npm log: " + err + " from " + ip
-          : "un" + "expected npm log: " + err + " from " + ip)
+          ? "expected npm log: " +
+            err +
+            " from " +
+            ip +
+            "/ route : " +
+            req.originalUrl
+          : "un" +
+            "expected npm log: " +
+            err +
+            " from " +
+            ip +
+            "/ route : " +
+            req.originalUrl)
     );
 
     return res.status(err.status || 500).json(

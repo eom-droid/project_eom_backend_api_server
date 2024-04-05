@@ -44,9 +44,15 @@ export const authCheck = ({
       if (userRequire) {
         const user = await UserRepository.searchUserById(req.decoded.id);
 
-        if (user === null || user.role < role) {
+        if (user === null) {
           throw new CustomHttpErrorModel({
-            message: "No authorization",
+            message: "No User",
+            status: 401,
+          });
+        }
+        if (user.role < role) {
+          throw new CustomHttpErrorModel({
+            message: "No Permission",
             status: 401,
           });
         }
