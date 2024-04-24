@@ -264,6 +264,7 @@ export const getOrCreateGoogleUserByWeb = async ({
       user: await getUserByGoogleToken(googleAccessToken),
     };
   } catch (error: any) {
+    console.log(error);
     throw error;
   }
 };
