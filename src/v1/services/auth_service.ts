@@ -274,10 +274,10 @@ export const getOrCreateGoogleUserByWeb = async ({
  */
 export const getOrCreateAppleUserByWeb = async ({
   code,
-}: // redirect_uri,
-{
+  redirect_uri,
+}: {
   code: string;
-  // redirect_uri?: string;
+  redirect_uri?: string;
 }) => {
   try {
     const { APPLE_CLIENT_ID, APPLE_REDIRECT_URL } = process.env;
@@ -291,7 +291,7 @@ export const getOrCreateAppleUserByWeb = async ({
         client_secret: apple_client_secret,
         code,
         grant_type: "authorization_code",
-        redirect_uri: decodeURI(APPLE_REDIRECT_URL!),
+        redirect_uri: redirect_uri ?? decodeURI(APPLE_REDIRECT_URL!),
       },
       {
         headers: {
