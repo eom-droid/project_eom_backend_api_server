@@ -289,7 +289,7 @@ export const getOrCreateAppleUserByWeb = async ({
       {
         client_id: APPLE_CLIENT_ID,
         client_secret: apple_client_secret,
-        code,
+        code: code,
         grant_type: "authorization_code",
         redirect_uri: redirect_uri ?? decodeURI(APPLE_REDIRECT_URL!),
       },
