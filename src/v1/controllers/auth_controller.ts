@@ -78,10 +78,11 @@ export const appleJoin = async (
 ) => {
   try {
     const { code } = req.body;
-    console.log(code);
 
     const userId = (
-      await authService.getOrCreateAppleUserByWeb(code)
+      await authService.getOrCreateAppleUserByWeb({
+        code: code,
+      })
     ).user!._id.toString();
 
     const refreshToken: string = await AuthUtils.createRefreshToken(userId);

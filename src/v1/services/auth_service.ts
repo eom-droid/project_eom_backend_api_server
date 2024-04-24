@@ -282,6 +282,7 @@ export const getOrCreateAppleUserByWeb = async ({
   try {
     const { APPLE_CLIENT_ID, APPLE_REDIRECT_URL } = process.env;
     const apple_client_secret = AuthUtils.createAppleClientSecret();
+    console.log(auth_code);
 
     // 2. 토큰을 이용하여 사용자 정보를 가져온다.
     const response = await axios.post(
