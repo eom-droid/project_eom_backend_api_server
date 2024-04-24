@@ -82,10 +82,6 @@ export class AuthUtils {
       );
       return client_secret;
     } catch (error) {
-      console.log("------------------------------");
-      console.log(error);
-      console.log("------------------------------");
-
       throw Error("애플 클라이언트 시크릿 생성에 실패했습니다.");
     }
   }

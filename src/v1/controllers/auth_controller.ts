@@ -93,7 +93,6 @@ export const appleJoin = async (
       .cookie("refreshToken", refreshToken, CookieOption)
       .json({ accessToken, refreshToken });
   } catch (error: any) {
-    console.log(error);
     // 각 컨트롤러 별 예상가능한 에러에 대해서 종합 필요
     next(error);
   }
