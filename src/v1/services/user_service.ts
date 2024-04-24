@@ -12,6 +12,7 @@ import { AWSUtils } from "../../utils/aws_utils";
 import { S3UserProfilePath } from "../../constant/default";
 import { profileEnd } from "console";
 import { Redis } from "../../redis/redis";
+import { Request } from "express";
 
 /**
  * @DESC email login
@@ -126,19 +127,18 @@ export const deleteEmailUser = async (user: User, userId: string) => {
   }
 };
 
-export const deleteGoogleUser = async (code: string) => {
-  const { GOOGLE_REVOKE_REDIRECT_URI } = process.env;
-
+export const deleteGoogleUser = async (req: Request) => {
   try {
     // getGoogleUserByWeb을 통해 user와 googleAccessToken을 받아옴
-    const { user, googleAccessToken } = await getOrCreateGoogleUserByWeb({
-      code,
-      redirect_uri: GOOGLE_REVOKE_REDIRECT_URI,
-    });
+    // const { user, googleAccessToken } = await getOrCreateGoogleUserByWeb({
+    //   code,
+    //   redirect_uri: GOOGLE_REVOKE_REDIRECT_URI,
+    // });
+    const user = req.user!;
 
-    const userId = user!._id.toString();
+    const userId = req.decoded!.id;
     // googleAccessToken을 통해 google 계정을 탈퇴시킴
-    await requestGoogleAccountRevoke(googleAccessToken);
+    // await requestGoogleAccountRevoke(googleAccessToken);
     // 지워진 유저를 deletedUser에 추가
     await deletedUserRepository.addDeletedUser(
       userToDeletedUserModel(user!, userId)

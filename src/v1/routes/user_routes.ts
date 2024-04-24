@@ -78,7 +78,11 @@ userRouter.delete(
  */
 userRouter.delete(
   "/me/google",
-  validate(revokeGoogleBodyValidation),
+  authCheck({
+    role: RoleType.USER,
+    userRequire: true,
+  }),
+  // validate(revokeGoogleBodyValidation),
   userController.deleteGoogleUser
 );
 

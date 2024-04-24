@@ -118,9 +118,7 @@ export const deleteGoogleUser = async (
   next: NextFunction
 ) => {
   try {
-    const { code } = req.body;
-
-    await userService.deleteGoogleUser(code);
+    await userService.deleteGoogleUser(req);
 
     return res.status(200).json({});
   } catch (error: any) {
