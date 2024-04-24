@@ -340,6 +340,10 @@ export const getOrCreateAppleUserByWeb = async ({
       user,
     };
   } catch (error: any) {
+    console.log("--------------------------------------");
+    console.log(error);
+    console.log("--------------------------------------");
+
     throw error;
   }
 };
