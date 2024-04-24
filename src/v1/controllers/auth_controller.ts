@@ -78,10 +78,8 @@ export const appleJoin = async (
 ) => {
   try {
     const { code } = req.body;
+    console.log(code);
 
-    // const userId = (await authService.createAppleUserByWeb(
-    //   code
-    // ))!._id.toString();
     const userId = (
       await authService.getOrCreateAppleUserByWeb(code)
     ).user!._id.toString();
@@ -94,6 +92,7 @@ export const appleJoin = async (
       .cookie("refreshToken", refreshToken, CookieOption)
       .json({ accessToken, refreshToken });
   } catch (error: any) {
+    console.log(error);
     // 각 컨트롤러 별 예상가능한 에러에 대해서 종합 필요
     next(error);
   }
