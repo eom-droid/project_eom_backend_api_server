@@ -48,7 +48,9 @@ export const googleJoin = async (
     const { code } = req.body;
 
     const userId = (
-      await authService.getOrCreateGoogleUserByWeb(code)
+      await authService.getOrCreateGoogleUserByWeb({
+        code: decodeURI(code),
+      })
     ).user!._id.toString();
 
     const refreshToken: string = await AuthUtils.createRefreshToken(userId);
