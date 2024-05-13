@@ -1,2 +1,1 @@
-현재로서 function Name을 지을때는
-create, update, delete, get을 사용한다
+![structure drawio](https://github.com/eom-droid/project_eom_backend_api_server/assets/81077988/ed24a284-2ff8-49c4-901c-ce716a709cbf)
