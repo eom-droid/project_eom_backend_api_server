@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import mongoose from "mongoose";
+import { pool } from "./v1/db";
 import { diaryRouter } from "./v1/routes/diary_routes";
 import { musicRouter } from "./v1/routes/music_routes";
 import { authRouter } from "./v1/routes/auth_routes";
@@ -20,8 +20,10 @@ async function server() {
   const app = express();
 
   const {
-    MONGO_URI,
-    MONGO_URI_SUFFIX,
+    MYSQL_HOST,
+    MYSQL_USER,
+    MYSQL_PASSWORD,
+    MYSQL_DATABASE,
     NODE_ENV,
     PORT,
     COOKIE_SECRET,
@@ -45,12 +47,11 @@ async function server() {
   // destructuring을 통해 변수를 불러옴
 
   // .env 파일 내에 있는 변수들이 없을 경우 에러를 던짐
-  if (!MONGO_URI) throw new Error("MONGO_URI is required!!!");
-  if (!PORT) throw new Error("PORT is required!!!");
 
-  // mongoose를 통해 MongoDB에 연결
-  await mongoose.connect(MONGO_URI + NODE_ENV + MONGO_URI_SUFFIX);
-  // mongoose의 debug 모드를 활성화
+  if (!PORT) throw new Error("PORT is required!!!");
+  if (!MYSQL_HOST || !MYSQL_USER || !MYSQL_PASSWORD || !MYSQL_DATABASE)
+    throw new Error("MYSQL info is required!!!");
+
   if (process.env.NODE_ENV === PRODUCTION) {
     app.use(
       morgan("combined", {
@@ -63,9 +64,7 @@ async function server() {
     );
   } else {
     app.use(morgan("dev"));
-    mongoose.set("debug", true);
   }
-  console.log(DateUtils.generateNowDateTime() + ": npm log: MongoDB connected");
 
   // redis를 통해 Redis에 연결
   await Redis.getInstance().connect();
@@ -77,6 +76,7 @@ async function server() {
   // controller : 쿼리 혹은 body를 통해 받은 데이터를 내부에서 사용하는 class 형태로 변경하여 service로 넘김
   // service : 서비스 로직에 대한 부분을 담당하며 repository를 활용하여 CURD를 진행함
   // repository : DB에 접근하는 부분을 담당하며 mongoose를 통해 DB에 접근함
+
   app.use("/api/v1/diaries", diaryRouter);
   app.use("/api/v1/musics", musicRouter);
   app.use("/api/v1/auth", authRouter);
@@ -124,34 +124,46 @@ async function server() {
           }
     );
   });
-  try {
-    var privateKey = fs.readFileSync(
-      "/etc/letsencrypt/live/" + HOST_NAME + "/privkey.pem"
-    );
-    var certificate = fs.readFileSync(
-      "/etc/letsencrypt/live/" + HOST_NAME + "/cert.pem"
-    );
-    var ca = fs.readFileSync(
-      "/etc/letsencrypt/live/" + HOST_NAME + "/chain.pem"
-    );
-    const credentails = {
-      key: privateKey,
-      cert: certificate,
-      ca: ca,
-    };
-    const server = https.createServer(credentails, app);
-    server.listen(PORT, async () => {
-      console.log(
-        DateUtils.generateNowDateTime() +
-          ": npm log: " +
-          `server listening on port ${PORT}`
+  if (NODE_ENV === PRODUCTION) {
+    try {
+      var privateKey = fs.readFileSync(
+        "/etc/letsencrypt/live/" + HOST_NAME + "/privkey.pem"
       );
-    });
-  } catch (e) {
-    console.log(
-      DateUtils.generateNowDateTime() + ": npm log: " + "https error"
-    );
-    // 서버를 https 없이 실행함
+      var certificate = fs.readFileSync(
+        "/etc/letsencrypt/live/" + HOST_NAME + "/cert.pem"
+      );
+      var ca = fs.readFileSync(
+        "/etc/letsencrypt/live/" + HOST_NAME + "/chain.pem"
+      );
+      const credentails = {
+        key: privateKey,
+        cert: certificate,
+        ca: ca,
+      };
+      console.log("_-------------------------------");
+      const server = https.createServer(credentails, app);
+      server.listen(PORT, async () => {
+        console.log(
+          DateUtils.generateNowDateTime() +
+            ": npm log: " +
+            `server listening on port ${PORT}`
+        );
+      });
+    } catch (e) {
+      console.log(e);
+      console.log(
+        DateUtils.generateNowDateTime() + ": npm log: " + "https error"
+      );
+      // 서버를 https 없이 실행함
+      app.listen(PORT, async () => {
+        console.log(
+          DateUtils.generateNowDateTime() +
+            ": npm log: " +
+            `server listening on port ${PORT}`
+        );
+      });
+    }
+  } else {
     app.listen(PORT, async () => {
       console.log(
         DateUtils.generateNowDateTime() +
@@ -165,3 +177,9 @@ async function server() {
 }
 
 server();
+
+process.on("SIGINT", async () => {
+  console.log("Received SIGINT. Shutting down gracefully...");
+  await pool.end();
+  process.exit();
+});

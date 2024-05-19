@@ -13,6 +13,12 @@ import { profilePatchBodyValidation } from "../middlewares/user/profile_patch_bo
 export const userRouter = express.Router();
 
 /**
+ * @GET
+ * @DESC test
+ */
+userRouter.get("/", userController.test);
+
+/**
  * @POST /api/v1/user/me
  * @DESC 인증번호 검증 확인
  */

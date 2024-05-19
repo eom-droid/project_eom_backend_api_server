@@ -2,7 +2,21 @@ import { NextFunction, Request, Response } from "express";
 
 import { CustomHttpErrorModel } from "../../models/custom_http_error_model";
 import * as userService from "../services/user_service";
+import { pool } from "../db";
 import { profile } from "console";
+
+export const test = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // db 쿼리 작성
+    // const user = await userService.test();
+    const result = await pool.query("SELECT * FROM test");
+    console.log(result);
+    return res.status(200).send({ status: "SUCCESS" });
+  } catch (error: any) {
+    console.log(error);
+    next(error);
+  }
+};
 
 export const getMyInfo = async (
   req: Request,
