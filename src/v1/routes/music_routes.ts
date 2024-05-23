@@ -14,7 +14,6 @@ import { MUSIC, RoleType } from "../../constant/default";
 import { idParamValidation } from "../middlewares/id_param_middleware";
 import { checkIdExistMiddleware } from "../middlewares/check_id_exist_middleware";
 import { MusicModel } from "../models/music_model";
-import { checkAccessTokenValidation } from "../middlewares/check_access_token_middleware";
 
 /**
  * @GET /api/v1/musics
@@ -22,9 +21,10 @@ import { checkAccessTokenValidation } from "../middlewares/check_access_token_mi
  */
 musicRouter.get(
   "/",
-  // authCheck({
-  //   role: RoleType.USER,
-  // }),
+  authCheck({
+    role: RoleType.USER,
+    canAccessWithoutToken: true,
+  }),
 
   validate(musicQueryValidation),
   musicController.getMusics

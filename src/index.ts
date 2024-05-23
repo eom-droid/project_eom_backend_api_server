@@ -105,6 +105,8 @@ async function server() {
             err +
             " from " +
             ip +
+            " method " +
+            req.method +
             "/ route : " +
             req.originalUrl
           : "un" +
@@ -112,6 +114,8 @@ async function server() {
             err +
             " from " +
             ip +
+            " method " +
+            req.method +
             "/ route : " +
             req.originalUrl)
     );
@@ -120,7 +124,10 @@ async function server() {
       NODE_ENV === PRODUCTION
         ? {}
         : {
-            message: err.message || "An unknown error occurred!",
+            message:
+              err.status !== undefined
+                ? err.message
+                : "An unknown error occurred!",
           }
     );
   });

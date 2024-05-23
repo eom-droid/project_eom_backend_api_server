@@ -42,10 +42,13 @@ export const updateDiary = async (id: String, diary: Diary) => {
  * pagination을 통해 특정 갯수만큼의 diary를 가져옴
  * txts, imgs, vids, contentOrder는 가져오지 않음
  */
-export const getDiaries = async (
-  paginateReq: DiaryPaginateReqModel,
-  userId: string
-) => {
+export const getDiaries = async ({
+  paginateReq,
+  userId,
+}: {
+  paginateReq: DiaryPaginateReqModel;
+  userId?: string;
+}) => {
   try {
     var filterQuery = paginateReq.generateQuery();
     const result = await DiaryModel.aggregate([
@@ -82,13 +85,19 @@ export const getDiaries = async (
           isShown: 1,
           createdAt: 1,
           likeCount: { $size: "$diaryLikes" },
-          isLike: {
-            $cond: {
-              if: { $in: [new Types.ObjectId(userId), "$diaryLikes.userId"] },
-              then: true,
-              else: false,
-            },
-          },
+
+          isLike:
+            userId === undefined
+              ? { $literal: false }
+              : {
+                  $cond: {
+                    if: {
+                      $in: [new Types.ObjectId(userId), "$diaryLikes.userId"],
+                    },
+                    then: true,
+                    else: false,
+                  },
+                },
         },
       },
     ]);
@@ -102,7 +111,13 @@ export const getDiaries = async (
  * @DESC get diary detail with likeCount and isLike
  * findById를 통해 특정 diary의 모든 정보를 가져옴(DiaryDetail을 가져옴)
  */
-export const getDiaryWithLike = async (diaryId: string, userId: string) => {
+export const getDiaryWithLike = async ({
+  diaryId,
+  userId,
+}: {
+  diaryId: string;
+  userId?: string;
+}) => {
   try {
     const result = await DiaryModel.aggregate([
       { $match: { _id: new Types.ObjectId(diaryId) } },
@@ -140,14 +155,18 @@ export const getDiaryWithLike = async (diaryId: string, userId: string) => {
           createdAt: 1,
           likeCount: { $size: "$diaryLikes" },
           commentCount: { $size: "$diaryComments" },
-          isLike: {
-            $cond: {
-              if: { $in: [new Types.ObjectId(userId), "$diaryLikes.userId"] },
-
-              then: true,
-              else: false,
-            },
-          },
+          isLike:
+            userId === undefined
+              ? { $literal: false }
+              : {
+                  $cond: {
+                    if: {
+                      $in: [new Types.ObjectId(userId), "$diaryLikes.userId"],
+                    },
+                    then: true,
+                    else: false,
+                  },
+                },
         },
       },
     ]);

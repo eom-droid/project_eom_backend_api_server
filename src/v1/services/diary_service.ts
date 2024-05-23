@@ -103,12 +103,16 @@ export const updateDiary = async (
 /**
  * @DESC get diaries
  * pagination을 통해 특정 갯수만큼의 diary를 가져옴
+ * userId가 존재할 경우 해당유저가 좋아요를 했는지 확인함
  */
-export const getDiaries = async (
-  paginateReq: DiaryPaginateReqModel,
-  userId: string
-): Promise<PaginateResModel<Diary>> => {
-  const result = await diaryRepository.getDiaries(paginateReq, userId);
+export const getDiaries = async ({
+  paginateReq,
+  userId,
+}: {
+  paginateReq: DiaryPaginateReqModel;
+  userId?: string;
+}): Promise<PaginateResModel<Diary>> => {
+  const result = await diaryRepository.getDiaries({ paginateReq, userId });
 
   return new PaginateResModel<Diary>({
     meta: {
@@ -123,7 +127,13 @@ export const getDiaries = async (
  * @DESC get diary detail
  * 파라미터에 존재하는 id를 통해 특정 diary의 모든 정보를 가져옴
  */
-export const getDiary = async (diaryId: string, userId: string) => {
+export const getDiary = async ({
+  diaryId,
+  userId,
+}: {
+  diaryId: string;
+  userId?: string;
+}) => {
   const temp = await diaryRepository.getDiary(diaryId);
 
   if (temp == null || (temp.isShown !== undefined && temp.isShown === false)) {
@@ -133,7 +143,10 @@ export const getDiary = async (diaryId: string, userId: string) => {
     });
   }
 
-  const result = await diaryRepository.getDiaryWithLike(diaryId, userId);
+  const result = await diaryRepository.getDiaryWithLike({
+    diaryId,
+    userId,
+  });
   if (result == null) {
     throw new CustomHttpErrorModel({
       status: 400,
@@ -244,17 +257,21 @@ export const deleteDiaryLike = async (diaryId: string, userId: string) => {
  * diary에 댓글을 가져옴
  */
 
-export const getDiaryComments = async (
-  diaryId: string,
-  userId: string,
-  paginateReq: PaginateReqModel
-) => {
+export const getDiaryComments = async ({
+  diaryId,
+  userId,
+  paginateReq,
+}: {
+  diaryId: string;
+  userId?: string;
+  paginateReq: PaginateReqModel;
+}) => {
   try {
-    const result = await diaryCommentRepository.getDiaryComments(
+    const result = await diaryCommentRepository.getDiaryComments({
       diaryId,
       userId,
-      paginateReq
-    );
+      paginateReq,
+    });
 
     return new PaginateResModel({
       meta: {
@@ -421,17 +438,21 @@ export const deleteDiaryCommentLike = async (
  * @DESC get diary comment's reply
  * diary에 댓글의 댓글을 가져옴
  */
-export const getDiaryReplys = async (
-  commentId: string,
-  userId: string,
-  paginateReq: PaginateReqModel
-) => {
+export const getDiaryReplys = async ({
+  commentId,
+  userId,
+  paginateReq,
+}: {
+  commentId: string;
+  userId?: string;
+  paginateReq: PaginateReqModel;
+}) => {
   try {
-    const result = await diaryReplyRepository.getDiaryReplys(
+    const result = await diaryReplyRepository.getDiaryReplys({
       commentId,
       userId,
-      paginateReq
-    );
+      paginateReq,
+    });
 
     return new PaginateResModel({
       meta: {

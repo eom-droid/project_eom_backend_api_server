@@ -69,9 +69,15 @@ export const getDiary = async (
 ) => {
   try {
     const diaryId = req.params.id;
-    const userId = req.decoded?.id!;
+    var userId = undefined;
+    if (req.decoded !== undefined && req.decoded.id !== undefined) {
+      userId = req.decoded.id;
+    }
 
-    const data = await diaryService.getDiary(diaryId, userId);
+    const data = await diaryService.getDiary({
+      diaryId,
+      userId,
+    });
 
     return res.status(200).send(data);
   } catch (error: any) {
@@ -90,8 +96,14 @@ export const getDiaries = async (
 ) => {
   try {
     const paginateReq = new DiaryPaginateReqModel(req.query);
-
-    const data = await diaryService.getDiaries(paginateReq, req.decoded!.id);
+    var userId = undefined;
+    if (req.decoded !== undefined && req.decoded.id !== undefined) {
+      userId = req.decoded.id;
+    }
+    const data = await diaryService.getDiaries({
+      paginateReq,
+      userId,
+    });
     return res.status(200).send(data);
   } catch (error: any) {
     next(error);
@@ -175,14 +187,18 @@ export const getDiaryComments = async (
   next: NextFunction
 ) => {
   try {
-    const { id } = req.params;
+    const { id: diaryId } = req.params;
     const paginateReq = new PaginateReqModel(req.query);
+    var userId = undefined;
+    if (req.decoded !== undefined && req.decoded.id !== undefined) {
+      userId = req.decoded.id;
+    }
 
-    const data = await diaryService.getDiaryComments(
-      id,
-      req.decoded!.id,
-      paginateReq
-    );
+    const data = await diaryService.getDiaryComments({
+      diaryId,
+      userId,
+      paginateReq,
+    });
 
     return res.status(200).send(data);
   } catch (error: any) {
@@ -313,14 +329,18 @@ export const getDiaryReplys = async (
   next: NextFunction
 ) => {
   try {
-    const { id } = req.params;
+    const { id: commentId } = req.params;
     const paginateReq = new PaginateReqModel(req.query);
+    var userId = undefined;
+    if (req.decoded !== undefined && req.decoded.id !== undefined) {
+      userId = req.decoded.id;
+    }
 
-    const data = await diaryService.getDiaryReplys(
-      id,
-      req.decoded!.id,
-      paginateReq
-    );
+    const data = await diaryService.getDiaryReplys({
+      commentId,
+      userId,
+      paginateReq,
+    });
 
     return res.status(200).send(data);
   } catch (error: any) {

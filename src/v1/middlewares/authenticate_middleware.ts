@@ -17,13 +17,33 @@ import { DateUtils } from "../../utils/date_utils";
 export const authCheck = ({
   role,
   userRequire = false,
+  canAccessWithoutToken = false,
 }: {
   role: RoleType;
   userRequire?: boolean;
+  canAccessWithoutToken?: boolean;
 }) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { authorization } = req.headers;
+      const { authorization, cs: clientSecret } = req.headers;
+
+      // 로직상 여기를 먼저 진행함
+      // 추가적으로 토큰이 없어도 접근 가능한 경우
+      // authorization이 있는경우는 토큰이 있는 경우 -> 로그인한 사용자의 요청
+      // 추가적으로 clien에서 null일때 안보냄
+      if (canAccessWithoutToken && authorization === undefined) {
+        if (
+          clientSecret !== process.env.ACCESS_WITHOUT_TOKEN_CLIENT_SCERET_KEY
+        ) {
+          throw new CustomHttpErrorModel({
+            message: "No authorization",
+            status: 401,
+          });
+        }
+        next();
+        return;
+      }
+
       if (!authorization) {
         throw new CustomHttpErrorModel({
           message: "No authorization",

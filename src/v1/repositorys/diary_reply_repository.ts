@@ -6,11 +6,15 @@ import { DiaryReplyModel } from "../models/diary_reply_model";
  * @DESC get diary Replys
  * diary의 대댓글을 가져옴
  */
-export const getDiaryReplys = async (
-  commentId: string,
-  userId: string,
-  paginateReq: PaginateReqModel
-) => {
+export const getDiaryReplys = async ({
+  commentId,
+  userId,
+  paginateReq,
+}: {
+  commentId: string;
+  userId?: string;
+  paginateReq: PaginateReqModel;
+}) => {
   try {
     const filterQuery = paginateReq.generateQuery(true);
 
@@ -56,15 +60,21 @@ export const getDiaryReplys = async (
           content: 1,
           createdAt: 1,
           likeCount: { $size: "$diaryReplyLikes" },
-          isLike: {
-            $cond: {
-              if: {
-                $in: [new Types.ObjectId(userId), "$diaryReplyLikes.userId"],
-              },
-              then: true,
-              else: false,
-            },
-          },
+          isLike:
+            userId === undefined
+              ? { $literal: false }
+              : {
+                  $cond: {
+                    if: {
+                      $in: [
+                        new Types.ObjectId(userId),
+                        "$diaryReplyLikes.userId",
+                      ],
+                    },
+                    then: true,
+                    else: false,
+                  },
+                },
         },
       },
     ]);

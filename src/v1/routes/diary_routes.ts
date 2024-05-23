@@ -26,6 +26,7 @@ diaryRouter.get(
   "/",
   authCheck({
     role: RoleType.USER,
+    canAccessWithoutToken: true,
   }),
   validate(diaryQueryValidation),
   diaryController.getDiaries
@@ -40,6 +41,7 @@ diaryRouter.get(
   "/:id/detail",
   authCheck({
     role: RoleType.USER,
+    canAccessWithoutToken: true,
   }),
   validate(idParamValidation),
   // 여기 추후에 변경 필요 불필요 요청인가 생각해보기!!!
@@ -146,6 +148,7 @@ diaryRouter.get(
   "/:id/comment",
   authCheck({
     role: RoleType.USER,
+    canAccessWithoutToken: true,
     userRequire: true,
   }),
   validate(idParamValidation),
@@ -242,6 +245,7 @@ diaryRouter.get(
   "/:diaryId/comment/:id/reply",
   authCheck({
     role: RoleType.USER,
+    canAccessWithoutToken: true,
     userRequire: true,
   }),
   validate(idParamValidation),

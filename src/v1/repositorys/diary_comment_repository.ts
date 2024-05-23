@@ -7,11 +7,15 @@ import { DiaryCommentModel } from "../models/diary_comment_model";
  * diary의 댓글을 가져옴
  * 미완성
  */
-export const getDiaryComments = async (
-  diaryId: string,
-  userId: string,
-  paginateReq: PaginateReqModel
-) => {
+export const getDiaryComments = async ({
+  diaryId,
+  userId,
+  paginateReq,
+}: {
+  diaryId: string;
+  userId?: string;
+  paginateReq: PaginateReqModel;
+}) => {
   try {
     const filterQuery = paginateReq.generateQuery(true);
     const result = await DiaryCommentModel.aggregate([
@@ -65,15 +69,21 @@ export const getDiaryComments = async (
           content: 1,
           createdAt: 1,
           likeCount: { $size: "$diaryCommentLikes" },
-          isLike: {
-            $cond: {
-              if: {
-                $in: [new Types.ObjectId(userId), "$diaryCommentLikes.userId"],
-              },
-              then: true,
-              else: false,
-            },
-          },
+          isLike:
+            userId === undefined
+              ? { $literal: false }
+              : {
+                  $cond: {
+                    if: {
+                      $in: [
+                        new Types.ObjectId(userId),
+                        "$diaryCommentLikes.userId",
+                      ],
+                    },
+                    then: true,
+                    else: false,
+                  },
+                },
           replyCount: { $size: "$reply" },
         },
       },
