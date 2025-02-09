@@ -2,7 +2,10 @@
 
 ![Frame 1](https://github.com/user-attachments/assets/bbf6f18c-422c-43eb-a92b-0bd269d79839)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2fe7c03 (FEAT conflict 용도)
 ## 프로젝트 소개
 
 - ‘엄태호’는 개인의 컨텐츠의 플랫폼화 및 퍼스널 마케팅을 할 수 있는 어플 입니다.
@@ -16,8 +19,11 @@
 
 ![KakaoTalk_Photo_2024-09-27-23-59-13 1](https://github.com/user-attachments/assets/84fdf715-28d9-481b-954a-5abbf507c0c5)
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 2fe7c03 (FEAT conflict 용도)
 ## 1. 개발 환경
 
 - Client: Flutter
@@ -32,6 +38,7 @@
 총 5개의 git repository를 생성하였으며 아래와 같은 인프라 구조를 가지고 있음
 ![스크린샷 2024-09-28 오전 3 27 58](https://github.com/user-attachments/assets/bc4f60ee-37f7-4176-9709-643d06bf928a)
 
+<<<<<<< HEAD
 
 - backend(NodeJS, Express)
     - Restful API 기본 CURD
@@ -47,13 +54,33 @@
     - client와 동일
 - web(Vue)
     - firebase활용 배포
+=======
+- backend(NodeJS, Express)
+  - Restful API 기본 CURD
+  - AWS S3 이미지 업로드
+  - JWT 활용 인증
+  - Redis활용 JWT 관리
+- chat_server(NodeJS)
+  - SocketIO 활용 실시간 채팅서버
+- client(Flutter)
+  - go_router 활용 라우팅 설계
+  - riverpod 활용 상태관리
+- manger(Flutter)
+  - client와 동일
+- web(Vue)
+  - firebase활용 배포
+>>>>>>> 2fe7c03 (FEAT conflict 용도)
 
 ## 3. 신경쓴 부분
 
 ### 구조화된 코드 및 파일 시스템
 
 - backend에서 api 버전별 파일시스템 분리(예: v1, v2 등)
+<<<<<<< HEAD
 - backend에서  routes → authCheck → middleware(input validation) → controllers → services → repositorys 순서의 로직
+=======
+- backend에서 routes → authCheck → middleware(input validation) → controllers → services → repositorys 순서의 로직
+>>>>>>> 2fe7c03 (FEAT conflict 용도)
 - client에서 riverpod provider를 활용한 상태관리 및 각 페이지별 컴포넌트화
 
 ### JWT활용 인증
@@ -64,6 +91,7 @@
 ### 앱스토어 배포
 
 - 최종적으로 앱스토어 배포를 진행하지 못하였지만 아래와 같은 시도로 다양한 Reject 사유에 대한 학습이 가능하였음
+<<<<<<< HEAD
 ![스크린샷 2024-09-28 오전 3 35 43](https://github.com/user-attachments/assets/97f28db7-9b1d-4669-ae6c-61edbf21aa57)
 ![스크린샷 2024-09-28 오전 3 50 44](https://github.com/user-attachments/assets/f4765159-b9ae-48ba-add1-7a8688cbbeda)
 
@@ -78,6 +106,17 @@ https://github.com/user-attachments/assets/886ccdec-95da-4125-aed2-982c24fccb3e
 
 
 
+=======
+  ![스크린샷 2024-09-28 오전 3 35 43](https://github.com/user-attachments/assets/97f28db7-9b1d-4669-ae6c-61edbf21aa57)
+  ![스크린샷 2024-09-28 오전 3 50 44](https://github.com/user-attachments/assets/f4765159-b9ae-48ba-add1-7a8688cbbeda)
+
+## 4. 페이지별 기능
+
+https://github.com/user-attachments/assets/886ccdec-95da-4125-aed2-982c24fccb3e
+
+## 5. 개선목표
+
+>>>>>>> 2fe7c03 (FEAT conflict 용도)
 ### backend
 
 - DTO, DAO, VO 개념 적용
@@ -86,10 +125,16 @@ https://github.com/user-attachments/assets/886ccdec-95da-4125-aed2-982c24fccb3e
 ### client & manager
 
 - 다양한 기능 제공
+<<<<<<< HEAD
     - map 기반 맛집, 보드타기 좋은곳 공유 등
 - 비디오 스트리밍 라이브 기능
 
 
+=======
+  - map 기반 맛집, 보드타기 좋은곳 공유 등
+- 비디오 스트리밍 라이브 기능
+
+>>>>>>> 2fe7c03 (FEAT conflict 용도)
 ## 6. 후기
 
 독학으로 기존 군에서의 기술(C++, C#, Delphi, JAVA 등)이 아닌 다른 언어로의 개발을 진행함에 언어 학습에 대한 장벽이 무너지는 계기가 되었다. 객체지향 프로그래밍에 대해 조금이나마 이해하는 계기가 되었으며, 재사용성을 높인 코드의 편리함을 학습하였다. 그리고 추후 다른 개발자와의 협업을 강조한 프로젝트의 필요성을 느꼈다.
