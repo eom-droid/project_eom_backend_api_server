@@ -294,6 +294,7 @@ export const getAccessToken = async (
   // 만약 해커가 refresh token payload 상 id를 변경하였을 경우
   // 어차피 Redis에 저장되어있지 않을 것임
   try {
+    // 나중에 웹서비스를 위해 쿠키를 사용하는 방법을 채택함
     const { refreshToken } = req.cookies;
 
     // 1. token 검증(redis + jwt 검증)

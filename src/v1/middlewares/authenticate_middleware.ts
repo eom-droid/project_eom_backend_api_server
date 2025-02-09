@@ -24,6 +24,7 @@ export const authCheck = ({
   canAccessWithoutToken?: boolean;
 }) => {
   return async (req: Request, res: Response, next: NextFunction) => {
+    console.log("role: ", role);
     try {
       const { authorization, cs: clientSecret } = req.headers;
 

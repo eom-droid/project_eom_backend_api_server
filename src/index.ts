@@ -30,7 +30,7 @@ async function server() {
   } = process.env;
   app.use(
     cors({
-      origin: CORS_URL,
+      // origin: CORS_URL,
       credentials: true, // 응답 헤더에 Access-Control-Allow-Credentials 추가
       optionsSuccessStatus: 200, // 응답 상태 200으로 설정
     })
